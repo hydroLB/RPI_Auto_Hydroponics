@@ -1,19 +1,25 @@
 from pumps import *
-waterPump.startReverse()
-nutrientPump1.startReverse()
-nutrientPump2.startReverse()
-nutrientPump3.startReverse()
-nutrientPump4.startReverse()
-pHDownPump.startReverse()
-pHUpPump.startReverse()
+from stopmotors import stop_pumps_list  # Import stop_all_pumps from stop_motors
+from pump_config import all_pumps  # Import the global pumps list from pump_config
 
-print("Press enter to stop")
+
+# This is needed to get all the pumps to the same point and ensure any liquid left
+# over in the tubes is removed, priming it
+def reverse_pumps_list(pumps_list):
+    """
+    Start all pumps in the given list in reverse mode.
+    Args:
+        pumps_list: List of pump objects to be reversed.
+    """
+    for pump in pumps_list:
+        pump.startReverse()
+
+
+# Reverse all pumps
+reverse_pumps_list(all_pumps)
+
+print("Press Enter to halt the liquid resetting process in the pumps")
 input()
 
-waterPump.stop()
-nutrientPump1.stop()
-nutrientPump2.stop()
-nutrientPump3.stop()
-nutrientPump4.stop()
-pHDownPump.stop()
-pHUpPump.stop()
+# Stop all pumps
+stop_pumps_list(all_pumps)
