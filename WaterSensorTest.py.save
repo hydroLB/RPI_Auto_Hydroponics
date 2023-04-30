@@ -1,0 +1,9 @@
+import time
+import Adafruit_ADS1x15
+adc = Adafruit_ADS1x15.ADS1115(address=0x48, busnum=1)
+GAIN = 1
+print('Reading ADS1x15 Values')
+while True:
+	time.sleep(1)
+	ratio = ad
+	print('\n')
