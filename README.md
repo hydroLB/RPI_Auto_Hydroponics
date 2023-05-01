@@ -13,8 +13,44 @@ This repository contains a Python script to manage and monitor an automatic hydr
 ## 📦 Requirements
 
 - Python 3.7 or higher
-- Raspberry Pi 4
-- Compatible pumps, water level, and pH sensors
+Here's an updated version with better readability:
+
+### (~Estimated) Under $20
+- Zip ties: $4 - $6
+- Wire stripper: $6 - $10
+- 12V AC adapter (2x): $6 - $10
+- Raspberry Pi Cobbler: $6 - $10
+- Heat shrink pack: $6 - $10
+- Epoxy glue: $8 - $12
+- Wood board: $8 - $12
+- Mason jars: $8 - $12
+- Raspberry Pi screw set: $8 - $12
+- Long screws for pump attachment: $8 - $12
+- Silicone tubing: $8 - $12
+- Temperature sensor and circuit: $8 - $12
+- Analog-to-digital converter: $10 - $12
+- Protoboards: $12 - $18
+- Large fresh water pump: $12 - $18
+- Multistrand wire pack: $13 - $20
+- Single strand wire pack: $13 - $20
+- Wire crimper and crimps: $15 - $25
+
+### (~Estimated) $20 - $50
+- Clear PVC tubes (4x): $20 - $30
+- 8-gallon bucket with lid: $25 - $35
+- pH probe Voltage isolator: $25 - $35
+- EC probe Voltage isolator: $25 - $35
+- Water level sensor (E-Tape): $30 - $50
+- IOT Relay: $30 - $50
+
+### (~Estimated) Over $50
+- EC probe (Atlas Scientific): $35 - $55
+- pH probe (Atlas Scientific): $40 - $60
+- Peristaltic pumps (7x): $60 - $90
+- Soldering Iron kit: $65 - $95
+- Raspberry Pi B+: $100 - $140
+
+### Total estimated cost range: $600-$900
 
 ## 🛠️ Installation
 
@@ -37,9 +73,13 @@ pip install -r requirements.txt
 
 You will need to configure the following variables in the main function code:
 
-- `ph_var`: List containing times for pH up and down pumps to be on per cycle, and time between each cycle (loop) .
-- `WATER_LEVEL_CHANGE_THRESHOLD`: Water level change threshold in inches (activate the dry-back feature, this controls how        often a fillup to the top occurs).
+- `ph_var`: List of 3, containing times for pH up and down pumps to be on per cycle, and time between each cycle (loop) when dosing for pH.
+
+- `WATER_LEVEL_CHANGE_THRESHOLD`: This parameter determines the minimum difference in water level (in inches) needed to trigger a fill-up, promoting stronger root growth by encouraging plants to search for water deeper in the ground. Adjust the threshold to optimize watering frequency and root strength. Consider updating this value in relation to the plant's growth stage. As the plant matures, increase the time between fill-ups to encourage deeper root growth.
+- Smaller threshold -> More frequent fill-ups. Larger threshold -> Less frequent fill-ups, stronger roots. 
+
 - `WAIT_TIME_BETWEEN_CHECKS`: Time in seconds to wait between each water level check and ph check.
+
 - `NUTRIENT_PPM_SAFETY_MARGIN`: Safety margin in ppm between the actual target PPM and the first nutrient dosing cycle, as the ph balancing raises ppm too.
 
 ## 🚀 Usage
@@ -59,6 +99,7 @@ python3 main.py
 - The code is designed to work with a specific set of pumps and sensors. You may need to modify the code to work with different hardware.
 - The water level, PPM, and pH values are stored in a file to allow the system to continue monitoring in the event of a reboot or power outage.
 
-## 🤝 Contributing
+## 🤝 Contributing and special thanks
+Special thanks to Michael Yinka-Oke and Sean Cunneen for bringing this project and idea to from the ground to reality! 
 
 Contributions are welcome! If you have any suggestions or improvements, feel free to submit a pull request or create an issue.
