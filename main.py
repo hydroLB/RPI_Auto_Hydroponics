@@ -31,7 +31,6 @@ c = .9816
 
 # Initialize the ADC (Analog-to-Digital Converter) with I2C address and bus number
 adc = Adafruit_ADS1x15.ADS1115(address=0x48, busnum=1)
-
 # Set the gain value for the ADC
 GAIN = 1
 
@@ -45,16 +44,13 @@ driver1 = MotorKit(0x61)
 WATER_LEVEL_CHANGE_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS = 3.0, 1000
 
 nutrient_pump_times = [5, 5, 5, 5]  # Time in seconds for each nute pump to run
-
 # Margin (in ppm) between the actual target PPM and the first nutrient dosing cycle
 # to avoid overloading the nutrients when the pH is balanced after (which always raises it to some degree).
 NUTRIENT_PPM_SAFETY_MARGIN = 30
-
 # how long should the RPI wait in between dosing nutrients to reach the target PPM
 NUTRIENT_WAIT_TIME_LOOP = 10
 
 target_min_max_ph = [5.8, 5.6, 6.2]  # [TARGET_PH, MIN_PH, MAX_PH]
-
 # 1.  Sleep time for pH up pump (how long is it on)
 # 2.  Sleep time for pH down pump (how long is it on)
 # 3.  Sleep time for the loop (how long to wait between each increment dosing)
