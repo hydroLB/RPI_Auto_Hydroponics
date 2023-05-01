@@ -110,7 +110,7 @@ Copyright (c) [Year(s)] Adafruit Industries. Licensed under the MIT License.
 Atlas Scientific Library: [Name of the library] (Link to the library)
 Copyright (c) [Year(s)] Atlas Scientific LLC. Licensed under the MIT License.
 
-This project was developed using a variety of tools, including PyCharm as the integrated development environment, OpenAI's API and GitHub Copilot as coding assistants, and implemented on a Raspberry Pi platform.
+This project was developed using a variety of tools, including PyCharm as the integrated development environment and implemented on a Raspberry Pi platform.
 
 Original contributions and unique code in this project:
 Copyright © [2023] [Leon Bouramia]. All rights reserved.
