@@ -11,7 +11,7 @@ import Adafruit_ADS1x15
 
 # VARIABLE CONFIGURATION
 
-skip_system_setup_water_level = 2.0
+skip_system_setup_water_level = 1.5 # how low the water can go for the system to assume setup has already been conducted, any lower than it wont know. 
 
 filename = "settings.txt"  # where idea water level and last fillup ppm is stored
 
