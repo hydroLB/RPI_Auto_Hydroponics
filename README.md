@@ -59,6 +59,7 @@ python3 main.py
 - The code is designed to work with a specific set of pumps and sensors. You may need to modify the code to work with different hardware.
 - The water level, PPM, and pH values are stored in a file to allow the system to continue monitoring in the event of a reboot or power outage.
 
-## 🤝 Contributing
+## 🤝 Contributing and special thanks
+Special thanks to Michael Yinka-Oke and Sean Cunneen for bringing this project and idea to from the ground to reality! 
 
 Contributions are welcome! If you have any suggestions or improvements, feel free to submit a pull request or create an issue.
