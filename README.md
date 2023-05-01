@@ -99,7 +99,21 @@ python3 main.py
 - The code is designed to work with a specific set of pumps and sensors. You may need to modify the code to work with different hardware.
 - The water level, and PPM are stored in a file to allow the system to resume its monitoring in the event of a reboot or power outage.
 
-## 🤝 Contributing and special thanks
+## 🤝 Contributing, credits and special thanks: 
 Special thanks to Michael Yinka-Oke and Sean Cunneen for bringing this project and idea to from the ground to reality! 
+
+This project uses support code from the following sources:
+
+Adafruit Library: [Name of the library] (Link to the library)
+Copyright (c) [Year(s)] Adafruit Industries. Licensed under the MIT License.
+
+Atlas Scientific Library: [Name of the library] (Link to the library)
+Copyright (c) [Year(s)] Atlas Scientific LLC. Licensed under the MIT License.
+
+This project was developed using a variety of tools, including PyCharm as the integrated development environment, OpenAI's API and GitHub Copilot as coding assistants, and implemented on a Raspberry Pi platform.
+
+Original contributions and unique code in this project:
+Copyright © [2023] [Leon Bouramia]. All rights reserved.
+This original work is licensed under the GNU Affero General Public License v3.0 (AGPLv3). The full license text can be found at https://www.gnu.org/licenses/agpl-3.0.en.html
 
 Contributions are welcome! If you have any suggestions or improvements, feel free to submit a pull request or create an issue.
