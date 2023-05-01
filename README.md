@@ -13,41 +13,42 @@ This repository contains a Python script to manage and monitor an automatic hydr
 ## 📦 Requirements
 
 - Python 3.7 or higher
+Here's an updated version with better readability:
 
-### (estimated) Under $20
-Zip ties - $4-$6
-Wire stripper - $6-$10
-12V AC adapter (2x) - $6-$10
-Raspberry Pi Cobbler - $6-$10
-Heat shrink pack - $6-$10
-Epoxy glue - $8-$12
-Wood board - $8-$12
-Mason jars - $8-$12
-Raspberry Pi screw set - $8-$12
-Long screws for pump attachment - $8-$12
-Silicone tubing - $8-$12
-Temperature sensor and circuit - $8-$12
-Analog-to-digital converter - $10-12
-Protoboards - $12-$18
-Large fresh water pump - $12-$18
-Multistrand wire pack - $13-$20
-Single strand wire pack - $13-$20
-Wire crimper and crimps - $15-$25
+### Estimated Under $20
+- Zip ties: $4 - $6
+- Wire stripper: $6 - $10
+- 12V AC adapter (2x): $6 - $10
+- Raspberry Pi Cobbler: $6 - $10
+- Heat shrink pack: $6 - $10
+- Epoxy glue: $8 - $12
+- Wood board: $8 - $12
+- Mason jars: $8 - $12
+- Raspberry Pi screw set: $8 - $12
+- Long screws for pump attachment: $8 - $12
+- Silicone tubing: $8 - $12
+- Temperature sensor and circuit: $8 - $12
+- Analog-to-digital converter: $10 - $12
+- Protoboards: $12 - $18
+- Large fresh water pump: $12 - $18
+- Multistrand wire pack: $13 - $20
+- Single strand wire pack: $13 - $20
+- Wire crimper and crimps: $15 - $25
 
-### (estimated) $20 - $50
-Clear PVC tubes (4x) - $20-$30
-8-gallon bucket with lid - $25-$35
-pH probe Voltage isolator - $25-$35
-EC probe Voltage isolator - $25-$35
-Water level sensor - $30-$50
-IOT Relay - $30-$50
+### Estimated $20 - $50
+- Clear PVC tubes (4x): $20 - $30
+- 8-gallon bucket with lid: $25 - $35
+- pH probe Voltage isolator: $25 - $35
+- EC probe Voltage isolator: $25 - $35
+- Water level sensor: $30 - $50
+- IOT Relay: $30 - $50
 
-### (estimated) Over $50
-EC probe (Atlas Scientific) - $35-$55
-pH probe (Atlas Scientific) - $40-$60
-Peristaltic pumps (7x) - $60-$90
-Soldering Iron kit - $65-$95
-Raspberry Pi B+ - $100-$140
+### Estimated Over $50
+- EC probe (Atlas Scientific): $35 - $55
+- pH probe (Atlas Scientific): $40 - $60
+- Peristaltic pumps (7x): $60 - $90
+- Soldering Iron kit: $65 - $95
+- Raspberry Pi B+: $100 - $140
 
 ### Total estimated cost range: $600-$900
 
