@@ -15,7 +15,7 @@ ph_var = [0.1, 0.1, 10]  # [PH_UP_SLEEP_TIME, PH_DOWN_SLEEP_TIME, LOOP_SLEEP_TIM
 # Water level change threshold (in inches) (acts as the plants 'dry-back' function and time between checks (in
 # seconds) WAIT_TIME_BETWEEN_CHECKS = how long should the raspberry pi wait to check the water level and then if the
 # ph is within soft range
-WATER_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS = 3, 1000
+WATER_LEVEL_CHANGE_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS = 3, 1000
 
 # Margin (in ppm) between the actual target PPM and the first nutrient dosing cycle
 # to avoid overloading the nutrients when the pH is finally balanced (which always raises it to some degree).
@@ -84,7 +84,7 @@ def monitor_hydroponic_system():
 
             # Check if the difference between the current water level and the target water level
             # is greater than the defined threshold
-            if get_water_level() - target_water_level > WATER_THRESHOLD:
+            if get_water_level() - target_water_level > WATER_LEVEL_CHANGE_THRESHOLD:
                 # Adjust water level and nutrients if the difference is greater than the threshold
                 adjust_water_level_and_nutrients()
 
