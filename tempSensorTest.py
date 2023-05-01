@@ -1,7 +1,4 @@
-# Variables for 1-wire temperature sensor
-w1_device_path = '/sys/bus/w1/devices/'
-w1_device_name = '28-3c09f6495e17'
-w1_temp_path = w1_device_path + w1_device_name + '/temperature'
+from main import w1_temp_path
 
 while True:
     # Open the temperature file for reading

@@ -4,13 +4,16 @@ from time import sleep
 from pumps import pHUpPump, pHDownPump
 from tempAtlas import get_ph
 
-TARGET_PH, MIN_PH, MAX_PH = 5.8, 5.6, 6.2
 
+def balance_ph(target_min_max_ph, ph_dosing_time):
+    TARGET_PH = target_min_max_ph[0]
+    MIN_PH = target_min_max_ph[1]
+    MAX_PH = target_min_max_ph[2]
 
-def balance_ph(ph_var):
-    ph_up_sleep_time = ph_var[0]
-    ph_down_sleep_time = ph_var[1]
-    loop_sleep_time = ph_var[2]
+    ph_up_sleep_time = ph_dosing_time[0]
+    ph_down_sleep_time = ph_dosing_time[1]
+    loop_sleep_time = ph_dosing_time[2]
+
     if get_ph() < MIN_PH:  # Check if the current pH value is less than the minimum pH value
         while get_ph() < TARGET_PH:  # Keep running the loop while the pH value is less than the target pH value
             print("Increasing PH, PH: %f" % (
@@ -30,10 +33,12 @@ def balance_ph(ph_var):
         pHDownPump.stop()  # Stop the pH down pump when the pH value reaches the target value
 
 
-def balance_PH_exact(ph_var):
-    ph_up_sleep_time = ph_var[0]
-    ph_down_sleep_time = ph_var[1]
-    loop_sleep_time = ph_var[2]
+def balance_PH_exact(target_min_max_ph, ph_dosing_time):
+    TARGET_PH = target_min_max_ph[0]
+
+    ph_up_sleep_time = ph_dosing_time[0]
+    ph_down_sleep_time = ph_dosing_time[1]
+    loop_sleep_time = ph_dosing_time[2]
     if get_ph() < TARGET_PH:  # Check if the current pH value is less than the target pH value
         while get_ph() < TARGET_PH:  # Keep running the loop while the pH value is less than the target pH value
             print("Increasing PH, PH: %f" % (

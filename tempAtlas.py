@@ -1,13 +1,4 @@
-from AtlasI2C import AtlasI2C
-
-# Vars for 1-wire temp sensor
-w1_device_path = '/sys/bus/w1/devices/'
-w1_device_name = '28-3c09f6495e17'
-w1_temp_path = w1_device_path + w1_device_name + '/temperature'
-
-# Initialize ECSensor and PHSensor
-ECSensor = AtlasI2C(100)
-PHSensor = AtlasI2C(99)
+from main import w1_temp_path, PHSensor, ECSensor
 
 
 def read_temp_file():

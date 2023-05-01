@@ -1,16 +1,12 @@
+from main import nutrient_pump_times
 from pumps import *
 
-# times each pump should be on
-nutrient1Time = 5
-nutrient2Time = 5
-nutrient3Time = 5
-nutrient4Time = 5
 
 fresh_water_pump = waterPump
 
 # List of pumps and their time
-nutrient_pump_time_list = [(nutrientPump1, nutrient1Time), (nutrientPump2, nutrient2Time),
-                           (nutrientPump3, nutrient3Time), (nutrientPump4, nutrient4Time)]
+nutrient_pump_time_list = [(nutrientPump1, nutrient_pump_times[0]), (nutrientPump2, nutrient_pump_times[1]),
+                           (nutrientPump3, nutrient_pump_times[2]), (nutrientPump4, nutrient_pump_times[3])]
 
 ph_pump_list = [pHUpPump, pHDownPump]
 

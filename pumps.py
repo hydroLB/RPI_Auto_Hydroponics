@@ -1,8 +1,4 @@
-from adafruit_motorkit import MotorKit
-
-# Initialize motor drivers with I2C addresses
-driver0 = MotorKit(0x60)
-driver1 = MotorKit(0x61)
+from main import driver0, driver1
 
 
 class Pump:

@@ -1,11 +1,6 @@
 import math
-import Adafruit_ADS1x15
 
-# Initialize the ADC (Analog-to-Digital Converter) with I2C address and bus number
-adc = Adafruit_ADS1x15.ADS1115(address=0x48, busnum=1)
-
-# Set the gain value for the ADC
-GAIN = 1
+from main import adc, GAIN
 
 print('Reading ADS1x15 Values')
 

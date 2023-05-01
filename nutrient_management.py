@@ -2,7 +2,7 @@ from time import sleep
 from tempAtlas import get_ppm
 
 
-def dose_nutrients(target_ppm_local, pump_info):
+def dose_nutrients(target_ppm_local, pump_info, NUTRIENT_WAIT_TIME_LOOP):
     # Keep dosing nutrients until the target PPM is reached
     while get_ppm() < target_ppm_local:
         # Iterate through each pump and its corresponding dosing time in the pump_info list
@@ -20,4 +20,4 @@ def dose_nutrients(target_ppm_local, pump_info):
             pump.stop()
 
         # Sleep for 10 seconds before checking the PPM again
-        sleep(10)
+        sleep(NUTRIENT_WAIT_TIME_LOOP)
