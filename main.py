@@ -11,8 +11,6 @@ import Adafruit_ADS1x15
 
 # VARIABLE CONFIGURATION
 
-skip_system_setup_water_level = 1.5 # how low the water can go for the system to assume setup has already been conducted, any lower than it wont know. 
-
 filename = "settings.txt"  # where idea water level and last fillup ppm is stored
 
 # Vars for 1-wire temp sensor
@@ -24,20 +22,20 @@ w1_temp_path = w1_device_path + w1_device_name + '/temperature'
 ECSensor = AtlasI2C(100)
 PHSensor = AtlasI2C(99)
 
+# Initialize the ADC (Analog-to-Digital Converter) with I2C address and bus number
+adc = Adafruit_ADS1x15.ADS1115(address=0x48, busnum=1)
+# Set the gain value for the ADC
+GAIN = 1
 # Coefficients for quadratic equation to convert reading to water level
 a = -.0034
 b = -.0103
 c = .9816
 
-# Initialize the ADC (Analog-to-Digital Converter) with I2C address and bus number
-adc = Adafruit_ADS1x15.ADS1115(address=0x48, busnum=1)
-# Set the gain value for the ADC
-GAIN = 1
-
 # Initialize motor drivers with I2C addresses
 driver0 = MotorKit(0x60)
 driver1 = MotorKit(0x61)
 
+skip_system_setup_water_level = 1.5 # Indicates the minimum water level for the system to recognize a completed setup
 # Water level change threshold (in inches) (acts as the plants 'dry-back' function and time between checks (in
 # seconds) WAIT_TIME_BETWEEN_CHECKS = how long should the raspberry pi wait to check the water level and then if the
 # ph is within soft range
