@@ -73,8 +73,8 @@ pip install -r requirements.txt
 
 You will need to configure the following variables in the main function code:
 
-- `ph_var`: List containing times for pH up and down pumps to be on per cycle, and time between each cycle (loop) .
-- `WATER_LEVEL_CHANGE_THRESHOLD`: Water level change threshold in inches (activate the dry-back feature, this controls how        often a fillup to the top occurs).
+- `ph_var`: List containing times for pH up and down pumps to be on per cycle, and time between each cycle (loop) when dosing for ph.
+- `WATER_LEVEL_CHANGE_THRESHOLD`: This is the minimum drop in water level in inches between user-defined top-level and current-level before a fillup occurs, (this is to stimulate the plants dry-back feature, making stronger roots), the smaller the threshold, the more frequent fillups are, while the larger the threshold, the less frequent fillups are, growing stronger roots.
 - `WAIT_TIME_BETWEEN_CHECKS`: Time in seconds to wait between each water level check and ph check.
 - `NUTRIENT_PPM_SAFETY_MARGIN`: Safety margin in ppm between the actual target PPM and the first nutrient dosing cycle, as the ph balancing raises ppm too.
 
