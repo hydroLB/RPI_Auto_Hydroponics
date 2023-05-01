@@ -75,7 +75,7 @@ You will need to configure the following variables in the main function code:
 
 - `ph_var`: List containing times for pH up and down pumps to be on per cycle, and time between each cycle (loop) when dosing for ph.
 
-- 'Water Level Change Threshold': This parameter determines the minimum difference in water level (in inches) needed to trigger a fill-up, promoting stronger root growth by encouraging plants to search for water deeper in the ground. Adjust the threshold to optimize watering frequency and root strength. Consider updating this value in relation to the plant's growth stage. As the plant matures, increase the time between fill-ups to encourage deeper root growth.
+- `Water Level Change Threshold`: This parameter determines the minimum difference in water level (in inches) needed to trigger a fill-up, promoting stronger root growth by encouraging plants to search for water deeper in the ground. Adjust the threshold to optimize watering frequency and root strength. Consider updating this value in relation to the plant's growth stage. As the plant matures, increase the time between fill-ups to encourage deeper root growth.
 - Smaller threshold -> More frequent fill-ups. Larger threshold -> Less frequent fill-ups, stronger roots. 
 
 - `WAIT_TIME_BETWEEN_CHECKS`: Time in seconds to wait between each water level check and ph check.
