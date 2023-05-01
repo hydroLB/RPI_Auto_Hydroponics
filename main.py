@@ -11,6 +11,8 @@ import Adafruit_ADS1x15
 
 # VARIABLE CONFIGURATION
 
+skip_system_setup_water_level = 2.0
+
 filename = "settings.txt"  # where idea water level and last fillup ppm is stored
 
 # Vars for 1-wire temp sensor
@@ -64,7 +66,7 @@ def setup_hydroponic_system():
     Set up the hydroponic system by priming pumps, filling water, dosing nutrients, and balancing pH.
     """
     # Check if the water level is below the threshold for system setup
-    if get_water_level(a, b, c) < WATER_LEVEL_CHANGE_THRESHOLD:
+    if get_water_level(a, b, c) < skip_system_setup_water_level:
 
         # Log the system startup message
         logging.info("RPI Hydroponic System Startup\nTo start, pumps must be primed")
