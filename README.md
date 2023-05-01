@@ -15,7 +15,7 @@ This repository contains a Python script to manage and monitor an automatic hydr
 - Python 3.7 or higher
 Here's an updated version with better readability:
 
-### Estimated Under $20
+### (~Estimated) Under $20
 - Zip ties: $4 - $6
 - Wire stripper: $6 - $10
 - 12V AC adapter (2x): $6 - $10
@@ -35,7 +35,7 @@ Here's an updated version with better readability:
 - Single strand wire pack: $13 - $20
 - Wire crimper and crimps: $15 - $25
 
-### Estimated $20 - $50
+### (~Estimated) $20 - $50
 - Clear PVC tubes (4x): $20 - $30
 - 8-gallon bucket with lid: $25 - $35
 - pH probe Voltage isolator: $25 - $35
@@ -43,7 +43,7 @@ Here's an updated version with better readability:
 - Water level sensor: $30 - $50
 - IOT Relay: $30 - $50
 
-### Estimated Over $50
+### (~Estimated) Over $50
 - EC probe (Atlas Scientific): $35 - $55
 - pH probe (Atlas Scientific): $40 - $60
 - Peristaltic pumps (7x): $60 - $90
