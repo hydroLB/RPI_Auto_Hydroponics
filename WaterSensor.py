@@ -11,7 +11,7 @@ GAIN = 1
 print('Reading ADS1x15 Values')
 
 
-def getWaterLevel():
+def get_water_level():
     """
     Calculate the water level using a liquid eTape sensor and the ADC.
 
