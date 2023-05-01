@@ -1,27 +1,25 @@
-import logging
-from pump_control import *
+from pump_config import *
+from pump_control import prime, stop_pumps_list, run_pumps_list
 from water_management import *
 from nutrient_management import *
 from ph_management import *
 from file_operations import *
-from sensor_management import *
 from logging_config import *
 
+# VARIABLE CONFIGURATION
+# 1.  Sleep time for pH up pump (how long is it on)
+# 2.  Sleep time for pH down pump (how long is it on)
+# 3.  Sleep time for the loop ((how long to wait between each increment dosing)
+ph_var = [0.1, 0.1, 10]  # [PH_UP_SLEEP_TIME, PH_DOWN_SLEEP_TIME, LOOP_SLEEP_TIME]
 
-# Target pH values and limits
-TARGET_PH, MIN_PH, MAX_PH = 5.8, 5.6, 6.2
-
-# Water level change threshold (in inches) (acts as the plants 'dry-back' function and time between checks (in seconds)
-# WAIT_TIME_BETWEEN_CHECKS = how long should the raspberry pi wait to check the water level and then if the ph is within soft range
+# Water level change threshold (in inches) (acts as the plants 'dry-back' function and time between checks (in
+# seconds) WAIT_TIME_BETWEEN_CHECKS = how long should the raspberry pi wait to check the water level and then if the
+# ph is within soft range
 WATER_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS = 3, 1000
 
 # Margin (in ppm) between the actual target PPM and the first nutrient dosing cycle
 # to avoid overloading the nutrients when the pH is finally balanced (which always raises it to some degree).
 NUTRIENT_PPM_SAFETY_MARGIN = 30
-
-PH_UP_SLEEP_TIME = 0.1  # Sleep time for pH up pump (how long is it on)
-PH_DOWN_SLEEP_TIME = 0.1  # Sleep time for pH down pump (how long is it on)
-LOOP_SLEEP_TIME = 10  # Sleep time for the loop ((how long to wait between each increment dosing)
 
 
 def setup_hydroponic_system():
@@ -59,7 +57,7 @@ def setup_hydroponic_system():
         dose_nutrients(target_ppm, nutrient_pump_time_list)
 
         # Balance pH levels to the desired range
-        balance_PH_exact()
+        balance_PH_exact(ph_var)
 
         # Log the completion of the system setup
         logging.info("Startup completed")
@@ -92,14 +90,14 @@ def monitor_hydroponic_system():
 
             else:
                 # If the difference is within the threshold, balance the pH levels
-                balance_ph()  # Keep within range
+                balance_ph(ph_var)  # Keep within range
 
             # Sleep for a defined time before checking water level and pH again
             sleep(WAIT_TIME_BETWEEN_CHECKS)
 
-        except Exception as e:
+        except Exception as eeee:
             # Log any errors that occur during the monitoring process
-            logging.error(f"An error occurred: {e}")
+            logging.error(f"An error occurred: {eeee}")
 
             # Sleep for a defined time before attempting to monitor the hydroponic system again
             sleep(WAIT_TIME_BETWEEN_CHECKS)

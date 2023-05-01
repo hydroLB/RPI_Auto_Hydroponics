@@ -1,5 +1,4 @@
 import math
-import time
 import Adafruit_ADS1x15
 
 # Initialize the ADC (Analog-to-Digital Converter) with I2C address and bus number
@@ -19,11 +18,11 @@ def get_water_level():
         float: Water level value.
     """
     # Read baseline and raw eTape sensor values from the ADC
-    baseLine = adc.read_adc(1, gain=GAIN)
-    rawVal = adc.read_adc(0, gain=GAIN)
+    baseline = adc.read_adc(1, gain=GAIN)
+    raw_val = adc.read_adc(0, gain=GAIN)
 
     # Calculate the reading ratio
-    reading = rawVal / baseLine
+    reading = raw_val / baseline
 
     # Coefficients for quadratic equation to convert reading to water level
     a = -.0034
@@ -31,6 +30,6 @@ def get_water_level():
     c = .9816 - reading
 
     # Solve the quadratic equation to get the water level
-    waterLevel = ((-b) - math.sqrt(b * b - 4 * a * c)) / (2 * a)
+    water_level = ((-b) - math.sqrt(b * b - 4 * a * c)) / (2 * a)
 
-    return waterLevel
+    return water_level

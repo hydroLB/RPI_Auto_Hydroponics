@@ -1,5 +1,3 @@
-import os
-
 # Variables for 1-wire temperature sensor
 w1_device_path = '/sys/bus/w1/devices/'
 w1_device_name = '28-3c09f6495e17'

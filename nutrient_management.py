@@ -1,6 +1,6 @@
-from WaterSensor import *
 from time import sleep
-from pump_control import *
+from tempAtlas import get_ppm
+
 
 def dose_nutrients(target_ppm_local, pump_info):
     # Keep dosing nutrients until the target PPM is reached

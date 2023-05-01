@@ -1,18 +1,11 @@
-#Function to write target_ppm and target_water_level to a file
-
-
+# Function to write target_ppm and target_water_level to a file
 
 def write_to_file(target_ppm, target_water_level):
     with open("settings.txt", "w") as file:
         file.write(f"{target_ppm},{target_water_level}")
 
 
-
-
-#Function to read target_ppm and target_water_level from a file
-
-
-
+# Function to read target_ppm and target_water_level from a file
 
 def read_from_file():
     with open("settings.txt", "r") as file:
@@ -21,4 +14,3 @@ def read_from_file():
         target_water_level = int(data[1])
 
     return target_ppm, target_water_level
-

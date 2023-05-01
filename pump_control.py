@@ -1,6 +1,5 @@
 import sys
-from time import sleep
-from pump_config import *
+
 
 # Prime pumps with the user's help
 def prime(pumps_list):
@@ -14,6 +13,7 @@ def prime(pumps_list):
         sys.stdin.readline()  # Wait for user to hit enter
         pump.stop()
     print("All pumps primed")
+
 
 # This is needed to get all the pumps to the same point and ensure any liquid left
 # over in the tubes is removed, priming it
@@ -35,4 +35,3 @@ def stop_pumps_list(pumps_list):
     """Stop all pumps in the given list."""
     for pump in pumps_list:
         pump.stop(pump)
-

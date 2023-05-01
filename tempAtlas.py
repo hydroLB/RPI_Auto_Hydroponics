@@ -1,5 +1,4 @@
 from AtlasI2C import AtlasI2C
-import time
 
 # Vars for 1-wire temp sensor
 w1_device_path = '/sys/bus/w1/devices/'

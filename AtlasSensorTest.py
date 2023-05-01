@@ -26,8 +26,8 @@ def get_temp_c():
 
 while True:
     # Get temperature in Celsius and Fahrenheit
-    temp_c = get_temp_c()
-    temp_f = temp_c * 9 / 5 + 32
+    temp_c_2 = get_temp_c()
+    temp_f = temp_c_2 * 9 / 5 + 32
 
     # Get EC value with temperature compensation
     ec = ECSensor.query('RT,' + str(get_temp_c()))
