@@ -45,10 +45,10 @@ def adjust_water_level_and_nutrients():
     # Update target PPM based on plant's nutrient consumption rate
     target_ppm += (target_ppm - pre_fillup_ppm)
 
-    write_to_file(target_ppm, target_water_level)
-
     # Dose nutrients, first making sure it's under the amount needed, then balance pH, increasing it,
     # then finally ensure it's exactly at the target PPM
     dose_nutrients(target_ppm - NUTRIENT_PPM_SAFETY_MARGIN, nutrient_pump_time_list)
     balance_PH_exact(ph_var)
     dose_nutrients(target_ppm, nutrient_pump_time_list)
+    # write the new water level and new ppm to the file
+    write_to_file(get_ppm(), get_water_level())

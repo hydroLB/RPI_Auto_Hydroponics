@@ -65,7 +65,7 @@ def setup_hydroponic_system():
         # Wait for 30 seconds to allow PPM to settle
         sleep(30)
 
-        # Update target PPM based on the plant's behavior
+        # Update target PPM after ph was balanced
         target_ppm = get_ppm()
         write_to_file(target_ppm, target_water_level)
     else:
@@ -81,20 +81,18 @@ def monitor_hydroponic_system():
         try:
             # Read the target PPM and water level values from the file
             target_ppm, target_water_level = read_from_file()
-
             # Check if the difference between the current water level and the target water level
             # is greater than the defined threshold
             if get_water_level() - target_water_level > WATER_LEVEL_CHANGE_THRESHOLD:
                 # Adjust water level and nutrients if the difference is greater than the threshold
                 adjust_water_level_and_nutrients()
-
             else:
                 # If the difference is within the threshold, balance the pH levels
                 balance_ph(ph_var)  # Keep within range
-
-            # Sleep for a defined time before checking water level and pH again
-            sleep(WAIT_TIME_BETWEEN_CHECKS)
-
+                # update the values of ppm and water level
+                write_to_file(get_ppm(), get_water_level())
+                # Sleep for a defined time before checking water level and pH again
+                sleep(WAIT_TIME_BETWEEN_CHECKS)
         except Exception as eeee:
             # Log any errors that occur during the monitoring process
             logging.error(f"An error occurred: {eeee}")
