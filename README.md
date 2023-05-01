@@ -40,7 +40,7 @@ Here's an updated version with better readability:
 - 8-gallon bucket with lid: $25 - $35
 - pH probe Voltage isolator: $25 - $35
 - EC probe Voltage isolator: $25 - $35
-- Water level sensor: $30 - $50
+- Water level sensor (E-Tape): $30 - $50
 - IOT Relay: $30 - $50
 
 ### (~Estimated) Over $50
