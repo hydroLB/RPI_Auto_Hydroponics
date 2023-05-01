@@ -1,0 +1,44 @@
+from WaterSensor import *
+from time import sleep
+from pump_control import *
+
+def fill_water(target_level):
+    """
+    Fill the water reservoir until the target water level is reached.
+
+    :param target_level: The desired water level to be reached in the reservoir.
+    """
+    try:
+        # Continuously check the current water level in the reservoir
+        while get_water_level() < target_level:
+            # Display the current water level while adding water
+            print("Adding water... level %f" % (get_water_level()))
+            # Start the water pump to fill the reservoir
+            waterPump.start()
+            # Wait for 5 seconds to allow the water pump to operate
+            sleep(5)
+        # Stop the water pump once the target water level is reached
+        waterPump.stop()
+    except Exception as ee:
+        # Log the error message and stop the water pump in case of an exception
+        logging.error(f"An error occurred while filling water: {ee}")
+        waterPump.stop()
+
+def adjust_water_level_and_nutrients():
+    target_ppm, target_water_level = read_from_file()
+
+    pre_fillup_ppm = get_ppm()
+    fill_water(target_water_level)
+    sleep(30)  # Wait for PPM readings to settle
+
+    # Update target PPM based on plant's nutrient consumption rate
+    target_ppm += (target_ppm - pre_fillup_ppm)
+
+    write_to_file(target_ppm, target_water_level)
+
+    # Dose nutrients, first making sure it's under the amount needed, then balance pH, increasing it,
+    # then finally ensure it's exactly at the target PPM
+    dose_nutrients(target_ppm - NUTRIENT_PPM_SAFETY_MARGIN, nutrient_pump_time_list)
+    balance_PH_exact()
+    dose_nutrients(target_ppm, nutrient_pump_time_list)
+
