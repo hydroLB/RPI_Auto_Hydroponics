@@ -45,7 +45,7 @@ WATER_LEVEL_CHANGE_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS = 3.0, 1000
 nutrient_pump_times = [5, 5, 5, 5]  # Time in seconds for each nute pump to run
 
 # Margin (in ppm) between the actual target PPM and the first nutrient dosing cycle
-# to avoid overloading the nutrients when the pH is finally balanced (which always raises it to some degree).
+# to avoid overloading the nutrients when the pH is balanced after (which always raises it to some degree).
 NUTRIENT_PPM_SAFETY_MARGIN = 30
 
 # how long should the RPI wait in between dosing nutrients to reach the target PPM
