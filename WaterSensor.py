@@ -5,7 +5,7 @@ from main import adc, GAIN
 print('Reading ADS1x15 Values')
 
 
-def get_water_level():
+def get_water_level(a, b, c):
     """
     Calculate the water level using a liquid eTape sensor and the ADC.
 
@@ -19,12 +19,10 @@ def get_water_level():
     # Calculate the reading ratio
     reading = raw_val / baseline
 
-    # Coefficients for quadratic equation to convert reading to water level
-    a = -.0034
-    b = -.0103
-    c = .9816 - reading
+    # Calculate the quadratic equation coefficient
+    c_2 = c - reading
 
     # Solve the quadratic equation to get the water level
-    water_level = ((-b) - math.sqrt(b * b - 4 * a * c)) / (2 * a)
+    water_level = ((-b) - math.sqrt(b * b - 4 * a * c_2)) / (2 * a)
 
     return water_level

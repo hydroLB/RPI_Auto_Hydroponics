@@ -11,6 +11,8 @@ import Adafruit_ADS1x15
 
 # VARIABLE CONFIGURATION
 
+filename = "settings.txt"  # where idea water level and last fillup ppm is stored
+
 # Vars for 1-wire temp sensor
 w1_device_path = '/sys/bus/w1/devices/'
 w1_device_name = '28-3c09f6495e17'
@@ -19,6 +21,11 @@ w1_temp_path = w1_device_path + w1_device_name + '/temperature'
 # Initialize ECSensor and PHSensor
 ECSensor = AtlasI2C(100)
 PHSensor = AtlasI2C(99)
+
+# Coefficients for quadratic equation to convert reading to water level
+a = -.0034
+b = -.0103
+c = .9816
 
 # Initialize the ADC (Analog-to-Digital Converter) with I2C address and bus number
 adc = Adafruit_ADS1x15.ADS1115(address=0x48, busnum=1)
@@ -57,7 +64,7 @@ def setup_hydroponic_system():
     Set up the hydroponic system by priming pumps, filling water, dosing nutrients, and balancing pH.
     """
     # Check if the water level is below the threshold for system setup
-    if get_water_level() < WATER_LEVEL_CHANGE_THRESHOLD:
+    if get_water_level(a, b, c) < WATER_LEVEL_CHANGE_THRESHOLD:
 
         # Log the system startup message
         logging.info("RPI Hydroponic System Startup\nTo start, pumps must be primed")
@@ -78,7 +85,7 @@ def setup_hydroponic_system():
         target_water_level = int(input("Input target water level (in inches): "))
 
         # Save target PPM and water level to the file
-        write_to_file(target_ppm, target_water_level)
+        write_to_file(filename, target_ppm, target_water_level)
 
         # Fill water to the target level in the reservoir
         fill_water(target_water_level)
@@ -97,7 +104,7 @@ def setup_hydroponic_system():
 
         # Update target PPM after ph was balanced
         target_ppm = get_ppm()
-        write_to_file(target_ppm, target_water_level)
+        write_to_file(filename, target_ppm, target_water_level)
     else:
         # If the water level is above the threshold, log that the system is already set up
         logging.info("Hydroponic system already set up")
@@ -110,17 +117,17 @@ def monitor_hydroponic_system():
     while True:
         try:
             # Read the target PPM and water level values from the file
-            target_ppm, target_water_level = read_from_file()
+            target_ppm, target_water_level = read_from_file(filename)
             # Check if the difference between the current water level and the target water level
             # is greater than the defined threshold
-            if get_water_level() - target_water_level > WATER_LEVEL_CHANGE_THRESHOLD:
+            if get_water_level(a, b, c) - target_water_level > WATER_LEVEL_CHANGE_THRESHOLD:
                 # Adjust water level and nutrients if the difference is greater than the threshold
                 adjust_water_level_and_nutrients()
             else:
                 # If the difference is within the threshold, balance the pH levels
                 balance_ph(target_min_max_ph, ph_dosing_time)  # Keep within range
                 # update the values of ppm and water level
-                write_to_file(get_ppm(), get_water_level())
+                write_to_file(filename, get_ppm(), get_water_level(a, b, c))
                 # Sleep for a defined time before checking water level and pH again
                 sleep(WAIT_TIME_BETWEEN_CHECKS)
         except Exception as eeee:
