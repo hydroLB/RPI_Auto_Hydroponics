@@ -4,7 +4,7 @@ This repository contains a Python script to manage and monitor an automatic hydr
 
 ## ✨ Features
 
-- 🚰 Automatic water management with target water level and dry-back function
+- 🚰 Automatic water management with user-inputted target water level, and dry-back function using a water level change threshold
 - 🌡️ Nutrient dosing with target PPM (parts per million) and safety margin
 - 🧪 pH management with up and down pump control
 - 📋 Logging system to keep track of the hydroponic system's status
@@ -37,10 +37,10 @@ pip install -r requirements.txt
 
 You will need to configure the following variables in the main function code:
 
-- `ph_var`: List containing sleep times for pH up and down pumps and loop sleep time.
-- `WATER_THRESHOLD`: Water level change threshold in inches.
-- `WAIT_TIME_BETWEEN_CHECKS`: Time in seconds to wait between each water level check.
-- `NUTRIENT_PPM_SAFETY_MARGIN`: Safety margin in ppm between the actual target PPM and the first nutrient dosing cycle.
+- `ph_var`: List containing times for pH up and down pumps to be on per cycle, and time between each cycle (loop) .
+- `WATER_LEVEL_CHANGE_THRESHOLD`: Water level change threshold in inches (activate the dry-back feature, this controls how        often a fillup to the top occurs).
+- `WAIT_TIME_BETWEEN_CHECKS`: Time in seconds to wait between each water level check and ph check.
+- `NUTRIENT_PPM_SAFETY_MARGIN`: Safety margin in ppm between the actual target PPM and the first nutrient dosing cycle, as the ph balancing raises ppm too.
 
 ## 🚀 Usage
 
@@ -49,9 +49,9 @@ You will need to configure the following variables in the main function code:
 python3 main.py
 ```
 
-2. Follow the prompts to input the target PPM and water level for your system.
+2. Follow the prompts to reset and prime the pumps and input the target PPM and water level for your system.
 
-3. The script will continuously monitor the hydroponic system and make adjustments as necessary.
+3. The script will continuously monitor the hydroponic system and make adjustments as necessary based on the plants response.
 
 ## 📝 Notes
 
