@@ -29,6 +29,7 @@ def read_from_file():
 TARGET_PH, MIN_PH, MAX_PH = 5.8, 5.6, 6.2
 
 # Water level change threshold (in inches) (acts as the plants 'dry-back' function and time between checks (in seconds)
+# WAIT_TIME_BETWEEN_CHECKS = how long should the raspberry pi wait to check the water level and then if the ph is within soft range
 WATER_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS = 3, 1000
 
 # Margin (in ppm) between the actual target PPM and the first nutrient dosing cycle
