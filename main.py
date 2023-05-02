@@ -1,3 +1,4 @@
+from WaterSensor import get_water_level
 from pumps import run_pumps_list, stop_pumps_list, prime
 from water_management import *
 from nutrient_management import *
@@ -5,8 +6,11 @@ from ph_management import *
 from file_operations import *
 from logging_config import *
 from constants import *
+import time
+
 
 # Use constants in code from constants.py
+from water_management import fill_water
 
 ECSensor = AtlasI2C(EC_SENSOR_I2C_ADDRESS)
 PHSensor = AtlasI2C(PH_SENSOR_I2C_ADDRESS)
@@ -17,7 +21,8 @@ driver0 = MotorKit(DRIVER0_I2C_ADDRESS)
 driver1 = MotorKit(DRIVER1_I2C_ADDRESS)
 
 
-def setup_hydroponic_system(NUTRIENT_PUMP_TIME_LIST, NUTRIENT_WAIT_TIME_LOOP, target_min_max_ph, ph_dosing_time):
+def setup_hydroponic_system(FILENAME, NUTRIENT_PUMP_TIME_LIST, NUTRIENT_WAIT_TIME_LOOP,
+                            target_min_max_ph, ph_dosing_time):
     """
     Set up the hydroponic system by priming pumps, filling water, dosing nutrients, and balancing pH.
     """
@@ -68,21 +73,26 @@ def setup_hydroponic_system(NUTRIENT_PUMP_TIME_LIST, NUTRIENT_WAIT_TIME_LOOP, ta
         logging.info("Hydroponic system already set up")
 
 
-def monitor_hydroponic_system(WATER_LEVEL_CHANGE_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS, target_min_max_ph,
+def monitor_hydroponic_system(FILENAME, WATER_LEVEL_CHANGE_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS, target_min_max_ph,
                               ph_dosing_time, NUTRIENT_PPM_SAFETY_MARGIN, NUTRIENT_PUMP_TIME_LIST,
                               NUTRIENT_WAIT_TIME_LOOP):
     """
     Continuously monitor the hydroponic system, adjusting water level, dosing nutrients, and balancing pH as needed.
     """
-    while True:
         try:
-            # Read the target PPM and water level values from the file
+            # Read the target PPM and water level values from the file specific to the plants file
             target_ppm, target_water_level = read_from_file(FILENAME)
             # Check if the difference between the current water level and the target water level
             # is greater than the defined threshold
+
+            # Bring water in from the bucket used by the plant to the main reservoir to check using sensors and dose
+            # nutrients
+            # reverse_pump = on for 3 minutes to bring water in from the bucket to the main reservoir
+
+            # check water level to gauge how much is in the bucket
             if get_water_level(a, b, c) - target_water_level > WATER_LEVEL_CHANGE_THRESHOLD:
                 # Adjust water level and nutrients if the difference is greater than the threshold
-                adjust_water_level_and_nutrients(NUTRIENT_PPM_SAFETY_MARGIN, NUTRIENT_PUMP_TIME_LIST,
+                adjust_water_level_and_nutrients(FILENAME, NUTRIENT_PPM_SAFETY_MARGIN, NUTRIENT_PUMP_TIME_LIST,
                                                  NUTRIENT_WAIT_TIME_LOOP, target_min_max_ph, ph_dosing_time)
             else:
                 # If the difference is within the threshold, balance the pH levels
@@ -100,32 +110,30 @@ def monitor_hydroponic_system(WATER_LEVEL_CHANGE_THRESHOLD, WAIT_TIME_BETWEEN_CH
 
 
 def main():
-    # Get the user's plant selection
-    logging.info("Please enter the plant species (e.g., plant_A, plant_B): ")
-    plant_selection = input().strip()
+    for plant_selection_dict in PLANTS:
+        # Update the parameters based on the selected plant
+        plant_params = PLANTS[plant_selection_dict]
+        FILENAME = plant_selection_dict + '.txt'
 
-    # Check if the plant selection exists in the plants dictionary
-    while plant_selection not in PLANTS:
-        logging.error("Invalid plant selection. Please enter a valid plant species (e.g., plant_A, plant_B): ")
-        plant_selection = input().strip()
+        target_min_max_ph = plant_params['ph_settings']['target_min_ph'], plant_params['ph_settings']['target_max_ph']
+        NUTRIENT_PUMP_TIME_LIST = plant_params['nutrient_settings']['nutrient_pump_times']
+        WATER_LEVEL_CHANGE_THRESHOLD = plant_params['water_settings']['level_change_threshold']
+        WAIT_TIME_BETWEEN_CHECKS = plant_params['water_settings']['wait_time_between_checks']
+        NUTRIENT_PPM_SAFETY_MARGIN = plant_params['nutrient_settings']['ppm_safety_margin']
+        NUTRIENT_WAIT_TIME_LOOP = plant_params['nutrient_settings']['wait_time_loop']
+        ph_dosing_time = plant_params['ph_settings']['dosing_time']
 
-    # Update the parameters based on the selected plant
-    plant_params = PLANTS[plant_selection]
+        # Set up the hydroponic system
+        setup_hydroponic_system(FILENAME, NUTRIENT_PUMP_TIME_LIST, NUTRIENT_WAIT_TIME_LOOP, target_min_max_ph,
+                                ph_dosing_time)
 
-    target_min_max_ph = plant_params['ph_settings']['target_min_ph'], plant_params['ph_settings']['target_max_ph']
-    NUTRIENT_PUMP_TIME_LIST = plant_params['nutrient_settings']['nutrient_pump_times']
-    WATER_LEVEL_CHANGE_THRESHOLD = plant_params['water_settings']['level_change_threshold']
-    WAIT_TIME_BETWEEN_CHECKS = plant_params['water_settings']['wait_time_between_checks']
-    NUTRIENT_PPM_SAFETY_MARGIN = plant_params['nutrient_settings']['ppm_safety_margin']
-    NUTRIENT_WAIT_TIME_LOOP = plant_params['nutrient_settings']['wait_time_loop']
-    ph_dosing_time = plant_params['ph_settings']['dosing_time']
+        # Continuously monitor the hydroponic system
+        monitor_hydroponic_system(FILENAME, WATER_LEVEL_CHANGE_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS, target_min_max_ph,
+                                  ph_dosing_time, NUTRIENT_PPM_SAFETY_MARGIN, NUTRIENT_PUMP_TIME_LIST,
+                                  NUTRIENT_WAIT_TIME_LOOP)
 
-    # Set up the hydroponic system
-    setup_hydroponic_system(NUTRIENT_PUMP_TIME_LIST, NUTRIENT_WAIT_TIME_LOOP, target_min_max_ph, ph_dosing_time)
-    # Continuously monitor the hydroponic system
-    monitor_hydroponic_system(WATER_LEVEL_CHANGE_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS, target_min_max_ph,
-                              ph_dosing_time, NUTRIENT_PPM_SAFETY_MARGIN, NUTRIENT_PUMP_TIME_LIST,
-                              NUTRIENT_WAIT_TIME_LOOP)
+        # Wait for an hour before checking the next plant
+        time.sleep(60 * 60)
 
 
 if __name__ == "__main__":

@@ -20,9 +20,6 @@ NUTRIENT_PUMP4_POSITION = 'driver1.motor1'
 PH_DOWN_PUMP_POSITION = 'driver1.motor4'
 PH_UP_PUMP_POSITION = 'driver0.motor1'
 
-# Settings filename
-FILENAME = "settings.txt"
-
 # Vars for 1-wire temp sensor
 W1_DEVICE_PATH = '/sys/bus/w1/devices/'
 W1_DEVICE_NAME = '28-3c09f6495e17'
