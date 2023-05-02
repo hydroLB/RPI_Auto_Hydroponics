@@ -125,7 +125,7 @@ We appreciate your cooperation and understanding. Let's work together to promote
 
 ### Contributions are welcome! If you have any suggestions or improvements, feel free to submit a pull request or create an issue.
 
-🌟 Ideas to Add to the Future:
+## 🌟 Ideas to Add to the Future:
 
 1. 🚨 Alerts and Notifications: Add a feature for sending alerts and notifications when certain conditions are met or thresholds are exceeded, such as low water levels, pH imbalances, or high nutrient concentrations. This will keep you informed about your system's status and help you react promptly to any issues.
 
