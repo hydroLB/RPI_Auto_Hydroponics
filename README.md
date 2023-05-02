@@ -14,7 +14,6 @@ This repository contains a Python script to manage and monitor an automatic hydr
 ## 📦 Requirements
 
 - Python 3.7 or higher
-Here's an updated version with better readability:
 
 ### (~Estimated) Under $20
 - Zip ties: $4 - $6
