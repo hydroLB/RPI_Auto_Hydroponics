@@ -115,11 +115,11 @@ Copyright (c) [Year(s)] Atlas Scientific LLC. Licensed under the MIT License.
 
 This project was developed using a variety of tools, including PyCharm as the integrated development environment and implemented on a Raspberry Pi platform.
 
-Original contributions and unique code in this project:
-Copyright © [2023] [Leon Bouramia]. All rights reserved.
-
 ## 📄 License for code: 
 This original work is licensed under the GNU Affero General Public License v3.0 (AGPLv3). The full license text can be found at https://www.gnu.org/licenses/agpl-3.0.en.html
+
+Original contributions and unique code in this project:
+Copyright © [2023] [Leon Bouramia]. All rights reserved.
 
 ⚠️ Please note that using this code without proper attribution or violating the terms of the license may have legal consequences. Be nice and respect the license! ⚠️
 
