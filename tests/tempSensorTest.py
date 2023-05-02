@@ -1,4 +1,4 @@
-from constants import W1_TEMP_PATH
+from user_controlled_constants import W1_TEMP_PATH
 
 while True:
     # Open the temperature file for reading

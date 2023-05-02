@@ -2,10 +2,10 @@ from water_management import *
 from ph_management import *
 from file_operations import *
 from logging_config import *
-from constants import *
+from user_controlled_constants import *
 import time
 
-# Use constants in code from constants.py
+# Use constants in code from user_controlled_constants.py
 from water_management import fill_water
 
 ECSensor = AtlasI2C(EC_SENSOR_I2C_ADDRESS)

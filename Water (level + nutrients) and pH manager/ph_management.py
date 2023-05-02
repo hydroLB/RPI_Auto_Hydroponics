@@ -1,7 +1,7 @@
 from time import sleep
 
 # Target pH values and limits
-from constants import *
+from user_controlled_constants import *
 from utilities.AtlasI2C import get_ph
 
 
