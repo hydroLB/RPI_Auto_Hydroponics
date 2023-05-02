@@ -52,7 +52,7 @@ def dose_nutrients(target_ppm_local, pump_info, NUTRIENT_WAIT_TIME_LOOP):
 def adjust_water_level_and_nutrients(FILENAME, NUTRIENT_PPM_SAFETY_MARGIN, NUTRIENT_PUMP_TIME_LIST,
                                      NUTRIENT_WAIT_TIME_LOOP, target_min_max_ph, ph_dosing_time):
     # Read target PPM and water level from file
-    target_ppm, target_water_level = read_from_file(FILENAME)
+    target_ppm, target_water_level, _, _ = read_from_file(FILENAME)
 
     # Measure PPM before adjusting water level
     pre_fillup_ppm = get_ppm()
