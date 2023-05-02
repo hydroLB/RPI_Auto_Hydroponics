@@ -2,6 +2,9 @@ import logging
 from WaterSensor import get_water_level
 from constants import fresh_waterPump
 from main import *
+from time import sleep
+from tempAtlas import get_ppm
+
 
 
 def fill_water(target_level):
@@ -25,6 +28,26 @@ def fill_water(target_level):
         # Log the error message and stop the water pump in case of an exception
         logging.error(f"An error occurred while filling water: {ee}")
         fresh_waterPump.stop()
+        
+def dose_nutrients(target_ppm_local, pump_info, NUTRIENT_WAIT_TIME_LOOP):
+    # Keep dosing nutrients until the target PPM is reached
+    while get_ppm() < target_ppm_local:
+        # Iterate through each pump and its corresponding dosing time in the pump_info list
+        for pump, dosing_time in pump_info:
+            # Print the current PPM
+            print("Adding nutrients... PPM %f" % (get_ppm()))
+
+            # Start the pump
+            pump.start()
+
+            # Sleep for the specified dosing time
+            sleep(dosing_time)
+
+            # Stop the pump
+            pump.stop()
+
+        # Sleep for 10 seconds before checking the PPM again
+        sleep(NUTRIENT_WAIT_TIME_LOOP)
 
 
 def adjust_water_level_and_nutrients(FILENAME, NUTRIENT_PPM_SAFETY_MARGIN, NUTRIENT_PUMP_TIME_LIST,
