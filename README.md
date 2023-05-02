@@ -121,7 +121,7 @@ This original work is licensed under the GNU Affero General Public License v3.0 
 Original contributions and unique code in this project:
 Copyright © [2023] [Leon Bouramia]. All rights reserved.
 
-#### ⚠️ Please note that using this code without proper attribution or violating the terms of the license may have legal consequences. Be nice and respect the license! ⚠️
+#### ⚠️ Please note that using this code without proper attribution or violating the terms of the license may have legal consequences. Please be nice and respect the license! ⚠️
 
 We appreciate your cooperation and understanding. Let's work together to promote open source innovation while protecting the rights of creators!
 
