@@ -41,7 +41,7 @@ This repository contains a Python script to manage and monitor an automatic hydr
 - pH probe Voltage isolator: $25 - $35
 - EC probe Voltage isolator: $25 - $35
 - Water level sensor (E-Tape): $30 - $50
-- IOT Relay: $30 - $50
+- IOT Relay (RPI-controlled power strip): $30 - $50
 
 ### (~Estimated) Over $50
 - EC probe (Atlas Scientific): $35 - $55
