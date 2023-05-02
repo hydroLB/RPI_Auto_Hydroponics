@@ -6,7 +6,6 @@ from time import sleep
 from tempAtlas import get_ppm
 
 
-
 def fill_water(target_level):
     """
     Fill the water reservoir until the target water level is reached.
@@ -28,7 +27,8 @@ def fill_water(target_level):
         # Log the error message and stop the water pump in case of an exception
         logging.error(f"An error occurred while filling water: {ee}")
         fresh_waterPump.stop()
-        
+
+
 def dose_nutrients(target_ppm_local, pump_info, NUTRIENT_WAIT_TIME_LOOP):
     # Keep dosing nutrients until the target PPM is reached
     while get_ppm() < target_ppm_local:
