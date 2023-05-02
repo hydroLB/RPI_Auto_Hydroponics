@@ -136,8 +136,8 @@ We appreciate your cooperation and understanding. Let's work together to promote
 
 5. 💡 Light Management: Incorporate a light management system to control light intensity and duration, simulating day-night cycles and optimizing plant growth.
 
-6. 📷 Camera Integration: Consider integrating a camera module with your Raspberry Pi to enable visual monitoring of plant growth and health. This will allow you to track your plants' progress over a timelapse.
+6. 📷 Camera Integration: Consider integrating a camera module with your Raspberry Pi to enable visual monitoring of plant growth and health. This will allow you to track your plants' progress using a timelapse.
 
-7. 🌡️ Temperature Control: Implement a temperature sensor and control system (heaters or coolers) to maintain optimal temperature levels in the hydroponic environment. This will ensure that your plants grow in the most suitable conditions.
+7. 🌡️ Temperature Control: Implement a new temperature sensor to control a heater or cooler to maintain optimal temperature levels in the hydroponic environment. This will ensure that your plants grow in the most suitable conditions.
 
 8. 💧 Humidity Control: Implement a humidity sensor and control system (fans) to maintain optimal humidity levels in the hydroponic environment.
