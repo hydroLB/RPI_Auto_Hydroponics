@@ -189,7 +189,7 @@ class AtlasI2C:
 
         return i2c_devices
 
-from USER_PROGRAM_CONTROL_CONSTANTS.constants import *
+from constants import *
 from main import PHSensor, ECSensor
 
 

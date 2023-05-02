@@ -2,7 +2,7 @@ from water_management import *
 from ph_management import *
 from file_operations import *
 from logging_config import *
-from USER_PROGRAM_CONTROL_CONSTANTS.constants import *
+from constants import *
 import time
 
 # Use constants in code from constants.py
