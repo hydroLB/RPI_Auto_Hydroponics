@@ -8,6 +8,7 @@ This repository contains a Python script to manage and monitor an automatic hydr
 - 🌡️ Nutrient dosing with target PPM (parts per million) and safety margin
 - 🧪 pH management with up and down pump control
 - 📋 Logging system to keep track of the hydroponic system's status
+- Multiple different plant customizaiton of settings, including pH, water level, dryback, starting nutrient level, etc
 - ⚠️ Error handling and pump stopping in case of exceptions
 
 ## 📦 Requirements
@@ -124,7 +125,7 @@ We appreciate your cooperation and understanding. Let's work together to promote
 
 ### Contributions are welcome! If you have any suggestions or improvements, feel free to submit a pull request or create an issue.
 
-🌟 Ideas to Add to the Future:
+## 🌟 Ideas to Add to the Future:
 
 1. 🚨 Alerts and Notifications: Add a feature for sending alerts and notifications when certain conditions are met or thresholds are exceeded, such as low water levels, pH imbalances, or high nutrient concentrations. This will keep you informed about your system's status and help you react promptly to any issues.
 
@@ -132,12 +133,10 @@ We appreciate your cooperation and understanding. Let's work together to promote
 
 3. 📱 Web/Mobile Interface: You may want to develop a web or mobile application for interacting with the Raspberry Pi and controlling the hydroponic system. This will provide you with the ability to remotely monitor and manage your plants.
 
-4. 🧬 Plant Species Customization: To cater to a variety of plants, allow users to input specific parameters for different plant species. This optimizes the hydroponic system's settings for each plant's unique requirements.
+4. 💡 Light Management: Incorporate a light management system to control light intensity and duration, simulating day-night cycles and optimizing plant growth.
 
-5. 💡 Light Management: Incorporate a light management system to control light intensity and duration, simulating day-night cycles and optimizing plant growth.
+5. 📷 Camera Integration: Consider integrating a camera module with your Raspberry Pi to enable visual monitoring of plant growth and health. This will allow you to track your plants' progress using a timelapse.
 
-6. 📷 Camera Integration: Consider integrating a camera module with your Raspberry Pi to enable visual monitoring of plant growth and health. This will allow you to track your plants' progress over a timelapse.
-
-7. 🌡️ Temperature Control: Implement a temperature sensor and control system (heaters or coolers) to maintain optimal temperature levels in the hydroponic environment. This will ensure that your plants grow in the most suitable conditions.
+6. 🌡️ Temperature Control: Implement a new temperature sensor to control a heater or cooler to maintain optimal temperature levels in the hydroponic environment. This will ensure that your plants grow in the most suitable conditions.
 
 8. 💧 Humidity Control: Implement a humidity sensor and control system (fans) to maintain optimal humidity levels in the hydroponic environment.
