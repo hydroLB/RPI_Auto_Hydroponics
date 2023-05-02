@@ -1,9 +1,8 @@
 import logging
 from WaterSensor import get_water_level
-from constants import fresh_waterPump
 from main import *
 from time import sleep
-from tempAtlas import get_ppm
+from utilities.AtlasI2C import get_ppm
 
 
 def fill_water(target_level):

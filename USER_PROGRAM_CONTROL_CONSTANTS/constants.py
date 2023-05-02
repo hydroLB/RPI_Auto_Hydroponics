@@ -1,5 +1,5 @@
 # Pump directions
-from pumps import Pump
+from utilities.pumps import Pump
 
 # What direction a pump will go in for forward, if pump was placed  in backwards direction (positive, negative on the
 # pump) will most likely be -1

@@ -1,4 +1,4 @@
-from AtlasI2C import AtlasI2C
+from utilities.AtlasI2C import AtlasI2C
 import time
 
 # Initialize EC and pH sensors with I2C addresses

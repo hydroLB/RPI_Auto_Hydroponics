@@ -1,8 +1,8 @@
 from time import sleep
 
 # Target pH values and limits
-from constants import *
-from tempAtlas import get_ph
+from USER_PROGRAM_CONTROL_CONSTANTS.constants import *
+from utilities.AtlasI2C import get_ph
 
 
 def balance_ph(target_min_max_ph, ph_dosing_time):
