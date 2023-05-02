@@ -1,16 +1,8 @@
 import logging
 
-from WaterSensor import *
-from time import sleep
-
-from file_operations import read_from_file, write_to_file
-from main import NUTRIENT_PPM_SAFETY_MARGIN, ph_dosing_time, target_min_max_ph, NUTRIENT_WAIT_TIME_LOOP, b, a, c, \
-    filename
-from nutrient_management import dose_nutrients
-from ph_management import balance_PH_exact
-from pump_config import nutrient_pump_time_list
-from pumps import waterPump
-from tempAtlas import get_ppm
+from WaterSensor import get_water_level
+from constants import fresh_waterPump
+from main import *
 
 
 def fill_water(target_level):
@@ -25,20 +17,20 @@ def fill_water(target_level):
             # Display the current water level while adding water
             print("Adding water... level %f" % (get_water_level(a, b, c)))
             # Start the water pump to fill the reservoir
-            waterPump.start()
+            fresh_waterPump.start()
             # Wait for 5 seconds to allow the water pump to operate
             sleep(5)
         # Stop the water pump once the target water level is reached
-        waterPump.stop()
+        fresh_waterPump.stop()
     except Exception as ee:
         # Log the error message and stop the water pump in case of an exception
         logging.error(f"An error occurred while filling water: {ee}")
-        waterPump.stop()
+        fresh_waterPump.stop()
 
 
-def adjust_water_level_and_nutrients():
+def adjust_water_level_and_nutrients(NUTRIENT_PPM_SAFETY_MARGIN, NUTRIENT_PUMP_TIME_LIST, NUTRIENT_WAIT_TIME_LOOP, target_min_max_ph, ph_dosing_time):
     # Read target PPM and water level from file
-    target_ppm, target_water_level = read_from_file(filename)
+    target_ppm, target_water_level = read_from_file(FILENAME)
 
     # Measure PPM before adjusting water level
     pre_fillup_ppm = get_ppm()
@@ -52,12 +44,12 @@ def adjust_water_level_and_nutrients():
 
     # Dose nutrients, first making sure it's under the amount needed, then balance pH, increasing it,
     # then finally ensure it's exactly at the target PPM
-    dose_nutrients(target_ppm - NUTRIENT_PPM_SAFETY_MARGIN, nutrient_pump_time_list, NUTRIENT_WAIT_TIME_LOOP)
+    dose_nutrients(target_ppm - NUTRIENT_PPM_SAFETY_MARGIN, NUTRIENT_PUMP_TIME_LIST, NUTRIENT_WAIT_TIME_LOOP)
     balance_PH_exact(target_min_max_ph, ph_dosing_time)
-    dose_nutrients(target_ppm, nutrient_pump_time_list, NUTRIENT_WAIT_TIME_LOOP)
+    dose_nutrients(target_ppm, NUTRIENT_PUMP_TIME_LIST, NUTRIENT_WAIT_TIME_LOOP)
 
     # Write the new water level and new ppm to the file
-    write_to_file(filename, get_ppm(), get_water_level(a, b, c))
+    write_to_file(FILENAME, get_ppm(), get_water_level(a, b, c))
 
 
 def proprietary_ppm_update_algorithm(target_ppm, pre_fillup_ppm):

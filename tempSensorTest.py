@@ -1,8 +1,8 @@
-from main import w1_temp_path
+from constants import W1_TEMP_PATH
 
 while True:
     # Open the temperature file for reading
-    temp_file = open(w1_temp_path, 'r')
+    temp_file = open(W1_TEMP_PATH, 'r')
 
     # Read the temperature value in Celsius
     temp_c = int(temp_file.readline()) / 1000.0

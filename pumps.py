@@ -1,21 +1,8 @@
 # Import components from the main module: motor drivers and nutrient pump times.
-from main import driver0, driver1, nutrient_pump_times
 import sys
 
-# Instantiate the fresh water pump object.
-fresh_water_pump = waterPump
 
-# Create a list of tuples with nutrient pump objects and corresponding pump times.
-nutrient_pump_time_list = [(nutrientPump1, nutrient_pump_times[0]), (nutrientPump2, nutrient_pump_times[1]),
-                           (nutrientPump3, nutrient_pump_times[2]), (nutrientPump4, nutrient_pump_times[3])]
-
-# List containing the pH Up and pH Down pump objects.
-ph_pump_list = [pHUpPump, pHDownPump]
-
-# Global list of all pump objects: fresh water, nutrient, and pH pumps.
-all_pumps = [fresh_water_pump] + [pump for pump, _ in nutrient_pump_time_list] + ph_pump_list
-
-
+# Import the MotorKit class from the Adafruit Motor HAT library.
 class Pump:
     def __init__(self, motor, direction):
         """
@@ -39,22 +26,6 @@ class Pump:
     def startReverse(self):
         """Start the pump in reverse by setting the motor throttle to the opposite of its direction."""
         self.motor.throttle = -self.direction
-
-
-# Initialize pump objects with corresponding motor and direction
-
-# direction value of each (-1 or 1) is due to the direction of the peristaltic pump, in our case we had some pumps that
-# were moving in the opposite direction of what we expected
-
-# position of each pump (driver0/driver1) dependent on how its setup physically
-waterPump = Pump(driver0.motor4, -1)
-nutrientPump1 = Pump(driver0.motor3, 1)
-nutrientPump2 = Pump(driver1.motor3, 1)
-nutrientPump3 = Pump(driver1.motor2, 1)
-nutrientPump4 = Pump(driver1.motor1, -1)
-pHDownPump = Pump(driver1.motor4, -1)
-pHUpPump = Pump(driver0.motor1, 1)
-
 
 
 # Prime pumps with the user's help
@@ -91,4 +62,3 @@ def stop_pumps_list(pumps_list):
     """Stop all pumps in the given list."""
     for pump in pumps_list:
         pump.stop(pump)
-

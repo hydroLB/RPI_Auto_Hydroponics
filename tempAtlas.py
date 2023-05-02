@@ -1,10 +1,11 @@
-from main import w1_temp_path, PHSensor, ECSensor
+from constants import *
+from main import PHSensor, ECSensor
 
 
 def read_temp_file():
     """Read temperature file and return its content."""
     try:
-        with open(w1_temp_path, 'r') as temp_file:
+        with open(W1_TEMP_PATH, 'r') as temp_file:
             return temp_file.readline()
     except FileNotFoundError:
         print("Error: Temperature file not found.")

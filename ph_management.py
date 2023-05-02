@@ -1,7 +1,7 @@
 from time import sleep
 
 # Target pH values and limits
-from pumps import pHUpPump, pHDownPump
+from constants import *
 from tempAtlas import get_ph
 
 
