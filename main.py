@@ -1,3 +1,5 @@
+import logging
+
 from pump_config import *
 from pump_control import prime, stop_pumps_list, run_pumps_list
 from water_management import *
@@ -35,7 +37,8 @@ c = .9816
 driver0 = MotorKit(0x60)
 driver1 = MotorKit(0x61)
 
-skip_system_setup_water_level = 1.5 # Indicates the minimum water level for the system to recognize a completed setup
+skip_system_setup_water_level = 1.5  # Indicates the minimum water level for the system to recognize a completed setup
+
 # Water level change threshold (in inches) (acts as the plants 'dry-back' function and time between checks (in
 # seconds) WAIT_TIME_BETWEEN_CHECKS = how long should the raspberry pi wait to check the water level and then if the
 # ph is within soft range
@@ -54,6 +57,72 @@ target_min_max_ph = [5.8, 5.6, 6.2]  # [TARGET_PH, MIN_PH, MAX_PH]
 # 3.  Sleep time for the loop (how long to wait between each increment dosing)
 ph_dosing_time = [0.1, 0.1, 10]  # [PH_UP_SLEEP_TIME, PH_DOWN_SLEEP_TIME, LOOP_SLEEP_TIME]
 
+plants = {
+
+    'plant_0': {
+        'ph_settings': {
+            # FLOAT
+            'target_min_ph': 5.8,
+            # FLOAT
+            'target_max_ph': 6.2,
+            # FLOAT, FLOAT, int
+            'dosing_time': [0.1, 0.1, 10]  # [PH_UP_SLEEP_TIME, PH_DOWN_SLEEP_TIME, LOOP_SLEEP_TIME]
+        },
+        'nutrient_settings': {
+            # INT, INT, INT, INT
+            'nutrient_pump_times': [5, 5, 5, 5],  # Time in seconds for each nute pump to run
+            # Margin (in ppm) between the actual target PPM and the first nutrient dosing cycle
+            # to avoid overloading the nutrients when the pH is balanced after (which always raises it to some degree).
+            # INT
+            'ppm_safety_margin': 30,
+            # how long should the RPI wait in between dosing nutrients to reach the target PPM
+            # INT
+            'wait_time_loop': 10,
+        },
+        'water_settings': {
+            # water_level_change_threshold (in inches) (acts as the plants 'dry-back' function and time between
+            # checks (in seconds) wait_time_between_checks = how long should the raspberry pi wait to check the water
+            # level and then if the ph is within soft range
+            # FLOAT
+            'level_change_threshold': 3.0,
+            # INT
+            'wait_time_between_checks': 1000  # wait_time_between_checks = how long should the raspberry pi wait to
+            # check the water level and then if the ph is within soft range
+        }
+    },
+
+    'plant_1': {
+        'ph_settings': {
+            # FLOAT
+            'target_min_ph': 5.8,
+            # FLOAT
+            'target_max_ph': 6.2,
+            # FLOAT, FLOAT, int
+            'dosing_time': [0.1, 0.1, 10]  # [PH_UP_SLEEP_TIME, PH_DOWN_SLEEP_TIME, LOOP_SLEEP_TIME]
+        },
+        'nutrient_settings': {
+            # INT, INT, INT, INT
+            'nutrient_pump_times': [5, 5, 5, 5],  # Time in seconds for each nute pump to run
+            # Margin (in ppm) between the actual target PPM and the first nutrient dosing cycle
+            # to avoid overloading the nutrients when the pH is balanced after (which always raises it to some degree).
+            # INT
+            'ppm_safety_margin': 30,
+            # how long should the RPI wait in between dosing nutrients to reach the target PPM
+            # INT
+            'wait_time_loop': 10,
+        },
+        'water_settings': {
+            # water_level_change_threshold (in inches) (acts as the plants 'dry-back' function and time between
+            # checks (in seconds)
+            # FLOAT
+            'level_change_threshold': 3.0,
+            # INT
+            'wait_time_between_checks': 1000  # wait_time_between_checks = how long should the raspberry pi wait to
+            # check the water level and then if the ph is within soft range
+        }
+    }
+}
+
 
 def setup_hydroponic_system():
     """
@@ -66,7 +135,7 @@ def setup_hydroponic_system():
         logging.info("RPI Hydroponic System Startup\nTo start, pumps must be primed")
 
         # Reverse all pumps to ensure consistent starting state
-        print("Reversing all pumps for 25 seconds")
+        logging.info("Reversing all pumps for 25 seconds")
         run_pumps_list(all_pumps, reverse=True)
         sleep(25)  # Wait for pumps to reset
 
@@ -135,6 +204,27 @@ def monitor_hydroponic_system():
 
 
 def main():
+    global target_min_max_ph, nutrient_pump_times, WATER_LEVEL_CHANGE_THRESHOLD
+    global WAIT_TIME_BETWEEN_CHECKS, NUTRIENT_PPM_SAFETY_MARGIN, NUTRIENT_WAIT_TIME_LOOP, ph_dosing_time
+    # Get the user's plant selection
+    logging.info("Please enter the plant species (e.g., plant_A, plant_B): ")
+    plant_selection = input().strip()
+
+    # Check if the plant selection exists in the plants dictionary
+    while plant_selection not in plants:
+        logging.error("Invalid plant selection. Please enter a valid plant species (e.g., plant_A, plant_B): ")
+        plant_selection = input().strip()
+
+    # Update the parameters based on the selected plant
+    plant_params = plants[plant_selection]
+    target_min_max_ph = plant_params['target_min_max_ph']
+    nutrient_pump_times = plant_params['nutrient_pump_times']
+    WATER_LEVEL_CHANGE_THRESHOLD = plant_params['water_level_change_threshold']
+    WAIT_TIME_BETWEEN_CHECKS = plant_params['wait_time_between_checks']
+    NUTRIENT_PPM_SAFETY_MARGIN = plant_params['nutrient_ppm_safety_margin']
+    NUTRIENT_WAIT_TIME_LOOP = plant_params['nutrient_wait_time_loop']
+    ph_dosing_time = plant_params['ph_dosing_time']
+
     # Set up the hydroponic system
     setup_hydroponic_system()
     # Continuously monitor the hydroponic system

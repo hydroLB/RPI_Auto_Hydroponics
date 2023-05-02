@@ -37,25 +37,6 @@ def fill_water(target_level):
 
 
 def adjust_water_level_and_nutrients():
-    target_ppm, target_water_level = read_from_file(filename)
-
-    pre_fillup_ppm = get_ppm()
-    fill_water(target_water_level)
-    sleep(30)  # Wait for PPM readings to settle
-
-    # Update target PPM based on plant's nutrient consumption rate
-    target_ppm += (target_ppm - pre_fillup_ppm)
-
-    # Dose nutrients, first making sure it's under the amount needed, then balance pH, increasing it,
-    # then finally ensure it's exactly at the target PPM
-    dose_nutrients(target_ppm - NUTRIENT_PPM_SAFETY_MARGIN, nutrient_pump_time_list, NUTRIENT_WAIT_TIME_LOOP)
-    balance_PH_exact(target_min_max_ph, ph_dosing_time)
-    dose_nutrients(target_ppm, nutrient_pump_time_list, NUTRIENT_WAIT_TIME_LOOP)
-    # write the new water level and new ppm to the file
-    write_to_file(filename, get_ppm(), get_water_level(a, b, c))
-
-    
-def adjust_water_level_and_nutrients():
     # Read target PPM and water level from file
     target_ppm, target_water_level = read_from_file(filename)
 
@@ -78,12 +59,12 @@ def adjust_water_level_and_nutrients():
     # Write the new water level and new ppm to the file
     write_to_file(filename, get_ppm(), get_water_level(a, b, c))
 
+
 def proprietary_ppm_update_algorithm(target_ppm, pre_fillup_ppm):
     # This function contains the proprietary algorithm for updating the target PPM
     # based on the plant's nutrient consumption rate. The implementation details are
     # protected by copyright and licensed under AGPLv3. Using this without proper
     # attribution is illegal. 
-    
+
     updated_ppm = target_ppm + (target_ppm - pre_fillup_ppm)
     return updated_ppm
-
