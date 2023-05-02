@@ -8,7 +8,6 @@ from logging_config import *
 from constants import *
 import time
 
-
 # Use constants in code from constants.py
 from water_management import fill_water
 
@@ -48,7 +47,7 @@ def setup_hydroponic_system(FILENAME, NUTRIENT_PUMP_TIME_LIST, NUTRIENT_WAIT_TIM
         target_water_level = int(input("Input target water level (in inches): "))
 
         # Save target PPM and water level to the file
-        write_to_file(FILENAME, target_ppm, target_water_level)
+        write_to_file(FILENAME, target_ppm, target_water_level, 0, 0)
 
         # Fill water to the target level in the reservoir
         fill_water(target_water_level)
@@ -67,7 +66,7 @@ def setup_hydroponic_system(FILENAME, NUTRIENT_PUMP_TIME_LIST, NUTRIENT_WAIT_TIM
 
         # Update target PPM after ph was balanced
         target_ppm = get_ppm()
-        write_to_file(FILENAME, target_ppm, target_water_level)
+        write_to_file(FILENAME, target_ppm, target_water_level, get_ppm(), get_water_level(a, b, c))
     else:
         # If the water level is above the threshold, log that the system is already set up
         logging.info("Hydroponic system already set up")
@@ -79,34 +78,33 @@ def monitor_hydroponic_system(FILENAME, WATER_LEVEL_CHANGE_THRESHOLD, WAIT_TIME_
     """
     Continuously monitor the hydroponic system, adjusting water level, dosing nutrients, and balancing pH as needed.
     """
-        try:
-            # Read the target PPM and water level values from the file specific to the plants file
-            target_ppm, target_water_level = read_from_file(FILENAME)
-            # Check if the difference between the current water level and the target water level
-            # is greater than the defined threshold
+    try:
+        # Read the target PPM and water level values from the file specific to the plants file
+        target_ppm, target_water_level, current_ppm, current_water_level = read_from_file(FILENAME)
+        # Check if the difference between the current water level and the target water level
+        # is greater than the defined threshold
 
-            # Bring water in from the bucket used by the plant to the main reservoir to check using sensors and dose
-            # nutrients
-            # reverse_pump = on for 3 minutes to bring water in from the bucket to the main reservoir
+        # Bring water in from the bucket used by the plant to the main reservoir to check using sensors and dose
+        # nutrients
+        # reverse_pump = on for 3 minutes to bring water in from the bucket to the main reservoir
 
-            # check water level to gauge how much is in the bucket
-            if get_water_level(a, b, c) - target_water_level > WATER_LEVEL_CHANGE_THRESHOLD:
-                # Adjust water level and nutrients if the difference is greater than the threshold
-                adjust_water_level_and_nutrients(FILENAME, NUTRIENT_PPM_SAFETY_MARGIN, NUTRIENT_PUMP_TIME_LIST,
-                                                 NUTRIENT_WAIT_TIME_LOOP, target_min_max_ph, ph_dosing_time)
-            else:
-                # If the difference is within the threshold, balance the pH levels
-                balance_ph(target_min_max_ph, ph_dosing_time)  # Keep within range
-                # update the values of ppm and water level
-                write_to_file(FILENAME, get_ppm(), get_water_level(a, b, c))
-                # Sleep for a defined time before checking water level and pH again
-                sleep(WAIT_TIME_BETWEEN_CHECKS)
-        except Exception as eeee:
-            # Log any errors that occur during the monitoring process
-            logging.error(f"An error occurred: {eeee}")
-
-            # Sleep for a defined time before attempting to monitor the hydroponic system again
+        # check water level to gauge how much is in the bucket
+        if get_water_level(a, b, c) - target_water_level > WATER_LEVEL_CHANGE_THRESHOLD:
+            # Adjust water level and nutrients if the difference is greater than the threshold
+            adjust_water_level_and_nutrients(FILENAME, NUTRIENT_PPM_SAFETY_MARGIN, NUTRIENT_PUMP_TIME_LIST,
+                                             NUTRIENT_WAIT_TIME_LOOP, target_min_max_ph, ph_dosing_time)
+        else:
+            # If the difference is within the threshold, balance the pH levels
+            balance_ph(target_min_max_ph, ph_dosing_time)  # Keep within range
+            # update the values of ppm and water level
+            write_to_file(FILENAME, target_ppm, target_water_level, get_ppm(), get_water_level(a, b, c))
+            # Sleep for a defined time before checking water level and pH again
             sleep(WAIT_TIME_BETWEEN_CHECKS)
+    except Exception as eeee:
+        # Log any errors that occur during the monitoring process
+        logging.error(f"An error occurred: {eeee}")
+        # Sleep for a defined time before attempting to monitor the hydroponic system again
+        sleep(WAIT_TIME_BETWEEN_CHECKS)
 
 
 def main():

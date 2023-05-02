@@ -1,5 +1,4 @@
 import logging
-
 from WaterSensor import get_water_level
 from constants import fresh_waterPump
 from main import *
@@ -28,7 +27,8 @@ def fill_water(target_level):
         fresh_waterPump.stop()
 
 
-def adjust_water_level_and_nutrients(FILENAME, NUTRIENT_PPM_SAFETY_MARGIN, NUTRIENT_PUMP_TIME_LIST, NUTRIENT_WAIT_TIME_LOOP, target_min_max_ph, ph_dosing_time):
+def adjust_water_level_and_nutrients(FILENAME, NUTRIENT_PPM_SAFETY_MARGIN, NUTRIENT_PUMP_TIME_LIST,
+                                     NUTRIENT_WAIT_TIME_LOOP, target_min_max_ph, ph_dosing_time):
     # Read target PPM and water level from file
     target_ppm, target_water_level = read_from_file(FILENAME)
 
@@ -49,7 +49,7 @@ def adjust_water_level_and_nutrients(FILENAME, NUTRIENT_PPM_SAFETY_MARGIN, NUTRI
     dose_nutrients(target_ppm, NUTRIENT_PUMP_TIME_LIST, NUTRIENT_WAIT_TIME_LOOP)
 
     # Write the new water level and new ppm to the file
-    write_to_file(FILENAME, get_ppm(), get_water_level(a, b, c))
+    write_to_file(FILENAME, target_ppm, target_water_level, get_ppm(), get_water_level(a, b, c))
 
 
 def proprietary_ppm_update_algorithm(target_ppm, pre_fillup_ppm):
