@@ -1,5 +1,5 @@
 import logging
-from WaterSensor import get_water_level
+from read_water_sensor import get_water_level
 from main import *
 from time import sleep
 from utilities.AtlasI2C import get_ppm
