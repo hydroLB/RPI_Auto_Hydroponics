@@ -118,7 +118,7 @@ Copyright © [2023] [Leon Bouramia]. All rights reserved.
 ## 📄 License for code: 
 This original work is licensed under the GNU Affero General Public License v3.0 (AGPLv3). The full license text can be found at https://www.gnu.org/licenses/agpl-3.0.en.html
 
-⚠️ Please note that using this code without proper attribution or violating the terms of the license may have legal consequences. Be nice and respect the license!
+⚠️ Please note that using this code without proper attribution or violating the terms of the license may have legal consequences. Be nice and respect the license! ⚠️
 
 We appreciate your cooperation and understanding. Let's work together to promote open source innovation while protecting the rights of creators!
 
