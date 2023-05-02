@@ -8,7 +8,7 @@ This repository contains a Python script to manage and monitor an automatic hydr
 - 🌡️ Nutrient dosing with target PPM (parts per million) and safety margin
 - 🧪 pH management with up and down pump control
 - 📋 Logging system to keep track of the hydroponic system's status
-- Multiple different plant customizaiton of settings, including pH, water level, dryback, starting nutrient level, etc
+- 🌵 🌸 Multiple different plant customizaiton of settings, including pH, water level, dryback, starting nutrient level, etc  🍊 🍇
 - ⚠️ Error handling and pump stopping in case of exceptions
 
 ## 📦 Requirements
