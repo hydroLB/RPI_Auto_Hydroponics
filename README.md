@@ -8,17 +8,17 @@ This repository contains a Python script to manage and monitor an automatic hydr
 - 🌡️ Nutrient dosing with target PPM (parts per million) and safety margin
     - There are three commonly used conversion factors for TDS meters: 500, 640, and 700
     - These all convert the EC value and the choice depends on the source of the nutrient solution
-    - The 500 scale is the most common conversion factor and is typically used for nutrient solutions made with reverse osmosis or distilled water
-- 🧪 pH management with up and down pump control
+    - The 500 scale is the most common conversion factor and is typically used for nutrient solutions made with reverse osmosis or distilled water (Default for this system)
+- 🧪 pH management with up pump and down pump control 
 - 📋 Logging system to keep track of the hydroponic system's status
-- 🌵 🌸 Multiple different plant customizaiton of settings, including pH, max water level, dryback (how low can the water get before a refill), starting ppm, etc 🍊 🍇
+- 🌵 🌸 Multiple different plant customization of settings, including pH, max water level, dryback (how low can the water get before a refill), starting ppm, etc 🍊 🍇
 - ⚠️ Error handling and pump stopping in case of exceptions
 
 ## 📦 Requirements
 
 - Python 3.7 or higher
 
-### (~Estimated) Under $20
+### (~Estimated) Parts under $20
 - Zip ties: $4 - $6
 - Wire stripper: $6 - $10
 - 12V AC adapter (2x): $6 - $10
