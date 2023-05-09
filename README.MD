@@ -105,14 +105,6 @@ python3 main.py
 ## 🤝 Contributing, credits and special thanks: 
 Special thanks to Michael Yinka-Oke and Sean Cunneen for bringing this project and idea to from the ground to reality! 
 
-This project uses support code from the following sources:
-
-Adafruit Library: [Name of the library] (Link to the library)
-Copyright (c) [Year(s)] Adafruit Industries. Licensed under the MIT License.
-
-Atlas Scientific Library: [Name of the library] (Link to the library)
-Copyright (c) [Year(s)] Atlas Scientific LLC. Licensed under the MIT License.
-
 This project was developed using a variety of tools, including PyCharm as the integrated development environment and implemented on a Raspberry Pi platform.
 
 ## 📄 License for code: 
