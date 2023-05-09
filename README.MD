@@ -12,7 +12,7 @@ This repository contains a Python script to manage and monitor an automatic hydr
 - pH management with up pump and down pump control 
 - Logging system to keep track of the hydroponic system's status
 - Multiple different plant customization of settings, including pH, max water level, dryback (how low can the water get before a refill), starting ppm, etc 
-- ⚠️ Error handling and pump stopping in case of exceptions
+- Error handling and pump stopping in case of exceptions
 
 ## 📦 Requirements
 
