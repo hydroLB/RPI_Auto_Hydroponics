@@ -128,7 +128,7 @@ def monitor_hydroponic_system(FILENAME, WATER_LEVEL_CHANGE_THRESHOLD, WAIT_TIME_
 
 def main():
     //CHANGE FROM PLANT_OPTIONS_1, TO OTHER PLANT CHOICE DICTIONARY NAME, SUCH AS (PLANTS_OPTION_2)
-    for plant_selection_dict in PLANTS_OPTION_2:
+    for plant_selection_dict in BLUEBERRY_PLANT:
         # Update the parameters based on the selected plant
         plant_params = PLANTS[plant_selection_dict]
         FILENAME = plant_selection_dict + '.txt'
