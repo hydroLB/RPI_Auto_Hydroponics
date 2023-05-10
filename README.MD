@@ -69,11 +69,6 @@ cd RPI_Auto_Hydroponics
 
 3. Install all required project dependencies (Adafruit motorkit, Atlas Scientific, ADC, etc)
 
-4. Install the required packages using pip:
-```bash
-pip install -r requirements.txt
-```
-
 ## ⚙️ Configuration
 
 You will need to configure the following variables in the `user_controlled_constants` code:
