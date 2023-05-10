@@ -76,7 +76,7 @@ pip install -r requirements.txt
 
 ## ⚙️ Configuration
 
-You will need to configure the following variables in the main function code:
+You will need to configure the following variables in the `user_controlled_constants` code:
 
 - `ph_var`: List of 3, containing times for pH up and down pumps to be on per cycle, and time between each cycle (loop) when dosing for pH.
 
@@ -87,6 +87,9 @@ You will need to configure the following variables in the main function code:
 - `WAIT_TIME_BETWEEN_CHECKS`: Time in seconds to wait between each water level check and ph check.
 
 - `NUTRIENT_PPM_SAFETY_MARGIN`: Safety margin in ppm between the actual target PPM and the first nutrient dosing cycle, as the ph balancing raises ppm too.
+
+- `user_plant_choice` in the main must be customized to the plant the user wants to grow. 
+
 
 ## 🚀 Usage
 
@@ -122,13 +125,13 @@ Copyright © 2023, Leon Bouramia. All rights reserved.
 
 1. Alerts and Notifications: Add a feature for sending alerts and notifications when certain conditions are met or thresholds are exceeded, such as low water levels, pH imbalances, or high nutrient concentrations. This will keep you informed about your system's status and help you react promptly to any issues.
 
-2. Data Visualization: Enhance your project by adding a feature for visualizing logged data, such as water level at certain times, pH levels, and nutrient levels, over time. This will enable you to analyze your hydroponic system's performance and make necessary adjustments.
+2. Data Visualization: The ability to visualize logged data, such as water level at certain times, pH levels, and nutrient levels, over time. This will enable you to analyze your hydroponic system's performance and make necessary adjustments.
 
-3. Web/Mobile Interface: You may want to develop a web or mobile application for interacting with the Raspberry Pi and controlling the hydroponic system. This will provide you with the ability to remotely monitor and manage your plants.
+3. Web/Mobile Interface: Develop a web or mobile application for interacting with the Raspberry Pi and controlling the hydroponic system. This will provide you with the ability to remotely monitor and manage your plants.
 
 4. Light Management: Incorporate a light management system to control light intensity and duration, simulating day-night cycles and optimizing plant growth.
 
-5. Camera Integration: Consider integrating a camera module with your Raspberry Pi to enable visual monitoring of plant growth and health. This will allow you to track your plants' progress using a timelapse.
+5. Camera Integration: Integrating a camera module with your Raspberry Pi to enable visual monitoring of plant growth and health. This will allow you to track your plants' progress using a timelapse.
 
 6. Temperature Control: Implement a new temperature sensor to control a heater or cooler to maintain optimal temperature levels in the hydroponic environment. This will ensure that your plants grow in the most suitable conditions.
 
