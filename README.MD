@@ -67,7 +67,9 @@ git clone https://github.com/HydroLB/automatic-hydroponic-system.git
 cd RPI_Auto_Hydroponics
 ```
 
-3. Install the required packages using pip:
+3. Install all required project dependencies (Adafruit motorkit, Atlas Scientific, ADC, etc)
+
+4. Install the required packages using pip:
 ```bash
 pip install -r requirements.txt
 ```
@@ -92,8 +94,6 @@ You will need to configure the following variables in the main function code:
 ```bash
 python3 main.py
 ```
-
-Install all required project dependencies (Adafruit motorkit, Atlas Scientific, ADC, etc)
 
 2. Follow the prompts to reset and prime the pumps and input the target PPM and water level for your system.
 
