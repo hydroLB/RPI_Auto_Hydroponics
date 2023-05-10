@@ -127,11 +127,7 @@ def main():
         monitor_hydroponic_system(FILENAME, WATER_LEVEL_CHANGE_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS, target_min_max_ph,
                                   ph_dosing_time, NUTRIENT_PPM_SAFETY_MARGIN, NUTRIENT_PUMP_TIME_LIST,
                                   NUTRIENT_WAIT_TIME_LOOP)
-
-        # Wait for an hour before checking the next plant
-        time.sleep(60 * 60)
-
-
+        
 if __name__ == "__main__":
     try:
         main()
