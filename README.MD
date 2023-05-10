@@ -71,7 +71,7 @@ cd RPI_Auto_Hydroponics
 
 ## ⚙️ Configuration
 
-You will need to configure the following variables in the `user_controlled_constants` code:
+You will need to configure the following variables in the `user_controlled_constants` file:
 
 - `ph_var`: List of 3, containing times for pH up and down pumps to be on per cycle, and time between each cycle (loop) when dosing for pH.
 
