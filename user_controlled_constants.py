@@ -44,7 +44,7 @@ DRIVER1_I2C_ADDRESS = 0x61
 # Indicates the minimum water level for the system to recognize a completed setup
 SKIP_SYSTEM_SETUP_WATER_LEVEL = 1.5
 
-PLANTS = {
+PLANTS_OPTION_1 = {
 
     'plant_1': {
         'ph_settings': {
@@ -79,8 +79,12 @@ PLANTS = {
             'wait_time_between_checks': 1000  # MODIFY THE VALUES HERE
         }
     },
+}
 
-    'plant_2': {
+
+#SAVE ANOTHER PLANTS SETTINGS, TO ENSURE THIS IS USED BY THE HYDROPONICS SYSTEM, COPY 'PLANTS = {'  FROM ABOVE, DELETING IT, AND THEN PLACING IT BELOW:
+PLANTS_OPTION_2 = {
+    'plant': {
         'ph_settings': {
             # FLOAT
             'target_min_ph': 5.8,  # MODIFY THE VALUES HERE
