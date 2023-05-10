@@ -1,8 +1,7 @@
 # Pump directions
 from utilities.pumps import Pump
 
-# What direction a pump will go in for forward, if pump was placed  in backwards direction (positive, negative on the
-# pump) will most likely be -1
+# What direction a pump will go in for forward, to fix if a pump was placed in backwards direction (negative direction on the pump) will most likely be -1
 WATER_PUMP_DIRECTION = -1
 NUTRIENT_PUMP1_DIRECTION = 1
 NUTRIENT_PUMP2_DIRECTION = 1
@@ -11,7 +10,7 @@ NUTRIENT_PUMP4_DIRECTION = -1
 PH_DOWN_PUMP_DIRECTION = -1
 PH_UP_PUMP_DIRECTION = 1
 
-# Pump positions (driver0/driver1)
+# Pump positions (driver0/driver1, etc on the raspberry pi)
 WATER_PUMP_POSITION = 'driver0.motor4'
 NUTRIENT_PUMP1_POSITION = 'driver0.motor3'
 NUTRIENT_PUMP2_POSITION = 'driver1.motor3'
@@ -20,7 +19,7 @@ NUTRIENT_PUMP4_POSITION = 'driver1.motor1'
 PH_DOWN_PUMP_POSITION = 'driver1.motor4'
 PH_UP_PUMP_POSITION = 'driver0.motor1'
 
-# Vars for 1-wire temp sensor
+# Vars for 1-wire temp sensor receiving data
 W1_DEVICE_PATH = '/sys/bus/w1/devices/'
 W1_DEVICE_NAME = '28-3c09f6495e17'
 W1_TEMP_PATH = W1_DEVICE_PATH + W1_DEVICE_NAME + '/temperature'
@@ -35,17 +34,17 @@ ADC_BUSNUM = 1
 ADC_GAIN = 1
 
 # Coefficients for quadratic equation to convert reading to water level (a, b, c)
+# We calculated this using excel and measuring the output of the etape for each inch
 QUADRATIC_COEFFICIENTS = [-0.0034, -0.0103, 0.9816]
 
 # Motor driver I2C addresses
 DRIVER0_I2C_ADDRESS = 0x60
 DRIVER1_I2C_ADDRESS = 0x61
 
-# Indicates the minimum water level for the system to recognize a completed setup
+# Indicates the minimum water level in inches for the system to recognize a completed setup 
 SKIP_SYSTEM_SETUP_WATER_LEVEL = 1.5
 
 PLANTS_OPTION_1 = {
-
     'plant_1': {
         'ph_settings': {
             # FLOAT
@@ -82,7 +81,7 @@ PLANTS_OPTION_1 = {
 }
 
 
-#SAVE ANOTHER PLANTS SETTINGS, TO ENSURE THIS IS USED BY THE HYDROPONICS SYSTEM, COPY 'PLANTS = {'  FROM ABOVE, DELETING IT, AND THEN PLACING IT BELOW:
+#SAVE ANOTHER PLANTS SETTINGS, TO ENSURE THIS IS USED BY THE HYDROPONICS SYSTEM, CHANGE THE NAME OF THE DICTIONARY IN MAIN
 PLANTS_OPTION_2 = {
     'plant': {
         'ph_settings': {
@@ -118,24 +117,3 @@ PLANTS_OPTION_2 = {
         }
     },
 }
-
-# position of each pump (driver0/driver1) dependent on how its setup physically
-
-# Setup fresh water pump object using constants above
-fresh_waterPump = Pump(WATER_PUMP_POSITION, WATER_PUMP_DIRECTION)
-# Setup nutrient pump objects using constants above
-nutrientPump1 = Pump(NUTRIENT_PUMP1_POSITION, NUTRIENT_PUMP1_DIRECTION)
-nutrientPump2 = Pump(NUTRIENT_PUMP2_POSITION, NUTRIENT_PUMP2_DIRECTION)
-nutrientPump3 = Pump(NUTRIENT_PUMP3_POSITION, NUTRIENT_PUMP3_POSITION)
-nutrientPump4 = Pump(NUTRIENT_PUMP4_POSITION, NUTRIENT_PUMP4_POSITION)
-# pH pump objects using constants above
-pHDownPump = Pump(PH_DOWN_PUMP_POSITION, PH_DOWN_PUMP_POSITION)
-pHUpPump = Pump(PH_UP_PUMP_POSITION, PH_UP_PUMP_POSITION)
-
-NUTRIENT_PUMP_LIST = [nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4]  # add the nutrient pumps to the list
-
-# List containing the pH Up and pH Down pump objects.
-PH_PUMP_LIST = [pHUpPump, pHDownPump]  # add the pH pumps to the list
-
-# Global list of all pump objects: water, nutrient, and pH pumps.
-ALL_PUMPS = [fresh_waterPump] + [pump for pump in NUTRIENT_PUMP_LIST] + PH_PUMP_LIST
