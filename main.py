@@ -1,14 +1,13 @@
-from water_management import *
-from ph_management import *
-from file_operations import *
-from logging_config import *
+from Water_level_nutrients_ph_manager.water_management import *
+from Water_level_nutrients_ph_manager.ph_management import *
+from file_operations.logging_config import *
+from file_operations.plant_vals_file_manager import *
 from user_controlled_constants import *
-import time
 
-# Use constants in code from user_controlled_constants.py
-from water_management import fill_water
+# Pump directions
+from utilities.pumps import *
 
-#setup 
+# setup
 ECSensor = AtlasI2C(EC_SENSOR_I2C_ADDRESS)
 PHSensor = AtlasI2C(PH_SENSOR_I2C_ADDRESS)
 adc = Adafruit_ADS1x15.ADS1115(address=ADC_I2C_ADDRESS, busnum=ADC_BUSNUM)
@@ -127,10 +126,11 @@ def monitor_hydroponic_system(FILENAME, WATER_LEVEL_CHANGE_THRESHOLD, WAIT_TIME_
 
 
 def main():
-    //CHANGE FROM PLANT_OPTIONS_1, TO OTHER PLANT CHOICE DICTIONARY NAME, SUCH AS (PLANTS_OPTION_2)
-    for plant_selection_dict in BLUEBERRY_PLANT:
+    # CHANGE FROM PLANT_OPTIONS_1, TO OTHER PLANT CHOICE DICTIONARY NAME, SUCH AS (PLANTS_OPTION_2)
+    user_plant_choice = BLUEBERRY_PLANT
+    for plant_selection_dict in user_plant_choice:
         # Update the parameters based on the selected plant
-        plant_params = PLANTS[plant_selection_dict]
+        plant_params = user_plant_choice[plant_selection_dict]
         FILENAME = plant_selection_dict + '.txt'
 
         target_min_max_ph = plant_params['ph_settings']['target_min_ph'], plant_params['ph_settings']['target_max_ph']
@@ -149,7 +149,8 @@ def main():
         monitor_hydroponic_system(FILENAME, WATER_LEVEL_CHANGE_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS, target_min_max_ph,
                                   ph_dosing_time, NUTRIENT_PPM_SAFETY_MARGIN, NUTRIENT_PUMP_TIME_LIST,
                                   NUTRIENT_WAIT_TIME_LOOP)
-        
+
+
 if __name__ == "__main__":
     try:
         main()

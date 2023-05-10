@@ -1,7 +1,5 @@
-# Pump directions
-from utilities.pumps import Pump
-
-# What direction a pump will go in for forward, to fix if a pump was placed in backwards direction (negative direction on the pump) will most likely be -1
+# What direction a pump will go in for forward, to fix if a pump was placed in backwards direction (negative
+# direction on the pump) will most likely be -1
 WATER_PUMP_DIRECTION = -1
 NUTRIENT_PUMP1_DIRECTION = 1
 NUTRIENT_PUMP2_DIRECTION = 1
@@ -10,7 +8,7 @@ NUTRIENT_PUMP4_DIRECTION = -1
 PH_DOWN_PUMP_DIRECTION = -1
 PH_UP_PUMP_DIRECTION = 1
 
-# Pump positions (driver0/driver1, etc on the raspberry pi)
+# Pump positions (driver0/driver1, etc. on the raspberry pi)
 WATER_PUMP_POSITION = 'driver0.motor4'
 NUTRIENT_PUMP1_POSITION = 'driver0.motor3'
 NUTRIENT_PUMP2_POSITION = 'driver1.motor3'
@@ -34,7 +32,7 @@ ADC_BUSNUM = 1
 ADC_GAIN = 1
 
 # Coefficients for quadratic equation to convert reading to water level (a, b, c)
-# We calculated this using excel and measuring the output of the etape for each inch
+# We calculated this using excel and measuring the output of the e-tape for each inch
 QUADRATIC_COEFFICIENTS = [-0.0034, -0.0103, 0.9816]
 
 # Motor driver I2C addresses
@@ -44,7 +42,8 @@ DRIVER1_I2C_ADDRESS = 0x61
 # Indicates the minimum water level in inches for the system to recognize a completed setup 
 SKIP_SYSTEM_SETUP_WATER_LEVEL = 1.5
 
-#SAVE ANOTHER PLANTS SETTINGS, TO ENSURE THIS IS USED BY THE HYDROPONICS SYSTEM, CHANGE THE NAME OF THE DICTIONARY IN MAIN.PY MAIN FUNCTION to plant
+# SAVE ANOTHER PLANTS SETTINGS, TO ENSURE THIS IS USED BY THE HYDROPONICS SYSTEM, CHANGE THE NAME OF THE DICTIONARY
+# IN MAIN.PY MAIN FUNCTION to plant
 RASPBERRY_PLANT = {
     'plant_1': {
         'ph_settings': {
@@ -82,7 +81,8 @@ RASPBERRY_PLANT = {
 }
 
 
-#SAVE ANOTHER PLANTS SETTINGS, TO ENSURE THIS IS USED BY THE HYDROPONICS SYSTEM, CHANGE THE NAME OF THE DICTIONARY IN MAIN.PY MAIN FUNCTION
+# SAVE ANOTHER PLANTS SETTINGS, TO ENSURE THIS IS USED BY THE HYDROPONICS SYSTEM, CHANGE THE NAME OF THE DICTIONARY
+# IN MAIN.PY MAIN FUNCTION
 BLUEBERRY_PLANT = {
     'plant': {
         'ph_settings': {

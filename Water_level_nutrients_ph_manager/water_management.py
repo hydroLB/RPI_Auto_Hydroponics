@@ -1,5 +1,4 @@
-import logging
-from read_water_sensor import get_water_level
+from Water_level_nutrients_ph_manager.read_water_sensor import get_water_level
 from main import *
 from time import sleep
 from utilities.AtlasI2C import get_ppm
