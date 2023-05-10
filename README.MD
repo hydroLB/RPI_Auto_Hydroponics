@@ -93,6 +93,8 @@ You will need to configure the following variables in the main function code:
 python3 main.py
 ```
 
+Install all required project dependencies (Adafruit motorkit, Atlas Scientific, ADC, etc)
+
 2. Follow the prompts to reset and prime the pumps and input the target PPM and water level for your system.
 
 3. The script will continuously monitor the hydroponic system and make adjustments as necessary based on the plants response.
