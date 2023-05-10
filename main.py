@@ -8,6 +8,7 @@ import time
 # Use constants in code from user_controlled_constants.py
 from water_management import fill_water
 
+#setup 
 ECSensor = AtlasI2C(EC_SENSOR_I2C_ADDRESS)
 PHSensor = AtlasI2C(PH_SENSOR_I2C_ADDRESS)
 adc = Adafruit_ADS1x15.ADS1115(address=ADC_I2C_ADDRESS, busnum=ADC_BUSNUM)
@@ -15,6 +16,27 @@ GAIN = ADC_GAIN
 a, b, c = QUADRATIC_COEFFICIENTS
 driver0 = MotorKit(DRIVER0_I2C_ADDRESS)
 driver1 = MotorKit(DRIVER1_I2C_ADDRESS)
+
+# position of each pump (driver0/driver1) dependent on how its setup physically
+
+# Setup fresh water pump object using constants above
+fresh_waterPump = Pump(WATER_PUMP_POSITION, WATER_PUMP_DIRECTION)
+# Setup nutrient pump objects using constants above
+nutrientPump1 = Pump(NUTRIENT_PUMP1_POSITION, NUTRIENT_PUMP1_DIRECTION)
+nutrientPump2 = Pump(NUTRIENT_PUMP2_POSITION, NUTRIENT_PUMP2_DIRECTION)
+nutrientPump3 = Pump(NUTRIENT_PUMP3_POSITION, NUTRIENT_PUMP3_POSITION)
+nutrientPump4 = Pump(NUTRIENT_PUMP4_POSITION, NUTRIENT_PUMP4_POSITION)
+# pH pump objects using constants above
+pHDownPump = Pump(PH_DOWN_PUMP_POSITION, PH_DOWN_PUMP_POSITION)
+pHUpPump = Pump(PH_UP_PUMP_POSITION, PH_UP_PUMP_POSITION)
+
+NUTRIENT_PUMP_LIST = [nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4]  # add the nutrient pumps to the list
+
+# List containing the pH Up and pH Down pump objects.
+PH_PUMP_LIST = [pHUpPump, pHDownPump]  # add the pH pumps to the list
+
+# Global list of all pump objects: water, nutrient, and pH pumps.
+ALL_PUMPS = [fresh_waterPump] + [pump for pump in NUTRIENT_PUMP_LIST] + PH_PUMP_LIST
 
 
 def setup_hydroponic_system(FILENAME, NUTRIENT_PUMP_TIME_LIST, NUTRIENT_WAIT_TIME_LOOP,
@@ -105,7 +127,7 @@ def monitor_hydroponic_system(FILENAME, WATER_LEVEL_CHANGE_THRESHOLD, WAIT_TIME_
 
 
 def main():
-    //CHANGE FROM PLANT_OPTIONS_1, TO OTHER PLANT CHOICE LIST NAME, SUCH AS (PLANTS_OPTION_2)
+    //CHANGE FROM PLANT_OPTIONS_1, TO OTHER PLANT CHOICE DICTIONARY NAME, SUCH AS (PLANTS_OPTION_2)
     for plant_selection_dict in PLANTS_OPTION_2:
         # Update the parameters based on the selected plant
         plant_params = PLANTS[plant_selection_dict]
