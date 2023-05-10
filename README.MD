@@ -41,8 +41,8 @@ This repository contains a Python script to manage and monitor an automatic hydr
 ### (~Estimated) $20 - $50
 - Clear PVC tubes (4x): $20 - $30
 - 8-gallon bucket with lid: $25 - $35
-- pH probe Voltage isolator: $25 - $35
-- EC probe Voltage isolator: $25 - $35
+- pH probe Voltage isolator (Atlas Scientific): $25 - $35
+- EC probe Voltage isolator(Atlas Scientific): $25 - $35
 - Water level sensor (E-Tape): $30 - $50
 - IOT Relay (RPI-controlled power strip): $30 - $50
 
