@@ -11,7 +11,7 @@ This repository contains a Python script to manage and monitor an automatic hydr
     - The 500 scale is the most common conversion factor and is typically used for nutrient solutions made with reverse osmosis or distilled water (Default for this system)
 - pH management with up pump and down pump control 
 - Logging system to keep track of the hydroponic system's status
-- Multiple different plant customization of settings, including pH, max water level, dryback (how low can the water get before a refill), starting ppm, etc 
+- Storage of different plant customization of settings, including pH, max water level, dryback (how low can the water get before a refill), starting ppm, etc to easily switch control from one plant to another 
 - Error handling and pump stopping in case of exceptions
 
 ## 📦 Requirements
@@ -59,12 +59,12 @@ This repository contains a Python script to manage and monitor an automatic hydr
 
 1. Clone this repository to your Raspberry Pi:
 ```bash
-git clone https://github.com/your_username/automatic-hydroponic-system.git
+git clone https://github.com/HydroLB/automatic-hydroponic-system.git
 ```
 
 2. Navigate to the project folder:
 ```bash
-cd automatic-hydroponic-system
+cd RPI_Auto_Hydroponics
 ```
 
 3. Install the required packages using pip:
