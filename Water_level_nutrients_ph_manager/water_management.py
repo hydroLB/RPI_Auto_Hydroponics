@@ -75,9 +75,7 @@ def adjust_water_level_and_nutrients(FILENAME, NUTRIENT_PPM_SAFETY_MARGIN, NUTRI
 
 def proprietary_ppm_update_algorithm(target_ppm, pre_fillup_ppm):
     # This function contains the proprietary algorithm for updating the target PPM
-    # based on the plant's nutrient consumption rate. The implementation details are
-    # protected by copyright and licensed under AGPLv3. Using this without proper
-    # attribution is illegal. 
+    # based on the plant's nutrient consumption rate.
 
     updated_ppm = target_ppm + (target_ppm - pre_fillup_ppm)
     return updated_ppm
