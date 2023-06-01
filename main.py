@@ -131,7 +131,6 @@ def main():
     for plant_selection_dict in user_plant_choice:
         # Update the parameters based on the selected plant
         plant_params = user_plant_choice[plant_selection_dict]
-        FILENAME = plant_selection_dict + '.txt'
 
         target_min_max_ph = plant_params['ph_settings']['target_min_ph'], plant_params['ph_settings']['target_max_ph']
         NUTRIENT_PUMP_TIME_LIST = plant_params['nutrient_settings']['nutrient_pump_times']
