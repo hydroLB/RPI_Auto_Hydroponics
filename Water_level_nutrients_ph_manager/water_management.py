@@ -76,6 +76,13 @@ def adjust_water_level_and_nutrients(FILENAME, NUTRIENT_PPM_SAFETY_MARGIN, NUTRI
 def proprietary_ppm_update_algorithm(target_ppm, pre_fillup_ppm):
     # This function contains the proprietary algorithm for updating the target PPM
     # based on the plant's nutrient consumption rate.
-
+    
+    # the new feed amount will be found by finding the difference (the drift) from the target ppm set 
+    # before and what it is now before the fillup, what did the plant do? 
+    # If the plant was hungry -> ppm would have dropped as it ate more and there is less food (ppm) in the water
+    # If the plant was full -> ppm would of rose as it ate less and there is more food (ppm) in the water
+    # For example if the targetppm was 100, and a fillup is triggered and the ppm is seen to be 120, 
+    # It will be calculated as 100-120= -20, meaning the target_ppm should be lowered by that amount
     updated_ppm = target_ppm + (target_ppm - pre_fillup_ppm)
+    # updated_ppm = target_ppm*2 - pre_fillup_ppm
     return updated_ppm
