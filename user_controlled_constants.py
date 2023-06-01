@@ -42,6 +42,9 @@ DRIVER1_I2C_ADDRESS = 0x61
 # Indicates the minimum water level in inches for the system to recognize a completed setup (if the system lowers power and is turned back on)
 SKIP_SYSTEM_SETUP_WATER_LEVEL = 1.5
 
+#filename to use for reading and writing the target_ppm and target water level in case of power loss this data is not forgotten
+FILENAME = 'store.txt'
+
 # SAVE ANOTHER PLANTS SETTINGS, TO ENSURE THIS IS USED BY THE HYDROPONICS SYSTEM, CHANGE THE NAME OF THE DICTIONARY
 # IN MAIN.PY MAIN FUNCTION TO CHOOSEN PLANT VAR NAME (EX: "RASPBERRY_PLANT")
 RASPBERRY_PLANT = {
@@ -87,7 +90,7 @@ RASPBERRY_PLANT = {
 # ANOTHER PLANTS SETTINGS (#2), TO ENSURE THIS IS USED BY THE HYDROPONICS SYSTEM, CHANGE THE NAME OF THE DICTIONARY
 # IN MAIN.PY MAIN FUNCTION
 BLUEBERRY_PLANT = {
-    'plant': {
+    'plant': 
         'ph_settings': {
             # FLOAT
             'target_min_ph': 5.8,  # MODIFY THE VALUES HERE
