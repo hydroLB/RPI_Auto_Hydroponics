@@ -39,7 +39,7 @@ QUADRATIC_COEFFICIENTS = [-0.0034, -0.0103, 0.9816]
 DRIVER0_I2C_ADDRESS = 0x60
 DRIVER1_I2C_ADDRESS = 0x61
 
-# Indicates the minimum water level in inches for the system to recognize a completed setup 
+# Indicates the minimum water level in inches for the system to recognize a completed setup (if the system lowers power and is turned back on)
 SKIP_SYSTEM_SETUP_WATER_LEVEL = 1.5
 
 # SAVE ANOTHER PLANTS SETTINGS, TO ENSURE THIS IS USED BY THE HYDROPONICS SYSTEM, CHANGE THE NAME OF THE DICTIONARY
