@@ -2,7 +2,7 @@
 
 This repository contains a Python script to manage and monitor an automatic hydroponic system using a Raspberry Pi 4. The code takes care of various tasks, such as priming pumps, filling water, dosing nutrients, and balancing pH levels.
 
-## ✨ Features
+## Features
 
 -  Automatic water management with user-inputted target water level, and dry-back function using a water level change threshold
 -  Nutrient dosing with target PPM (parts per million) and safety margin
@@ -14,7 +14,7 @@ This repository contains a Python script to manage and monitor an automatic hydr
 - Storage of different plant customization of settings, including pH, max water level, dryback (how low can the water get before a refill), starting ppm, etc to easily switch control from one plant to another 
 - Error handling and pump stopping in case of exceptions
 
-## 📦 Requirements
+## Requirements
 
 - Python 3.7 or higher
 
@@ -55,7 +55,7 @@ This repository contains a Python script to manage and monitor an automatic hydr
 
 ### Total estimated cost range: $600-$900
 
-## 🛠️ Installation
+## Installation
 
 1. Clone this repository to your Raspberry Pi:
 ```bash
@@ -75,7 +75,7 @@ You will need to configure the following variables in the `user_controlled_const
 
 - `ph_var`: List of 3, containing times for pH up and down pumps to be on per cycle, and time between each cycle (loop) when dosing for pH.
 
-- `WATER_LEVEL_CHANGE_THRESHOLD`: This parameter determines the minimum difference in water level (in inches) needed to trigger a fill-up, promoting stronger root growth by encouraging plants to search for water deeper in the ground. Adjust the threshold to optimize watering frequency and root strength. Consider updating this value in relation to the plant's growth stage. As the plant matures, increase the time between fill-ups to encourage deeper root growth.
+- `WATER_LEVEL_CHANGE_THRESHOLD`: This parameter determines the minimum difference in water level (in inches) needed to trigger a fill-up, promoting stronger root growth by encouraging plants to search for water deeper in the container. Adjust the threshold to optimize watering frequency and root strength. Consider updating this value in relation to the plant's growth stage. As the plant matures, increase the time between fill-ups to encourage deeper root growth.
 
 - Smaller threshold -> More frequent fill-ups. Larger threshold -> Less frequent fill-ups, stronger roots. Never let the roots be too dry. I rather err on the side of caution even if the roots won't be as big.  
 
@@ -97,24 +97,16 @@ python3 main.py
 
 3. The script will continuously monitor the hydroponic system and make adjustments as necessary based on the plants response.
 
-## 📝 Notes
+## Notes
 
 - Ensure that your pumps and sensors are properly connected to the Raspberry Pi before running the script.
 - The code is designed to work with a specific set of pumps and sensors. You may need to modify the code to work with different hardware.
 - The water level, and PPM are stored in a file to allow the system to resume its monitoring in the event of a reboot or power outage.
 
-## 🤝 Contributing, credits and special thanks: 
+## Contributing, credits and special thanks: 
 Special thanks to Michael Yinka-Oke and Sean Cunneen for bringing this project and idea to from the ground to reality! 
 
 This project was developed using a variety of tools, including PyCharm as the integrated development environment and implemented on a Raspberry Pi platform.
-
-## 📄 License for code: 
-This original work is licensed under the GNU Affero General Public License v3.0 (AGPLv3). The full license text can be found at https://www.gnu.org/licenses/agpl-3.0.en.html
-
-Original contributions and unique code in this project:
-Copyright © 2023, Leon Bouramia. All rights reserved.
-
-### Contributions are welcome! If you have any suggestions or improvements, feel free to submit a pull request or create an issue.
 
 ## 🌟 Ideas to Add in the Future:
 
