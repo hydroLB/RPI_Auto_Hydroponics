@@ -1,6 +1,4 @@
-from pumps import *
-
-from pump_config import all_pumps  # Import the global pumps list from pump_config
+from main import all_pumps  # Import the global pumps list from pump_config
 
 
 def stop_pumps_list(pumps_list):

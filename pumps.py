@@ -1,9 +1,5 @@
 from adafruit_motorkit import MotorKit
 
-# Initialize motor drivers with I2C addresses
-driver0 = MotorKit(0x60)
-driver1 = MotorKit(0x61)
-
 
 class Pump:
     def __init__(self, motor, direction):
@@ -30,16 +26,4 @@ class Pump:
         self.motor.throttle = -self.direction
 
 
-# Initialize pump objects with corresponding motor and direction
 
-# direction value of each (-1 or 1) is due to the direction of the peristaltic pump, in our case we had some pumps that
-# were moving in the opposite direction of what we expected
-
-# position of each pump (driver0/driver1) dependent on how its setup physically
-waterPump = Pump(driver0.motor4, -1)
-nutrientPump1 = Pump(driver0.motor3, 1)
-nutrientPump2 = Pump(driver1.motor3, 1)
-nutrientPump3 = Pump(driver1.motor2, 1)
-nutrientPump4 = Pump(driver1.motor1, -1)
-pHDownPump = Pump(driver1.motor4, -1)
-pHUpPump = Pump(driver0.motor1, 1)

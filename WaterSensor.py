@@ -1,36 +1,31 @@
-import math
-import time
+import json
 import Adafruit_ADS1x15
-
-# Initialize the ADC (Analog-to-Digital Converter) with I2C address and bus number
-adc = Adafruit_ADS1x15.ADS1115(address=0x48, busnum=1)
+from watersensor_calibration import initialize_water_sensor, quadratic_model, get_average_sensor_value
 
 # Set the gain value for the ADC
 GAIN = 1
 
-print('Reading ADS1x15 Values')
+# File to store calibration coefficients
+coefficients_file = 'calibration_coefficients.txt'
 
 
-def get_water_level():
-    """
-    Calculate the water level using a liquid eTape sensor and the ADC.
+def load_coefficients():
+    try:
+        with open(coefficients_file, 'r') as file:
+            coefficients = json.load(file)
+            return coefficients
+    except FileNotFoundError:
+        print("Calibration file not found.")
+        return None
 
-    Returns:
-        float: Water level value.
-    """
-    # Read baseline and raw eTape sensor values from the ADC
-    baseLine = adc.read_adc(1, gain=GAIN)
-    rawVal = adc.read_adc(0, gain=GAIN)
 
-    # Calculate the reading ratio
-    reading = rawVal / baseLine
+def get_water_level(coefficients):
+    # Main execution
+    coefficients = load_coefficients()
+    if coefficients is None:
+        initialize_water_sensor()
+        coefficients = load_coefficients()  # Reload coefficients after initialization
 
-    # Coefficients for quadratic equation to convert reading to water level
-    a = -.0034
-    b = -.0103
-    c = .9816 - reading
-
-    # Solve the quadratic equation to get the water level
-    waterLevel = ((-b) - math.sqrt(b * b - 4 * a * c)) / (2 * a)
-
-    return waterLevel
+    sensor_value = get_average_sensor_value()
+    water_level = quadratic_model(sensor_value, **coefficients)
+    return round(water_level, 2)
