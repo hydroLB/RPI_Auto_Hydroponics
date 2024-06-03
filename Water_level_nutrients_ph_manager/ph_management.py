@@ -1,15 +1,23 @@
+# Two functions: balance_ph keeps it in range, the exact version reaches a precise measurement
+
 from time import sleep
 
 # Target pH values and limits
 from main import pHUpPump, pHDownPump
-from utilities.AtlasI2C import get_ph
+from Atlas_and_pump_utilities.AtlasI2C import get_ph
+from user_config import plant
 
 
-def balance_ph(target_min_max_ph, ph_dosing_time):
+#  keeps ph in the range provided in the user_config
+def balance_ph(ph_dosing_time):
+    # get ph values for range and target
+    target_min_max_ph = plant.target_ph, plant.min_ph, plant.max_ph
+
     TARGET_PH = target_min_max_ph[0]
     MIN_PH = target_min_max_ph[1]
     MAX_PH = target_min_max_ph[2]
 
+    # get the amount each pump is on
     ph_up_sleep_time = ph_dosing_time[0]
     ph_down_sleep_time = ph_dosing_time[1]
     loop_sleep_time = ph_dosing_time[2]
@@ -33,14 +41,14 @@ def balance_ph(target_min_max_ph, ph_dosing_time):
         pHDownPump.stop()  # Stop the pH down pump when the pH value reaches the target value
 
 
-def balance_PH_exact(target_min_max_ph, ph_dosing_time):
-    TARGET_PH = target_min_max_ph[0]
-
+def balance_PH_exact(ph_dosing_time):
+    # get the amount each pump is on
     ph_up_sleep_time = ph_dosing_time[0]
     ph_down_sleep_time = ph_dosing_time[1]
     loop_sleep_time = ph_dosing_time[2]
-    if get_ph() < TARGET_PH:  # Check if the current pH value is less than the target pH value
-        while get_ph() < TARGET_PH:  # Keep running the loop while the pH value is less than the target pH value
+
+    if get_ph() < plant.target_ph:  # Check if the current pH value is less than the target pH value
+        while get_ph() < plant.target_ph:  # Keep running the loop while the pH value is less than the target pH value
             print("Increasing PH, PH: %f" % (
                 get_ph()))  # Print the current pH value and indicate that it's being increased
             pHUpPump.start()  # Start the pH up pump
@@ -48,8 +56,8 @@ def balance_PH_exact(target_min_max_ph, ph_dosing_time):
             pHUpPump.stop()  # Stop the pH up pump
             sleep(loop_sleep_time)  # Pause the program for LOOP_SLEEP_TIME
         pHUpPump.stop()  # Stop the pH up pump when the pH value reaches the target value
-    elif get_ph() > TARGET_PH:  # Check if the current pH value is greater than the target pH value
-        while get_ph() > TARGET_PH:  # Keep running the loop while the pH value is greater than the target pH value
+    elif get_ph() > plant.target_ph:  # Check if the current pH value is greater than the target pH value
+        while get_ph() > plant.target_ph:  # Keep running the loop while pH value is greater than the target pH value
             print("Reducing PH, PH: %f" % (get_ph()))  # Print the current pH value and indicate that it's being reduced
             pHDownPump.start()  # Start the pH down pump
             sleep(ph_down_sleep_time)  # Pause the program for PH_DOWN_SLEEP_TIME

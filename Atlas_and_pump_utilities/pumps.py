@@ -1,8 +1,13 @@
+# Handles pumps start, stop, reverse, the list of all the pumps,  and priming using list
+# Also handles fresh water pump on and off using GPIO high/low
+
 # Import components from the main module: motor drivers and nutrient pump times.
 import sys
 
-
 # Import the MotorKit class from the Adafruit Motor HAT library.
+import GPIO as GPIO
+
+
 class Pump:
     def __init__(self, motor, direction):
         """
@@ -62,3 +67,11 @@ def stop_pumps_list(pumps_list):
     """Stop all pumps in the given list."""
     for pump in pumps_list:
         pump.stop(pump)
+
+
+def start_fresh_water_pump(pin_number):
+    GPIO.output(pin_number, GPIO.HIGH)
+
+
+def end_fresh_water_pump(pin_number):
+    GPIO.output(pin_number, GPIO.LOW)
