@@ -7,7 +7,7 @@ from Atlas_and_pump_utilities.pumps import *
 from Water_Level_Sensor.water_management import fill_water, dose_nutrients
 from Water_Level_Sensor.watersensor_calibration import initialize_water_sensor
 from Water_level_nutrients_ph_manager.ph_management import balance_PH_exact, balance_ph
-from user_config import *
+from user_config.user_config import *
 from file_operations.logging_config import *
 
 ph_pump_list = [pHUpPump, pHDownPump]

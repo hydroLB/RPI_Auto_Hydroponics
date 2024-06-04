@@ -1,7 +1,7 @@
-from main import *
+from main.main import *
 from time import sleep
 from Atlas_and_pump_utilities.AtlasI2C import get_ppm
-from user_config import *
+from user_config.user_config import *
 
 
 def fill_water():
