@@ -67,13 +67,8 @@ def find_motor_name_and_direction():
         temp_pump.stop()
 
         if feedback in ['no', 'n']:
-            confirmation = input("Are you sure you want to reverse the direction? (yes to confirm): ").strip().lower()
-            if confirmation in ['yes', 'y']:
-                direction = -1
-                print("Direction reversed.")
-            else:
-                direction = 1
-                print("Direction confirmed as forward.")
+            direction = -1
+            print("Direction reversed.")
         else:
             direction = 1
             print("Direction confirmed as forward.")
