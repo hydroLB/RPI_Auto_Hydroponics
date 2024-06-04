@@ -190,7 +190,7 @@ class AtlasI2C:
 
 
 def read_temp_file():
-    from user_config import W1_TEMP_PATH
+    from user_config.user_config import W1_TEMP_PATH
     """Read temperature file and return its content."""
     try:
         with open(W1_TEMP_PATH, 'r') as temp_file:
