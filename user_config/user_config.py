@@ -21,10 +21,6 @@ class Plant:
 PHSensor = AtlasI2C(63)
 ECSensor = AtlasI2C(64)
 
-# Initialize motor drivers with I2C addresses
-driver0 = MotorKit(0x60)
-driver1 = MotorKit(0x61)
-
 # ADC configuration
 ADC_I2C_ADDRESS = 0x48
 ADC_BUSNUM = 1
@@ -33,28 +29,45 @@ ADC_GAIN = 1
 # Set the GPIO numbering mode
 GPIO.setmode(GPIO.BCM)  # or GPIO.BOARD
 
+# Initialize motor drivers with I2C addresses
+driver0 = MotorKit(address=0x60)
+driver1 = MotorKit(address=0x61)
+
+# Dictionary to map motor numbers to motor objects
+motor_map = {
+    (0x60, 1): driver0.motor1,
+    (0x60, 2): driver0.motor2,
+    (0x60, 3): driver0.motor3,
+    (0x60, 4): driver0.motor4,
+    (0x61, 1): driver1.motor1,
+    (0x61, 2): driver1.motor2,
+    (0x61, 3): driver1.motor3,
+    (0x61, 4): driver1.motor4
+}
+
+# Define the motors with their respective driver addresses
+motors = [
+    (0x60, 3), (0x61, 3), (0x61, 2), (0x61, 1),
+    (0x60, 4), (0x61, 4), (0x60, 1)
+]
+
 
 # Initialize pump objects with corresponding motor and direction
 def find_motor_name_and_direction():
     pump_names = ["nutrientPump1", "nutrientPump2", "nutrientPump3", "nutrientPump4", "BacterialPump", "pHUpPump",
                   "pHDownPump"]
-    pumps = []
+    pump_objects = {}
 
-    motors = [
-        (driver0, 3), (driver1, 3), (driver1, 2), (driver1, 1),
-        (driver0, 4), (driver1, 4), (driver0, 1)
-    ]
-
-    for driver, motor_num in motors:
-        motor = getattr(driver, f'motor{motor_num}')
+    for address, motor_num in motor_map:
+        motor = motor_map[(address, motor_num)]
         temp_pump = Pump(motor, 1)  # Temporary pump with default direction
-        print(f"Testing motor {motor_num} on driver {driver.address}")
+        print(f"Testing motor {motor_num} on driver with address {hex(address)}")
 
         temp_pump.start()
         feedback = input("Is the direction correct? (yes/no): ").strip().lower()
         temp_pump.stop()
 
-        if feedback == 'no' or feedback == 'n':
+        if feedback in ['no', 'n']:
             direction = -1
             print("Direction reversed.")
         else:
@@ -65,28 +78,40 @@ def find_motor_name_and_direction():
         for idx, name in enumerate(pump_names):
             print(f"{idx + 1}: {name}")
 
-        name_choice = int(input("Enter the number corresponding to the chosen name: ").strip())
-        chosen_name = pump_names[name_choice - 1]
-        pump_names.remove(chosen_name)
+        while True:
+            try:
+                name_choice = int(input("Enter the number corresponding to the chosen name: ").strip())
+                if 1 <= name_choice <= len(pump_names):
+                    chosen_name = pump_names.pop(name_choice - 1)
+                    break
+                else:
+                    print("Invalid choice. Please enter a number from the list.")
+            except ValueError:
+                print("Invalid input. Please enter a number.")
 
         # Create a new Pump object with the correct direction and assign it to the chosen name
         new_pump = Pump(motor, direction)
-        pumps.append((chosen_name, new_pump))
-        print(f"Pump {chosen_name} mapped to motor {motor_num} on driver {driver.address}.")
+        pump_objects[chosen_name] = new_pump
+        print(f"Pump {chosen_name} mapped to motor {motor_num} on driver with address {hex(address)}.")
 
     print("All motors have been named and tested for correct direction.")
 
-    # Sort pumps by specified order
-    order = ["nutrientPump1", "nutrientPump2", "nutrientPump3", "nutrientPump4", "BacterialPump", "pHUpPump",
-             "pHDownPump"]
-    sorted_pumps = sorted(pumps, key=lambda x: order.index(x[0]))
+    # Assign variables to each pump based on their names
+    nutrientPump1 = pump_objects.get("nutrientPump1")
+    nutrientPump2 = pump_objects.get("nutrientPump2")
+    nutrientPump3 = pump_objects.get("nutrientPump3")
+    nutrientPump4 = pump_objects.get("nutrientPump4")
+    BacterialPump = pump_objects.get("BacterialPump")
+    pHUpPump = pump_objects.get("pHUpPump")
+    pHDownPump = pump_objects.get("pHDownPump")
 
-    return sorted_pumps
+    return nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump, pHUpPump, pHDownPump
 
 
 # Configuration function that initializes the pumps and sets up the environment
 def configure_system():
-    pumps = find_motor_name_and_direction()
+    nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump, pHUpPump, pHDownPump \
+        = find_motor_name_and_direction()
 
     # Times each pump should be on, representing the ratio of each nutrient
     NUTRIENT1_TIME = 5
@@ -95,10 +120,11 @@ def configure_system():
     NUTRIENT4_TIME = 5
     BACTERIAL_TIME = 5
 
-    nutrient_pump_list = [(pump, time) for pump, time in zip([p for _, p in pumps],
-                                                             [NUTRIENT1_TIME, NUTRIENT2_TIME, NUTRIENT3_TIME,
-                                                              NUTRIENT4_TIME, BACTERIAL_TIME])]
-    ph_pump_list = [pump for name, pump in pumps if name in ["pHUpPump", "pHDownPump"]]
+    nutrient_pump_list = [(pump, time) for pump, time in
+                          zip([nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump],
+                              [NUTRIENT1_TIME, NUTRIENT2_TIME, NUTRIENT3_TIME,
+                               NUTRIENT4_TIME, BACTERIAL_TIME])]
+    ph_pump_list = [pHUpPump, pHDownPump]
 
     plant = Plant("Raspberry plant", 5.7, 5.6, 5.8, 800, 5, nutrient_pump_list)
 
