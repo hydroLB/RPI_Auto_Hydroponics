@@ -67,15 +67,19 @@ def find_motor_name_and_direction():
         temp_pump.stop()
 
         if feedback in ['no', 'n']:
-            direction = -1
-            print("Direction reversed.")
+            confirmation = input("Are you sure you want to reverse the direction? (yes to confirm): ").strip().lower()
+            if confirmation in ['yes', 'y']:
+                direction = -1
+                print("Direction reversed.")
+            else:
+                direction = 1
+                print("Direction confirmed as forward.")
         else:
             direction = 1
             print("Direction confirmed as forward.")
 
         for idx, name in enumerate(pump_names):
             print(f"{idx + 1}: {name}")
-        print(f"{len(pump_names) + 1}: None")  # Add option for None
 
         while True:
             name_choice = input(

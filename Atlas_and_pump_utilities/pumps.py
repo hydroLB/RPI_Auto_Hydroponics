@@ -19,10 +19,11 @@ class Pump:
         """
         self.motor = motor
         self.direction = direction
+        self.speed = 0.5  # Set default speed to 0.5
 
     def start(self):
         """Start the pump by setting the motor throttle to its direction."""
-        self.motor.throttle = self.direction
+        self.motor.throttle = self.direction * self.speed
 
     def stop(self):
         """Stop the pump by setting the motor throttle to zero."""
@@ -30,7 +31,7 @@ class Pump:
 
     def startReverse(self):
         """Start the pump in reverse by setting the motor throttle to the opposite of its direction."""
-        self.motor.throttle = -self.direction
+        self.motor.throttle = -self.direction * self.speed
 
 
 # Prime pumps with the user's help
@@ -66,7 +67,7 @@ def run_pumps_list(pumps_list, reverse=False):
 def stop_pumps_list(pumps_list):
     """Stop all pumps in the given list."""
     for pump in pumps_list:
-        pump.stop(pump)
+        pump.stop()
 
 
 def start_fresh_water_pump(pin_number):
