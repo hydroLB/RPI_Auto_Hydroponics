@@ -4,6 +4,12 @@ import json
 from scipy.optimize import curve_fit
 import time
 
+
+# Specify the I2C bus and address (replace '1' and '0x48' with the correct bus number and address)
+I2C_BUS = 1
+ADC_ADDRESS = 0x48
+
+
 # Initialize the ADC using the Adafruit_ADS1x15 library
 adc = Adafruit_ADS1x15.ADS1115()
 
