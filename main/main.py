@@ -22,6 +22,8 @@ global plant, ph_pump_list, all_pumps
 def setup_hydroponic_system():
     global plant, ph_pump_list, all_pumps
     if (get_water_level() is None) or (get_water_level() < SKIP_SYSTEM_SETUP_WATER_LEVEL):
+        print("Welcome to Hydroponics Heaven, press enter to begin configuring the pumps")
+        sys.stdin.readline()  # Wait for user to hit enter
         plant, ph_pump_list = configure_system()
         # Global list of all pumps
         all_pumps = [pump for pump, _ in plant.nutrient_pump_time_list] + ph_pump_list

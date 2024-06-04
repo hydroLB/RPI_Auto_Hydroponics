@@ -68,7 +68,7 @@ def initialize_water_sensor():
 
     # Perform curve fitting
     try:
-        popt, _ = curve_fit(quadratic_model, sensor_values, levels)
+        popt, pcov = curve_fit(quadratic_model, sensor_values, levels)
     except Exception as e:
         print(f"Error during curve fitting: {e}")
         return
