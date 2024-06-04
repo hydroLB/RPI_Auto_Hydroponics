@@ -4,10 +4,9 @@
 # Import components from the main module: motor drivers and nutrient pump times.
 import sys
 
-from adafruit_motorkit import MotorKit
-
 # Import the MotorKit class from the Adafruit Motor HAT library.
 import RPi.GPIO as GPIO
+
 
 class Pump:
     def __init__(self, motor, direction):

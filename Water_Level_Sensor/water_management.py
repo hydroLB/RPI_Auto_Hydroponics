@@ -1,4 +1,3 @@
-import logging
 from time import sleep
 from Atlas_and_pump_utilities.AtlasI2C import get_ppm
 from Atlas_and_pump_utilities.pumps import end_fresh_water_pump, start_fresh_water_pump
@@ -53,7 +52,7 @@ def dose_nutrients(target_ppm_local, pump_info):
         sleep(10)
 
 
-def adjust_water_level_and_nutrients():
+def adjust_water_level_and_nutrients(plant, ph_pump_list):
     # Read target PPM and water level from file
     target_ppm, target_water_level = read_from_file()
 
@@ -71,7 +70,7 @@ def adjust_water_level_and_nutrients():
     # then finally ensure it's exactly at the target PPM
     dose_nutrients(target_ppm - PH_PPM_SAFETY_MARGIN, plant.nutrient_pump_time_list)
 
-    balance_PH_exact(ph_dosing_time)
+    balance_PH_exact(ph_dosing_time, plant, ph_pump_list)
 
     dose_nutrients(target_ppm, plant.nutrient_pump_time_list)
 

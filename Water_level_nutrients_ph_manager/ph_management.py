@@ -4,17 +4,19 @@ from time import sleep
 
 # Target pH values and limits
 from Atlas_and_pump_utilities.AtlasI2C import get_ph
-from user_config.user_config import plant, pHUpPump, pHDownPump
 
 
 #  keeps ph in the range provided in the user_config
-def balance_ph(ph_dosing_time):
+def balance_ph(ph_dosing_time, plant, ph_pump_list):
     # get ph values for range and target
     target_min_max_ph = plant.target_ph, plant.min_ph, plant.max_ph
 
     TARGET_PH = target_min_max_ph[0]
     MIN_PH = target_min_max_ph[1]
     MAX_PH = target_min_max_ph[2]
+
+    pHUpPump = ph_pump_list[0]
+    pHDownPump = ph_pump_list[1]
 
     # get the amount each pump is on
     ph_up_sleep_time = ph_dosing_time[0]
@@ -40,11 +42,14 @@ def balance_ph(ph_dosing_time):
         pHDownPump.stop()  # Stop the pH down pump when the pH value reaches the target value
 
 
-def balance_PH_exact(ph_dosing_time):
+def balance_PH_exact(ph_dosing_time, plant, ph_pump_list):
     # get the amount each pump is on
     ph_up_sleep_time = ph_dosing_time[0]
     ph_down_sleep_time = ph_dosing_time[1]
     loop_sleep_time = ph_dosing_time[2]
+
+    pHUpPump = ph_pump_list[0]
+    pHDownPump = ph_pump_list[1]
 
     if get_ph() < plant.target_ph:  # Check if the current pH value is less than the target pH value
         while get_ph() < plant.target_ph:  # Keep running the loop while the pH value is less than the target pH value

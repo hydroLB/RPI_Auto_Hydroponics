@@ -6,6 +6,7 @@ import fcntl
 import time
 import copy
 
+
 class AtlasI2C:
     # the timeout needed to query readings and calibrations
     LONG_TIMEOUT = 1.5

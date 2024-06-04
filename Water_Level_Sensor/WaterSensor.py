@@ -14,7 +14,7 @@ def load_coefficients():
             coefficients = json.load(file)
             return coefficients
     except FileNotFoundError:
-        print("Calibration file not found.")
+        print("Calibration file for water sensor not found.")
         return None
 
 

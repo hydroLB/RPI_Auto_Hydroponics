@@ -30,24 +30,79 @@ ADC_I2C_ADDRESS = 0x48
 ADC_BUSNUM = 1
 ADC_GAIN = 1
 
-
-
-
 # Set the GPIO numbering mode
 GPIO.setmode(GPIO.BCM)  # or GPIO.BOARD
 
 
-
 # Initialize pump objects with corresponding motor and direction
+def find_motor_name_and_direction():
+    pump_names = ["nutrientPump1", "nutrientPump2", "nutrientPump3", "nutrientPump4", "BacterialPump", "pHUpPump",
+                  "pHDownPump"]
+    pumps = []
 
-# Pump positions (driver0/driver1, etc. on the raspberry pi)
-NUTRIENT_PUMP1_POSITION = driver0.motor3
-NUTRIENT_PUMP2_POSITION = driver1.motor3
-NUTRIENT_PUMP3_POSITION = driver1.motor2
-NUTRIENT_PUMP4_POSITION = driver1.motor1
-BACTERIAL_PUMP_POSITION = driver0.motor4
-PH_DOWN_PUMP_POSITION = driver1.motor4
-PH_UP_PUMP_POSITION = driver0.motor1
+    motors = [
+        (driver0, 3), (driver1, 3), (driver1, 2), (driver1, 1),
+        (driver0, 4), (driver1, 4), (driver0, 1)
+    ]
+
+    for driver, motor_num in motors:
+        motor = getattr(driver, f'motor{motor_num}')
+        temp_pump = Pump(motor, 1)  # Temporary pump with default direction
+        print(f"Testing motor {motor_num} on driver {driver.address}")
+
+        temp_pump.start()
+        feedback = input("Is the direction correct? (yes/no): ").strip().lower()
+        temp_pump.stop()
+
+        if feedback == 'no' or feedback == 'n':
+            direction = -1
+            print("Direction reversed.")
+        else:
+            direction = 1
+            print("Direction confirmed as forward.")
+
+        print("Choose a name for this pump from the following options:")
+        for idx, name in enumerate(pump_names):
+            print(f"{idx + 1}: {name}")
+
+        name_choice = int(input("Enter the number corresponding to the chosen name: ").strip())
+        chosen_name = pump_names[name_choice - 1]
+        pump_names.remove(chosen_name)
+
+        # Create a new Pump object with the correct direction and assign it to the chosen name
+        new_pump = Pump(motor, direction)
+        pumps.append((chosen_name, new_pump))
+        print(f"Pump {chosen_name} mapped to motor {motor_num} on driver {driver.address}.")
+
+    print("All motors have been named and tested for correct direction.")
+
+    # Sort pumps by specified order
+    order = ["nutrientPump1", "nutrientPump2", "nutrientPump3", "nutrientPump4", "BacterialPump", "pHUpPump",
+             "pHDownPump"]
+    sorted_pumps = sorted(pumps, key=lambda x: order.index(x[0]))
+
+    return sorted_pumps
+
+
+# Configuration function that initializes the pumps and sets up the environment
+def configure_system():
+    pumps = find_motor_name_and_direction()
+
+    # Times each pump should be on, representing the ratio of each nutrient
+    NUTRIENT1_TIME = 5
+    NUTRIENT2_TIME = 5
+    NUTRIENT3_TIME = 5
+    NUTRIENT4_TIME = 5
+    BACTERIAL_TIME = 5
+
+    nutrient_pump_list = [(pump, time) for pump, time in zip([p for _, p in pumps],
+                                                             [NUTRIENT1_TIME, NUTRIENT2_TIME, NUTRIENT3_TIME,
+                                                              NUTRIENT4_TIME, BACTERIAL_TIME])]
+    ph_pump_list = [pump for name, pump in pumps if name in ["pHUpPump", "pHDownPump"]]
+
+    plant = Plant("Raspberry plant", 5.7, 5.6, 5.8, 800, 5, nutrient_pump_list)
+
+    return plant, ph_pump_list
 
 
 # Vars for 1-wire temp sensor receiving data
@@ -56,27 +111,6 @@ W1_DEVICE_NAME = '28-3c09f6495e17'
 W1_TEMP_PATH = W1_DEVICE_PATH + W1_DEVICE_NAME + '/temperature'
 
 SKIP_SYSTEM_SETUP_WATER_LEVEL = 2.0
-
-# direction value of each (-1 or 1) is due to the direction of the peristaltic pump, in our case we had some pumps that
-# were moving in the opposite direction of what we expected
-# position of each pump (driver0/driver1) dependent on how its setup physically
-nutrientPump1 = Pump(NUTRIENT_PUMP1_POSITION, 1)
-nutrientPump2 = Pump(NUTRIENT_PUMP2_POSITION, 1)
-nutrientPump3 = Pump(NUTRIENT_PUMP3_POSITION, 1)
-nutrientPump4 = Pump(NUTRIENT_PUMP4_POSITION, -1)
-
-BacterialPump = Pump(BACTERIAL_PUMP_POSITION, 1)
-
-pHDownPump = Pump(PH_DOWN_PUMP_POSITION, -1)
-pHUpPump = Pump(PH_UP_PUMP_POSITION, 1)
-
-# times each pump should be on, represents the ratio of each nutrient
-NUTRIENT1_TIME = 5
-NUTRIENT2_TIME = 5
-NUTRIENT3_TIME = 5
-NUTRIENT4_TIME = 5
-
-BACTERIAL_TIME = 5
 
 # pin used to turn on a pump to pull fresh water in
 FRESH_WATER_PUMP_PIN = 20
@@ -93,23 +127,4 @@ PH_DOWN_SLEEP_TIME = 0.3  # time for pH down pump (how long is it on aka how muc
 LOOP_SLEEP_TIME = 7  # Sleep time for the loop ((how long to wait between each increment dosing)
 
 ph_dosing_time = PH_UP_SLEEP_TIME, PH_DOWN_SLEEP_TIME, LOOP_SLEEP_TIME
-
-nutrient_pump_list = [(nutrientPump1, NUTRIENT1_TIME), (nutrientPump2, NUTRIENT2_TIME),
-                      (nutrientPump3, NUTRIENT3_TIME), (nutrientPump4, NUTRIENT4_TIME), (BacterialPump, BACTERIAL_TIME)]
-
-#   - name: A string representing the name or identifier of the plant.
-#   - target_ph: The ideal pH level for the plant's water/nutrient solution.
-#   - min_ph: The minimum acceptable pH level for the plant, defining the lower pH tolerance limit.
-#   - max_ph: The maximum acceptable pH level for the plant, setting the upper pH tolerance limit.
-#   - target_ppm: The target concentration of nutrients (measured in parts-per-million) in the water.
-#   - target_water_level: The optimal water level for the plant, typically measured in inches.
-# List of pumps and their time
-plants = [
-    Plant("Raspberry plant", 5.7, 5.6, 5.8, 800, 5, nutrient_pump_list),
-    # Plant("Plant2", 6.0, 5.8, 6.4, 900, 6, nutrient_pump_time_list),
-    # Add more plants as needed
-]
-
-plant = plants[0]  # Select a plant
-
 ############################################################################################
