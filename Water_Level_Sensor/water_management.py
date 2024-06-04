@@ -1,6 +1,10 @@
-from main.main import *
+import logging
 from time import sleep
 from Atlas_and_pump_utilities.AtlasI2C import get_ppm
+from Atlas_and_pump_utilities.pumps import end_fresh_water_pump, start_fresh_water_pump
+from Water_Level_Sensor.WaterSensor import get_water_level
+from Water_level_nutrients_ph_manager.ph_management import balance_PH_exact
+from file_operations.logging_config import write_to_file, read_from_file
 from user_config.user_config import *
 
 
