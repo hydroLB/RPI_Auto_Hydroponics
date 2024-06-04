@@ -3,9 +3,8 @@
 from time import sleep
 
 # Target pH values and limits
-from main.main import pHUpPump, pHDownPump
 from Atlas_and_pump_utilities.AtlasI2C import get_ph
-from user_config.user_config import plant
+from user_config.user_config import plant, pHUpPump, pHDownPump
 
 
 #  keeps ph in the range provided in the user_config

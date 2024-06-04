@@ -29,7 +29,6 @@ def fill_water():
         end_fresh_water_pump(FRESH_WATER_PUMP_PIN)
     except Exception as ee:
         # Log the error message and stop the water pump in case of an exception
-        logging.error(f"An error occurred while filling water: {ee}")
         end_fresh_water_pump(FRESH_WATER_PUMP_PIN)
 
 
