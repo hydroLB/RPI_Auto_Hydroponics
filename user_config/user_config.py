@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+from adafruit_motorkit import MotorKit
 
 from Atlas_and_pump_utilities.AtlasI2C import AtlasI2C
 from Atlas_and_pump_utilities.pumps import Pump
@@ -17,15 +18,25 @@ class Plant:
 
 ###########################################################
 # Initialize EC and pH sensors with I2C addresses
-ECSensor = AtlasI2C(100)
-PHSensor = AtlasI2C(99)
-
-# Set the GPIO numbering mode
-GPIO.setmode(GPIO.BCM)  # or GPIO.BOARD
+PHSensor = AtlasI2C(63)
+ECSensor = AtlasI2C(64)
 
 # Initialize motor drivers with I2C addresses
 driver0 = MotorKit(0x60)
 driver1 = MotorKit(0x61)
+
+# ADC configuration
+ADC_I2C_ADDRESS = 0x48
+ADC_BUSNUM = 1
+ADC_GAIN = 1
+
+
+
+
+# Set the GPIO numbering mode
+GPIO.setmode(GPIO.BCM)  # or GPIO.BOARD
+
+
 
 # Initialize pump objects with corresponding motor and direction
 
@@ -34,8 +45,10 @@ NUTRIENT_PUMP1_POSITION = 'driver0.motor3'
 NUTRIENT_PUMP2_POSITION = 'driver1.motor3'
 NUTRIENT_PUMP3_POSITION = 'driver1.motor2'
 NUTRIENT_PUMP4_POSITION = 'driver1.motor1'
+BACTERIAL_PUMP_POSITION = 'driver.motor4'
 PH_DOWN_PUMP_POSITION = 'driver1.motor4'
 PH_UP_PUMP_POSITION = 'driver0.motor1'
+
 
 # Vars for 1-wire temp sensor receiving data
 W1_DEVICE_PATH = '/sys/bus/w1/devices/'
@@ -51,6 +64,9 @@ nutrientPump1 = Pump(NUTRIENT_PUMP1_POSITION, 1)
 nutrientPump2 = Pump(NUTRIENT_PUMP2_POSITION, 1)
 nutrientPump3 = Pump(NUTRIENT_PUMP3_POSITION, 1)
 nutrientPump4 = Pump(NUTRIENT_PUMP4_POSITION, -1)
+
+BacterialPump = Pump(BACTERIAL_PUMP_POSITION, 1)
+
 pHDownPump = Pump(PH_DOWN_PUMP_POSITION, -1)
 pHUpPump = Pump(PH_UP_PUMP_POSITION, 1)
 
@@ -60,10 +76,7 @@ NUTRIENT2_TIME = 5
 NUTRIENT3_TIME = 5
 NUTRIENT4_TIME = 5
 
-# ADC configuration
-ADC_I2C_ADDRESS = 0x48
-ADC_BUSNUM = 1
-ADC_GAIN = 1
+BACTERIAL_TIME = 5
 
 # pin used to turn on a pump to pull fresh water in
 FRESH_WATER_PUMP_PIN = 20
@@ -82,7 +95,7 @@ LOOP_SLEEP_TIME = 7  # Sleep time for the loop ((how long to wait between each i
 ph_dosing_time = PH_UP_SLEEP_TIME, PH_DOWN_SLEEP_TIME, LOOP_SLEEP_TIME
 
 nutrient_pump_list = [(nutrientPump1, NUTRIENT1_TIME), (nutrientPump2, NUTRIENT2_TIME),
-                      (nutrientPump3, NUTRIENT3_TIME), (nutrientPump4, NUTRIENT4_TIME)]
+                      (nutrientPump3, NUTRIENT3_TIME), (nutrientPump4, NUTRIENT4_TIME), (BacterialPump, BACTERIAL_TIME)]
 
 #   - name: A string representing the name or identifier of the plant.
 #   - target_ph: The ideal pH level for the plant's water/nutrient solution.

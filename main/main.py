@@ -27,7 +27,7 @@ def setup_hydroponic_system():
         # write the starting user_config target_ppm and target_water_level to file
         with open("settings.txt", "w") as file:
             file.write(f"{plant.target_ppm},{plant.target_water_level}")
-        logging.info("RPI Hydroponic System Startup\nTo start, pumps must be primed")
+        print("RPI Hydroponic System Startup\nTo start, pumps must be primed")
         # clear pumps out
         print("Reversing all pumps for 25 seconds")
         run_pumps_list(all_pumps, reverse=True)
