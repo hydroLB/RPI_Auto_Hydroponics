@@ -52,7 +52,6 @@ motors = [
 ]
 
 
-# Initialize pump objects with corresponding motor and direction
 def find_motor_name_and_direction():
     pump_names = ["nutrientPump1", "nutrientPump2", "nutrientPump3", "nutrientPump4", "BacterialPump", "pHUpPump",
                   "pHDownPump"]
@@ -74,13 +73,18 @@ def find_motor_name_and_direction():
             direction = 1
             print("Direction confirmed as forward.")
 
-        print("Choose a name for this pump from the following options:")
         for idx, name in enumerate(pump_names):
             print(f"{idx + 1}: {name}")
+        print(f"{len(pump_names) + 1}: None")  # Add option for None
 
         while True:
+            name_choice = input(
+                "Enter the number for selected pump name (1,2,3...) (or type 'none' for no pump): ").strip().lower()
+            if name_choice == "none":
+                chosen_name = None
+                break
             try:
-                name_choice = int(input("Enter the number corresponding to the chosen name: ").strip())
+                name_choice = int(name_choice)
                 if 1 <= name_choice <= len(pump_names):
                     chosen_name = pump_names.pop(name_choice - 1)
                     break
@@ -89,10 +93,13 @@ def find_motor_name_and_direction():
             except ValueError:
                 print("Invalid input. Please enter a number.")
 
-        # Create a new Pump object with the correct direction and assign it to the chosen name
-        new_pump = Pump(motor, direction)
-        pump_objects[chosen_name] = new_pump
-        print(f"Pump {chosen_name} mapped to motor {motor_num} on driver with address {hex(address)}.")
+        if chosen_name:
+            # Create a new Pump object with the correct direction and assign it to the chosen name
+            new_pump = Pump(motor, direction)
+            pump_objects[chosen_name] = new_pump
+            print(f"Pump {chosen_name} mapped to motor {motor_num} on driver with address {hex(address)}.")
+        else:
+            print(f"No pump assigned to motor {motor_num} on driver with address {hex(address)}.")
 
     print("All motors have been named and tested for correct direction.")
 
