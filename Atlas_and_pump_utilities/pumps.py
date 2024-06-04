@@ -7,7 +7,7 @@ import sys
 from adafruit_motorkit import MotorKit
 
 # Import the MotorKit class from the Adafruit Motor HAT library.
-import GPIO as GPIO
+import RPi.GPIO as GPIO
 
 class Pump:
     def __init__(self, motor, direction):

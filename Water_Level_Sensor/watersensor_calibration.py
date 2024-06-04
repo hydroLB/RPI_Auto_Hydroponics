@@ -11,7 +11,7 @@ ADC_ADDRESS = 0x48
 
 
 # Initialize the ADC using the Adafruit_ADS1x15 library
-adc = Adafruit_ADS1x15.ADS1115()
+adc = Adafruit_ADS1x15.ADS1115(busnum=I2C_BUS, address=ADC_ADDRESS)
 
 # Set the gain value for the ADC
 GAIN = 1
