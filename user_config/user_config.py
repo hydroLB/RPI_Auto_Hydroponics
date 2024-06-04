@@ -41,13 +41,13 @@ GPIO.setmode(GPIO.BCM)  # or GPIO.BOARD
 # Initialize pump objects with corresponding motor and direction
 
 # Pump positions (driver0/driver1, etc. on the raspberry pi)
-NUTRIENT_PUMP1_POSITION = 'driver0.motor3'
-NUTRIENT_PUMP2_POSITION = 'driver1.motor3'
-NUTRIENT_PUMP3_POSITION = 'driver1.motor2'
-NUTRIENT_PUMP4_POSITION = 'driver1.motor1'
-BACTERIAL_PUMP_POSITION = 'driver.motor4'
-PH_DOWN_PUMP_POSITION = 'driver1.motor4'
-PH_UP_PUMP_POSITION = 'driver0.motor1'
+NUTRIENT_PUMP1_POSITION = driver0.motor3
+NUTRIENT_PUMP2_POSITION = driver1.motor3
+NUTRIENT_PUMP3_POSITION = driver1.motor2
+NUTRIENT_PUMP4_POSITION = driver1.motor1
+BACTERIAL_PUMP_POSITION = driver.motor4
+PH_DOWN_PUMP_POSITION = driver1.motor4
+PH_UP_PUMP_POSITION = driver0.motor1
 
 
 # Vars for 1-wire temp sensor receiving data
