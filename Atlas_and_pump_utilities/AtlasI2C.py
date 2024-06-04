@@ -6,7 +6,6 @@ import fcntl
 import time
 import copy
 
-from main import PHSensor, ECSensor
 
 
 class AtlasI2C:
@@ -222,6 +221,7 @@ def get_temp_f():
 
 
 def get_ph():
+    from main import PHSensor
     """Return pH value."""
     temp_c = get_temp_c()
     if temp_c is not None:
@@ -235,6 +235,7 @@ def get_ph():
 
 
 def get_ec():
+    from main import ECSensor
     """Return EC value."""
     temp_c = get_temp_c()
     if temp_c is not None:
