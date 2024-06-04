@@ -4,6 +4,12 @@ import json
 from scipy.optimize import curve_fit
 import time
 
+
+# Adjust the Python path to include the local scipy package
+sys.path.insert(0, 'path/to/your_project_directory')
+
+
+
 # Initialize the ADC using the Adafruit_ADS1x15 library
 adc = Adafruit_ADS1x15.ADS1115()
 

@@ -6,7 +6,6 @@ import fcntl
 import time
 import copy
 
-from user_config import W1_TEMP_PATH
 from main import PHSensor, ECSensor
 
 
@@ -194,6 +193,7 @@ class AtlasI2C:
 
 
 def read_temp_file():
+    from user_config import W1_TEMP_PATH
     """Read temperature file and return its content."""
     try:
         with open(W1_TEMP_PATH, 'r') as temp_file:

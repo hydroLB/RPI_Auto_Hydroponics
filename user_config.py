@@ -1,4 +1,3 @@
-from adafruit_motorkit import MotorKit
 import RPi.GPIO as GPIO
 
 from Atlas_and_pump_utilities.AtlasI2C import AtlasI2C
