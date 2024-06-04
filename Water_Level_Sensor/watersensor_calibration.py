@@ -2,6 +2,7 @@ import Adafruit_ADS1x15
 import numpy as np
 import json
 from scipy.optimize import curve_fit
+import sys
 import time
 
 

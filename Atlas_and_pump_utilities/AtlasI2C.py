@@ -6,14 +6,12 @@ import fcntl
 import time
 import copy
 
-
-
 class AtlasI2C:
     # the timeout needed to query readings and calibrations
     LONG_TIMEOUT = 1.5
     # timeout for regular commands
     SHORT_TIMEOUT = .3
-    # the default bus for I2C on the newer Raspberry Pis, 
+    # the default bus for I2C on the newer Raspberry Pis,
     # certain older boards use bus 0
     DEFAULT_BUS = 1
     # the default address for the sensor
