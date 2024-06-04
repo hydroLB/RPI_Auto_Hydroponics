@@ -23,17 +23,26 @@ all_pumps = [pump for pump, _ in plant.nutrient_pump_time_list] + ph_pump_list
 
 
 def setup_hydroponic_system():
+    # Write initial target levels from user config file, these will be modified as the system progresses
+    with open("settings.txt", "w") as file:
+        file.write(f"{plant.target_ppm},{plant.target_water_level}")
+
     if (get_water_level() is None) or (get_water_level() < SKIP_SYSTEM_SETUP_WATER_LEVEL):
+        # INITIALIZE PUMPS TO STARTING POSITION (NO LIQUIDS LEFT IN TUBES)
         # write the starting user_config target_ppm and target_water_level to file
-        with open("settings.txt", "w") as file:
-            file.write(f"{plant.target_ppm},{plant.target_water_level}")
         print("RPI Hydroponic System Startup\nTo start, pumps must be primed")
         # clear pumps out
+        print("Press enter to start reverse sequence")
+        sys.stdin.readline()  # Wait for user to hit enter
         print("Reversing all pumps for 25 seconds")
         run_pumps_list(all_pumps, reverse=True)
         sleep(25)
         stop_pumps_list(all_pumps)
+
+        # INITIALIZE PUMPS TO FILLED POSITION (TUBES ARE COMPLETELY FILLED,
+        # ENSURES PROPER DOSING (NO LAG TIME BETWEEN THE NUTRIENTS))
         prime(all_pumps)
+
         # get values from water sensor to get level
         initialize_water_sensor()
         # fill it up with water
