@@ -14,7 +14,7 @@ from Water_Level_Sensor.ETAPE_Calibration import initialize_water_sensor
 from Water_level_nutrients_ph_manager.ph_manager import balance_PH_exact, balance_ph
 from user_config.user_configurator import SKIP_SYSTEM_SETUP_WATER_LEVEL, configure_system, ECSensor, PHSensor, \
     ph_dosing_time, WATER_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS
-from file_operations.logging_water_lvl_and_target_ppm import read_from_file, write_to_file
+from file_operations.logging_water_and_ppm import read_from_file, write_to_file
 
 # Global variables
 global plant, ph_pump_list, all_pumps
@@ -90,6 +90,27 @@ def setup_hydroponic_system():
         print("Hydroponic system already set up")  # Log if the system is already set up
 
 
+def log_sensor_data():
+    filename = "sensor_data.log"
+
+    # Check if file exists, if not, create it with headers
+    if not os.path.exists(filename):
+        with open(filename, "w") as file:
+            file.write("Timestamp,Water Level,PPM,pH\n")
+
+    # Get current time and sensor values
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    water_level = get_water_level()
+    ppm = get_ppm()
+    ph = get_ph()
+
+    # Append the data to the file
+    with open(filename, "a") as file:
+        file.write(f"{current_time},{water_level},{ppm},{ph}\n")
+
+    print("Time, Wtr lvl, PPM, and PH logged successfully.")
+
+
 def monitor_hydroponic_system():
     """
     Continuously monitors the hydroponic system, including water level, PPM level, and pH level.
@@ -107,6 +128,8 @@ def monitor_hydroponic_system():
 
             # Print the current pH level
             print("Current PH level:", get_ph())
+            # log the data from each hour into a file or so
+            log_sensor_data()
 
             # Read target PPM and water level from the settings file
             target_ppm, target_water_level = read_from_file()
