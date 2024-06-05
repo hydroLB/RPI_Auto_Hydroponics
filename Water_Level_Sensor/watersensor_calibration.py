@@ -35,7 +35,7 @@ def save_coefficients(coefficients):
 
 
 def get_average_sensor_value(num_samples=5):
-    """Get the average sensor value over a number of samples."""
+    """Get the RAW average sensor value over a number of samples."""
     total = 0
     for i in range(num_samples):
         try:
@@ -99,7 +99,7 @@ def initialize_water_sensor():
 
     # Perform curve fitting
     try:
-        popt, pcov = curve_fit(quadratic_model, sensor_values, levels)
+        popt, popv = curve_fit(quadratic_model, sensor_values, levels)
         print("Curve fitting successful.")
     except Exception as e:
         print(f"Error during curve fitting: {e}")
