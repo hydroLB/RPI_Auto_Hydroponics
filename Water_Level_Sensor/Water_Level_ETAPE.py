@@ -9,21 +9,79 @@ coefficients_file = 'calibration_coefficients.txt'
 
 
 def load_coefficients():
+    """
+    Loads the coefficients for the quadratic model from a file.
+
+    Returns:
+        dict: A dictionary of coefficients if the file is found and loaded successfully.
+        None: If the file is not found or an error occurs during loading.
+    """
     try:
         with open(coefficients_file, 'r') as file:
             coefficients = json.load(file)
+
+            if not isinstance(coefficients, dict):
+                raise TypeError(
+                    "Expected coefficients to be a dictionary, but got type {}. Error in load_coefficients.".format(
+                        type(coefficients).__name__))
+
             return coefficients
+
     except FileNotFoundError:
         print("Calibration file for water sensor not found.")
         return None
 
-
-def get_water_level():
-    # Main execution
-    coefficients = load_coefficients()
-    if coefficients is None:
+    except json.JSONDecodeError as e:
+        print("Error decoding JSON from calibration file: {}. Error in load_coefficients.".format(e))
         return None
 
-    sensor_value = get_average_sensor_value()
-    water_level = quadratic_model(sensor_value, **coefficients)
-    return round(water_level, 2)
+    except Exception as e:
+        print("An unexpected error occurred in load_coefficients: {}".format(e))
+        return None
+
+
+def get_water_level():
+    """
+    Calculates the water level using sensor data and preloaded coefficients.
+
+    Returns:
+        float: The calculated water level rounded to two decimal places.
+        None: If coefficients cannot be loaded.
+    """
+    try:
+        # Load the coefficients for the quadratic model
+        coefficients = load_coefficients()
+        if coefficients is None:
+            raise ValueError("Failed to load coefficients. Error in get_water_level.")
+
+        # Get the average sensor value
+        sensor_value = get_average_sensor_value()
+
+        # Ensure sensor_value is a number
+        if not isinstance(sensor_value, (int, float)):
+            raise TypeError(
+                "Expected sensor_value to be an int or float, but got type {}. Error in get_water_level.".format(
+                    type(sensor_value).__name__))
+
+        # Calculate the water level using the quadratic model
+        water_level = quadratic_model(sensor_value, **coefficients)
+
+        # Ensure water_level is a number
+        if not isinstance(water_level, (int, float)):
+            raise TypeError(
+                "Expected water_level to be an int or float, but got type {}. Error in get_water_level.".format(
+                    type(water_level).__name__))
+
+        return round(water_level, 2)
+
+    except TypeError as e:
+        raise TypeError("Type error occurred in get_water_level: {}".format(e))
+
+    except ValueError as e:
+        raise ValueError("Value error occurred in get_water_level: {}".format(e))
+
+    except KeyError as e:
+        raise KeyError("Key error occurred in get_water_level: {}".format(e))
+
+    except Exception as e:
+        raise Exception("An unexpected error occurred in get_water_level: {}".format(e))

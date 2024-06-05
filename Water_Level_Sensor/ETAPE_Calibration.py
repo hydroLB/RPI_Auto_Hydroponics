@@ -15,8 +15,39 @@ GAIN = 1
 
 
 def quadratic_model(x, a, b, c):
-    """Quadratic model for curve fitting."""
-    return a * x ** 2 + b * x + c
+    """
+    Quadratic model for curve fitting.
+
+    Args:
+        x (float): The input value for the model.
+        a (float): The quadratic coefficient.
+        b (float): The linear coefficient.
+        c (float): The constant term.
+
+    Returns:
+        float: The calculated value of the quadratic model.
+    """
+    try:
+        if not isinstance(x, (int, float)):
+            raise TypeError(
+                "Expected x to be an int or float, but got type {}. Error in quadratic_model.".format(type(x).__name__))
+        if not isinstance(a, (int, float)):
+            raise TypeError(
+                "Expected a to be an int or float, but got type {}. Error in quadratic_model.".format(type(a).__name__))
+        if not isinstance(b, (int, float)):
+            raise TypeError(
+                "Expected b to be an int or float, but got type {}. Error in quadratic_model.".format(type(b).__name__))
+        if not isinstance(c, (int, float)):
+            raise TypeError(
+                "Expected c to be an int or float, but got type {}. Error in quadratic_model.".format(type(c).__name__))
+
+        return a * x ** 2 + b * x + c
+
+    except TypeError as e:
+        raise TypeError("Type error occurred in quadratic_model: {}".format(e))
+
+    except Exception as e:
+        raise Exception("An unexpected error occurred in quadratic_model: {}".format(e))
 
 
 def save_coefficients(coefficients):
