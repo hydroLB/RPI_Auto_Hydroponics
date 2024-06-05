@@ -60,14 +60,14 @@ def find_motor_name_and_direction():
     for address, motor_num in motor_map:
         motor = motor_map[(address, motor_num)]
         temp_pump = Pump(motor, 1)  # Temporary pump with default direction
-        print(f"Testing motor {motor_num} on driver with address {hex(address)}")
+        print(f"Testing motor # {motor_num} on driver with address: {hex(address)}")
 
         temp_pump.start()
-        feedback = input("Is the direction correct? (yes/no): ").strip().lower()
+        feedback = input("Is the direction correct, water is flowing towards bucket? (yes/no): ").strip().lower()
         temp_pump.stop()
 
         if feedback in ['no', 'n']:
-            direction = -1
+            direction = temp_pump.direction * -1
             print("Direction reversed.")
         else:
             direction = 1
@@ -79,7 +79,7 @@ def find_motor_name_and_direction():
         while True:
             name_choice = input(
                 "Enter the number for selected pump name (1,2,3...) (or type 'none' for no pump): ").strip().lower()
-            if name_choice == "none":
+            if name_choice == "none" or name_choice == "n":
                 chosen_name = None
                 break
             try:
@@ -92,11 +92,11 @@ def find_motor_name_and_direction():
             except ValueError:
                 print("Invalid input. Please enter a number.")
 
-        if chosen_name:
+        if chosen_name is not None:
             # Create a new Pump object with the correct direction and assign it to the chosen name
             new_pump = Pump(motor, direction)
             pump_objects[chosen_name] = new_pump
-            print(f"Pump {chosen_name} mapped to motor {motor_num} on driver with address {hex(address)}.")
+            print(f"Pump {chosen_name} mapped to motor {motor_num} on driver with address {hex(address)}. \n")
         else:
             print(f"No pump assigned to motor {motor_num} on driver with address {hex(address)}.")
 
@@ -130,6 +130,7 @@ def configure_system():
                           zip([nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump],
                               [NUTRIENT1_TIME, NUTRIENT2_TIME, NUTRIENT3_TIME,
                                NUTRIENT4_TIME, BACTERIAL_TIME])]
+
     ph_pump_list = [pHUpPump, pHDownPump]
 
     plant = Plant("Raspberry plant", 5.7, 5.6, 5.8, 800, 5, nutrient_pump_list)

@@ -19,7 +19,7 @@ class Pump:
         """
         self.motor = motor
         self.direction = direction
-        self.speed = 0.95  # Set default speed to 0.95
+        self.speed = 1.0  # Set default speed to 0.95
 
     def start(self):
         """Start the pump by setting the motor throttle to its direction."""
