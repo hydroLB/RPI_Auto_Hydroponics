@@ -20,8 +20,21 @@ def setup_hydroponic_system():
     if (get_water_level() is None) or (get_water_level() < SKIP_SYSTEM_SETUP_WATER_LEVEL):
         print("Welcome to Hydroponics Heaven, press enter to begin configuring the pumps")
         sys.stdin.readline()  # Wait for user to hit enter
-        configure_system(pump_setting_filename)
-        plant, ph_pump_list = load_configuration(pump_setting_filename)
+        if os.path.exists(pump_setting_filename):
+            plant, ph_pump_list = load_configuration(pump_setting_filename)
+            if isinstance(plant, Plant) and isinstance(ph_pump_list,
+                                                       list) and plant is not None and ph_pump_list is not None:
+                print("Loaded configuration from file.")
+            else:
+                print("Invalid configuration found. Reconfiguring system.")
+                configure_system(pump_setting_filename)
+                plant, ph_pump_list = load_configuration(pump_setting_filename)
+                print("Configuration saved to file.")
+        else:
+            configure_system(pump_setting_filename)
+            plant, ph_pump_list = load_configuration(pump_setting_filename)
+            print("Configuration saved to file.")
+
         # Global list of all pumps
         all_pumps = [pump for pump, _ in plant.nutrient_pump_time_list] + ph_pump_list
 
