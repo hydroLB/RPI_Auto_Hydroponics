@@ -95,12 +95,17 @@ def find_motor_name_and_direction():
                 print("Invalid input. Please enter a number.")
 
         if chosen_name is not None:
-            # Create a new Pump object with the correct direction and assign it to the chosen name
-            new_pump = Pump(motor, direction)
-            pump_objects[chosen_name] = new_pump
+            pump_objects[chosen_name] = {
+                'motor': (address, motor_num),
+                'direction': direction
+            }
             print(f"Pump {chosen_name} mapped to motor {motor_num} on driver with address {hex(address)}. \n")
         else:
             print(f"No pump assigned to motor {motor_num} on driver with address {hex(address)}.")
+
+    # Save pump objects to a file
+    with open('pump_configurations.pkl', 'wb') as file:
+        pickle.dump(pump_objects, file)
 
     print("All motors have been named and tested for correct direction.")
 
@@ -116,9 +121,33 @@ def find_motor_name_and_direction():
     return nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump, pHUpPump, pHDownPump
 
 
+def load_motor_name_and_direction():
+    try:
+        with open('pump_configurations.pkl', 'rb') as file:
+            pump_objects = pickle.load(file)
+
+        for name, config in pump_objects.items():
+            address, motor_num = config['motor']
+            direction = config['direction']
+            motor = motor_map[(address, motor_num)]
+            pump_objects[name] = Pump(motor, direction)
+
+        nutrientPump1 = pump_objects.get("nutrientPump1")
+        nutrientPump2 = pump_objects.get("nutrientPump2")
+        nutrientPump3 = pump_objects.get("nutrientPump3")
+        nutrientPump4 = pump_objects.get("nutrientPump4")
+        BacterialPump = pump_objects.get("BacterialPump")
+        pHUpPump = pump_objects.get("pHUpPump")
+        pHDownPump = pump_objects.get("pHDownPump")
+
+        return nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump, pHUpPump, pHDownPump
+    except FileNotFoundError:
+        return find_motor_name_and_direction()
+
+
 def configure_system():
     nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump, pHUpPump, pHDownPump \
-        = find_motor_name_and_direction()
+        = load_motor_name_and_direction()
 
     NUTRIENT1_TIME = 5
     NUTRIENT2_TIME = 5
