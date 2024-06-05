@@ -30,6 +30,7 @@ ADC_GAIN = 1
 
 # Set the GPIO numbering mode
 GPIO.setmode(GPIO.BCM)  # or GPIO.BOARD
+###########################################################
 
 # Initialize motor drivers with I2C addresses
 driver0 = MotorKit(address=0x60)
@@ -145,6 +146,8 @@ def load_motor_name_and_direction():
         return find_motor_name_and_direction()
 
 
+###########################################################
+
 def configure_system():
     nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump, pHUpPump, pHDownPump \
         = load_motor_name_and_direction()
@@ -165,23 +168,32 @@ def configure_system():
 
     return plant, ph_pump_list
 
+
+###########################################################
+
 # Vars for 1-wire temp sensor receiving data
 W1_DEVICE_PATH = '/sys/bus/w1/devices/'
 W1_DEVICE_NAME = '28-3c09f6495e17'
 W1_TEMP_PATH = W1_DEVICE_PATH + W1_DEVICE_NAME + '/temperature'
+###########################################################
 
 SKIP_SYSTEM_SETUP_WATER_LEVEL = 2.0
+###########################################################
 
 # pin used to turn on a pump to pull fresh water in
 FRESH_WATER_PUMP_PIN = 20
+###########################################################
 
 # Water level change threshold (in inches) (acts as the plants 'dry-back' function and time between checks (in seconds)
-WATER_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS = 2, 10000
+WATER_THRESHOLD, = 2
+# TIME TO WAIT BETWEEN SYSTEM WATER LEVEL CHECK -> PPM ADJUST, PH CHECK
+# 60 SECONDS AND 60 MINUTES = 60*60=3600 = 1 hour
+WAIT_TIME_BETWEEN_CHECKS = 3600
+###########################################################
 
 # Margin (in ppm) between the actual target PPM in the nutrient dosing cycle
 # to avoid overloading the nutrients when the pH is finally balanced at the end (which always raises it to some degree).
 PH_PPM_SAFETY_MARGIN = 50
-
 PH_UP_SLEEP_TIME = 0.3  # Sleep time for pH up pump (how long is it on aka how much of it per cycle)
 PH_DOWN_SLEEP_TIME = 0.3  # time for pH down pump (how long is it on aka how much of it per cycle)
 LOOP_SLEEP_TIME = 7  # Sleep time for the loop ((how long to wait between each increment dosing)

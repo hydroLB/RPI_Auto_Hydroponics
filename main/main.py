@@ -6,7 +6,7 @@ import os
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 
-from Atlas_and_pump_utilities.AtlasI2C import get_ppm
+from Atlas_and_pump_utilities.AtlasI2C import get_ppm, get_ph
 from Water_Level_Sensor.WaterSensor import *
 from Atlas_and_pump_utilities.pumps import *
 from Water_Level_Sensor.water_management import fill_water, dose_nutrients, adjust_water_level_and_nutrients
@@ -67,6 +67,9 @@ def monitor_hydroponic_system():
     global plant, ph_pump_list, all_pumps
     while True:
         try:
+            print("Current Water level:", get_water_level())
+            print("Current PPM level:", get_ppm())
+            print("Current PH level:", get_ph())
             # Read target PPM and water level from file
             target_ppm, target_water_level = read_from_file()
             if target_water_level - get_water_level() > WATER_THRESHOLD:
