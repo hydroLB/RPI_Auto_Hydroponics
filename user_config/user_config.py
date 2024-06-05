@@ -116,7 +116,7 @@ def find_motor_name_and_direction():
     return nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump, pHUpPump, pHDownPump
 
 
-def configure_system(filename):
+def configure_system():
     nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump, pHUpPump, pHDownPump \
         = find_motor_name_and_direction()
 
@@ -134,17 +134,7 @@ def configure_system(filename):
 
     plant = Plant("Raspberry plant", 5.7, 5.6, 5.8, 800, 5, nutrient_pump_list)
 
-    with open(filename, 'wb') as file:
-        pickle.dump((plant, ph_pump_list), file)
-
-
-def load_configuration(filename):
-    with open(filename, 'rb') as file:
-        plant, ph_pump_list = pickle.load(file)
     return plant, ph_pump_list
-
-
-pump_setting_filename = "pump_settings.pkl"
 
 # Vars for 1-wire temp sensor receiving data
 W1_DEVICE_PATH = '/sys/bus/w1/devices/'
