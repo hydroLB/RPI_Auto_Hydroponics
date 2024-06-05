@@ -7,6 +7,36 @@ import time
 import copy
 
 
+def read_temp_file():
+    from user_config.user_configurator import W1_TEMP_PATH
+    """Read temperature file and return its content."""
+    try:
+        with open(W1_TEMP_PATH, 'r') as temp_file:
+            return temp_file.readline()
+    except FileNotFoundError:
+        print("Error: Temperature file not found.")
+        return None
+
+
+def get_temp_c():
+    """Return temperature in Celsius."""
+    temp_data = read_temp_file()
+    if temp_data is not None:
+        return int(temp_data) / 1000
+    else:
+        return None
+
+
+def get_temp_f():
+    """Return temperature in Fahrenheit."""
+    temp_c = get_temp_c()
+    if temp_c is not None:
+        return temp_c * 9 / 5 + 32
+    else:
+        return None
+
+
+########################################
 class AtlasI2C:
     # the timeout needed to query readings and calibrations
     LONG_TIMEOUT = 1.5
@@ -190,35 +220,6 @@ class AtlasI2C:
         return i2c_devices
 
 
-def read_temp_file():
-    from user_config.user_config import W1_TEMP_PATH
-    """Read temperature file and return its content."""
-    try:
-        with open(W1_TEMP_PATH, 'r') as temp_file:
-            return temp_file.readline()
-    except FileNotFoundError:
-        print("Error: Temperature file not found.")
-        return None
-
-
-def get_temp_c():
-    """Return temperature in Celsius."""
-    temp_data = read_temp_file()
-    if temp_data is not None:
-        return int(temp_data) / 1000
-    else:
-        return None
-
-
-def get_temp_f():
-    """Return temperature in Fahrenheit."""
-    temp_c = get_temp_c()
-    if temp_c is not None:
-        return temp_c * 9 / 5 + 32
-    else:
-        return None
-
-
 def get_ph():
     from main.main import PHSensor
     """Return pH value."""
@@ -254,3 +255,95 @@ def get_ppm():
         return ec * 0.5
     else:
         return None
+
+
+#######################################################
+# SENSOR TESTS FOR MAIN INITIALIZATION
+
+def test_ph_sensor(sensor):
+    """Continuously read and display pH values until interrupted."""
+    try:
+        while True:
+            # Get the pH value with temperature compensation
+            ph_value = get_ph()
+            # Print the pH value
+            print(f"pH Value: {ph_value:.2f}, press Ctrl/Cmd+C keys to exit")
+            # Wait for 0.5 seconds before the next reading
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        # Handle the interruption to stop the test
+        print("Stopping pH sensor test.")
+
+    # Ask the user if they want to calibrate the pH sensor
+    calibrate_ph = input("Would you like to calibrate the pH sensor? (yes/no): ").strip().lower()
+    if calibrate_ph == 'yes':
+        calibrate_sensor(sensor, 'ph')
+
+
+def test_ec_sensor(sensor):
+    """Continuously read and display EC values (in PPM) until interrupted."""
+    try:
+        while True:
+            # Get the EC value and convert it to PPM
+            ec_value = get_ppm()
+            # Print the EC value in PPM
+            print(f"PPM Value: {ec_value:.2f}, press Ctrl/Cmd+C keys to exit")
+            # Wait for 0.5 seconds before the next reading
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        # Handle the interruption to stop the test
+        print("Stopping EC sensor test.")
+
+    # Ask the user if they want to calibrate the EC sensor
+    calibrate_ec = input("Would you like to calibrate the EC sensor? (yes/no): ").strip().lower()
+    if calibrate_ec == 'yes':
+        calibrate_sensor(sensor, 'ec')
+
+
+def calibrate_sensor(sensor, sensor_type):
+    """Guide the user through the calibration process for the specified sensor type."""
+    print(f"Starting {sensor_type.upper()} sensor calibration...")
+
+    # Determine the calibration points based on the sensor type
+    if sensor_type == 'ph':
+        points = ['low', 'mid', 'high']
+    elif sensor_type == 'ec':
+        points = ['dry', 'single', 'dual']
+    else:
+        print("Unknown sensor type for calibration.")
+        return
+
+    # Loop through each calibration point
+    for point in points:
+        while True:
+            # Prompt the user to place the sensor in the appropriate calibration solution
+            user_input = input(
+                f"Place the sensor in the {point} calibration solution and type 'confirm {point}': ").strip().lower()
+            if user_input == f"confirm {point}":
+                # Send the calibration command to the sensor
+                response = sensor.query(f'Cal,{point}')
+                # Print the response from the sensor
+                print(response)
+                break
+            else:
+                print("Invalid input. Please follow the format 'confirm <point>'.")
+
+
+def test_temp_sensor():
+    """Continuously read and display temperature values until interrupted."""
+    try:
+        while True:
+            # Get the temperature in Celsius
+            temp_c = get_temp_c()
+            # Get the temperature in Fahrenheit
+            temp_f = get_temp_f()
+            if temp_c is not None and temp_f is not None:
+                # Print the temperature in both Celsius and Fahrenheit
+                print(f"Temperature: {temp_c:.2f} °C / {temp_f:.2f} °F")
+            else:
+                print("Failed to read temperature.")
+            # Wait for 2 seconds before the next reading
+            time.sleep(2)
+    except KeyboardInterrupt:
+        # Handle the interruption to stop the test
+        print("Stopping temperature sensor test.")

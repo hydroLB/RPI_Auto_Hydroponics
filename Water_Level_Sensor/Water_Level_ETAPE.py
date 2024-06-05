@@ -1,5 +1,5 @@
 import json
-from Water_Level_Sensor.watersensor_calibration import quadratic_model, get_average_sensor_value
+from Water_Level_Sensor.ETAPE_Calibration import quadratic_model, get_average_sensor_value
 
 # Set the gain value for the ADC
 GAIN = 1

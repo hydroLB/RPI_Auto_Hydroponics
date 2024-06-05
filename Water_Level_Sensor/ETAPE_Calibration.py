@@ -1,5 +1,4 @@
 import os
-
 import Adafruit_ADS1x15
 import numpy as np
 import json
@@ -7,15 +6,12 @@ from scipy.optimize import curve_fit
 import time
 
 # Initialize the ADC using the Adafruit_ADS1x15 library
-from user_config.user_config import ADC_BUSNUM, ADC_I2C_ADDRESS
+from user_config.user_configurator import ADC_BUSNUM, ADC_I2C_ADDRESS
 
 adc = Adafruit_ADS1x15.ADS1115(busnum=ADC_BUSNUM, address=ADC_I2C_ADDRESS)
 
 # Set the gain value for the ADC
 GAIN = 1
-
-# File to store calibration coefficients
-coefficients_file = 'calibration_coefficients.txt'
 
 
 def quadratic_model(x, a, b, c):
@@ -24,6 +20,8 @@ def quadratic_model(x, a, b, c):
 
 
 def save_coefficients(coefficients):
+    # File to store calibration coefficients
+    coefficients_file = 'calibration_coefficients.txt'
     """Save calibration coefficients to a file."""
     try:
         with open(coefficients_file, 'w') as file:
@@ -60,13 +58,16 @@ def get_average_sensor_value(num_samples=5):
 
 
 def initialize_water_sensor():
+    # File to store calibration coefficients
+    coefficients_file = 'calibration_coefficients.txt'
     """Calibrate the water sensor."""
     print("Starting water sensor calibration...")
 
-    # Check if coefficients file directory is writable
+    # Enhanced directory writability check
     try:
-        if not os.access(os.path.dirname(coefficients_file), os.W_OK):
-            print(f"Warning: Directory {os.path.dirname(coefficients_file)} is not writable.")
+        dir_name = os.path.dirname(coefficients_file)
+        if dir_name and not os.access(dir_name, os.W_OK):
+            print(f"Warning: Directory {dir_name} is not writable.")
             return
     except Exception as e:
         print(f"Error checking directory write access: {e}")
@@ -74,7 +75,7 @@ def initialize_water_sensor():
 
     print("Please adjust the water to the specified levels.")
     calibration_data = []
-    for target_level in np.arange(1, 5.5, 0.5):  # 1, 1.5, 2, ..., 5 inches
+    for target_level in np.arange(1.5, 7, 0.5):  # 1.5, 2, ..., 6.5 inches
         while True:
             user_input = input(
                 f"Type 'confirm {target_level}' when the water is at {target_level} inches: ").strip().lower()
@@ -112,10 +113,3 @@ def initialize_water_sensor():
         save_coefficients(coefficients)
     except Exception as e:
         print(f"Error saving coefficients: {e}")
-
-
-if __name__ == "__main__":
-    try:
-        initialize_water_sensor()
-    except Exception as e:
-        print(f"Unhandled exception: {e}")

@@ -1,5 +1,4 @@
 import pickle
-
 import RPi.GPIO as GPIO
 from adafruit_motorkit import MotorKit
 
@@ -111,42 +110,38 @@ def find_motor_name_and_direction():
     print("All motors have been named and tested for correct direction.")
 
     # Assign variables to each pump based on their names
-    nutrientPump1 = pump_objects.get("nutrientPump1")
-    nutrientPump2 = pump_objects.get("nutrientPump2")
-    nutrientPump3 = pump_objects.get("nutrientPump3")
-    nutrientPump4 = pump_objects.get("nutrientPump4")
-    BacterialPump = pump_objects.get("BacterialPump")
-    pHUpPump = pump_objects.get("pHUpPump")
-    pHDownPump = pump_objects.get("pHDownPump")
+    return assign_pumps(pump_objects)
+
+
+def assign_pumps(pump_objects):
+    nutrientPump1 = create_pump(pump_objects.get("nutrientPump1"))
+    nutrientPump2 = create_pump(pump_objects.get("nutrientPump2"))
+    nutrientPump3 = create_pump(pump_objects.get("nutrientPump3"))
+    nutrientPump4 = create_pump(pump_objects.get("nutrientPump4"))
+    BacterialPump = create_pump(pump_objects.get("BacterialPump"))
+    pHUpPump = create_pump(pump_objects.get("pHUpPump"))
+    pHDownPump = create_pump(pump_objects.get("pHDownPump"))
 
     return nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump, pHUpPump, pHDownPump
+
+
+def create_pump(config):
+    if config:
+        address, motor_num = config['motor']
+        direction = config['direction']
+        motor = motor_map[(address, motor_num)]
+        return Pump(motor, direction)
+    return None
 
 
 def load_motor_name_and_direction():
     try:
         with open('pump_configurations.pkl', 'rb') as file:
             pump_objects = pickle.load(file)
-
-        for name, config in pump_objects.items():
-            address, motor_num = config['motor']
-            direction = config['direction']
-            motor = motor_map[(address, motor_num)]
-            pump_objects[name] = Pump(motor, direction)
-
-        nutrientPump1 = pump_objects.get("nutrientPump1")
-        nutrientPump2 = pump_objects.get("nutrientPump2")
-        nutrientPump3 = pump_objects.get("nutrientPump3")
-        nutrientPump4 = pump_objects.get("nutrientPump4")
-        BacterialPump = pump_objects.get("BacterialPump")
-        pHUpPump = pump_objects.get("pHUpPump")
-        pHDownPump = pump_objects.get("pHDownPump")
-
-        return nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump, pHUpPump, pHDownPump
+        return assign_pumps(pump_objects)
     except FileNotFoundError:
         return find_motor_name_and_direction()
 
-
-###########################################################
 
 def configure_system():
     nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump, pHUpPump, pHDownPump \
@@ -164,7 +159,7 @@ def configure_system():
 
     ph_pump_list = [pHUpPump, pHDownPump]
 
-    plant = Plant("Raspberry plant", 5.7, 5.6, 5.8, 800, 5, nutrient_pump_list)
+    plant = Plant("Raspberry plant", 5.7, 5.6, 5.8, 800, 6, nutrient_pump_list)
 
     return plant, ph_pump_list
 
@@ -177,11 +172,13 @@ W1_DEVICE_NAME = '28-3c09f6495e17'
 W1_TEMP_PATH = W1_DEVICE_PATH + W1_DEVICE_NAME + '/temperature'
 ###########################################################
 
-SKIP_SYSTEM_SETUP_WATER_LEVEL = 2.0
+SKIP_SYSTEM_SETUP_WATER_LEVEL = 1.5
 ###########################################################
 
 # pin used to turn on a pump to pull fresh water in
 FRESH_WATER_PUMP_PIN = 20
+GPIO.setup(FRESH_WATER_PUMP_PIN, GPIO.OUT)  # Set pin as an output
+
 ###########################################################
 
 # Water level change threshold (in inches) (acts as the plants 'dry-back' function and time between checks (in seconds)

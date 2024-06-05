@@ -36,15 +36,22 @@ class Pump:
 
 # Prime pumps with the user's help
 def prime(pumps_list):
+    """
+    Primes each pump in the provided list with user assistance.
+
+    Args:
+        pumps_list (list): A list of pump objects, each with 'start' and 'stop' methods.
+    """
     for pump in pumps_list:
         counter = 1
-        print("Press enter to start priming pump" + str(
-            counter) + ", then press enter to stop when liquid level reaches the end of the pumps tubing")
+        # Inform the user to start and stop the priming process
+        print("Press enter to start priming pump" + str(counter) +
+              ", then press enter to stop when liquid level reaches the end of the pump's tubing")
         counter += 1
-        sys.stdin.readline()  # Wait for user to hit enter
-        pump.start()
-        sys.stdin.readline()  # Wait for user to hit enter
-        pump.stop()
+        sys.stdin.readline()  # Wait for user to hit enter to start priming
+        pump.start()  # Start the pump
+        sys.stdin.readline()  # Wait for user to hit enter to stop priming
+        pump.stop()  # Stop the pump
     print("All pumps primed")
 
 
@@ -71,8 +78,22 @@ def stop_pumps_list(pumps_list):
 
 
 def start_fresh_water_pump(pin_number):
+    """
+    Activates the fresh water pump by setting the specified GPIO pin to HIGH.
+
+    Args:
+        pin_number (int): The GPIO pin number connected to the pump relay.
+    """
+    # Set the GPIO pin to HIGH to start the pump
     GPIO.output(pin_number, GPIO.HIGH)
 
 
 def end_fresh_water_pump(pin_number):
+    """
+    Deactivates the fresh water pump by setting the specified GPIO pin to LOW.
+
+    Args:
+        pin_number (int): The GPIO pin number connected to the pump relay.
+    """
+    # Set the GPIO pin to LOW to stop the pump
     GPIO.output(pin_number, GPIO.LOW)
