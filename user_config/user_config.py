@@ -1,3 +1,5 @@
+import pickle
+
 import RPi.GPIO as GPIO
 from adafruit_motorkit import MotorKit
 
@@ -114,12 +116,10 @@ def find_motor_name_and_direction():
     return nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump, pHUpPump, pHDownPump
 
 
-# Configuration function that initializes the pumps and sets up the environment
-def configure_system():
+def configure_system(filename):
     nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump, pHUpPump, pHDownPump \
         = find_motor_name_and_direction()
 
-    # Times each pump should be on, representing the ratio of each nutrient
     NUTRIENT1_TIME = 5
     NUTRIENT2_TIME = 5
     NUTRIENT3_TIME = 5
@@ -128,15 +128,23 @@ def configure_system():
 
     nutrient_pump_list = [(pump, time) for pump, time in
                           zip([nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump],
-                              [NUTRIENT1_TIME, NUTRIENT2_TIME, NUTRIENT3_TIME,
-                               NUTRIENT4_TIME, BACTERIAL_TIME])]
+                              [NUTRIENT1_TIME, NUTRIENT2_TIME, NUTRIENT3_TIME, NUTRIENT4_TIME, BACTERIAL_TIME])]
 
     ph_pump_list = [pHUpPump, pHDownPump]
 
     plant = Plant("Raspberry plant", 5.7, 5.6, 5.8, 800, 5, nutrient_pump_list)
 
+    with open(filename, 'wb') as file:
+        pickle.dump((plant, ph_pump_list), file)
+
+
+def load_configuration(filename):
+    with open(filename, 'rb') as file:
+        plant, ph_pump_list = pickle.load(file)
     return plant, ph_pump_list
 
+
+pump_setting_filename = "pump_settings.pkl"
 
 # Vars for 1-wire temp sensor receiving data
 W1_DEVICE_PATH = '/sys/bus/w1/devices/'

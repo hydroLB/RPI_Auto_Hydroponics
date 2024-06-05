@@ -15,16 +15,13 @@ from Water_level_nutrients_ph_manager.ph_management import balance_PH_exact, bal
 from user_config.user_config import *
 from file_operations.logging_config import *
 
-# Global variables
-global plant, ph_pump_list, all_pumps
-
 
 def setup_hydroponic_system():
-    global plant, ph_pump_list, all_pumps
     if (get_water_level() is None) or (get_water_level() < SKIP_SYSTEM_SETUP_WATER_LEVEL):
         print("Welcome to Hydroponics Heaven, press enter to begin configuring the pumps")
         sys.stdin.readline()  # Wait for user to hit enter
-        plant, ph_pump_list = configure_system()
+        configure_system(pump_setting_filename)
+        plant, ph_pump_list = load_configuration(pump_setting_filename)
         # Global list of all pumps
         all_pumps = [pump for pump, _ in plant.nutrient_pump_time_list] + ph_pump_list
 
@@ -64,9 +61,9 @@ def setup_hydroponic_system():
 
 
 def monitor_hydroponic_system():
-    global plant, ph_pump_list, all_pumps
     while True:
         try:
+            plant, ph_pump_list = load_configuration(pump_setting_filename)
             # Read target PPM and water level from file
             target_ppm, target_water_level = read_from_file()
             if target_water_level - get_water_level() > WATER_THRESHOLD:
@@ -80,7 +77,6 @@ def monitor_hydroponic_system():
 
 
 def main():
-    global plant, ph_pump_list, all_pumps
     setup_hydroponic_system()
     monitor_hydroponic_system()
 
