@@ -14,7 +14,7 @@ def log_sensor_data():
             with open(filename, "w") as file:
                 file.write("Timestamp,Water Level,PPM,pH\n")
     except Exception as e:
-        print(f"Error checking or creating the file: {e}")
+        print(f"Error checking or creating the file in log_sensor_data: {e}")
         return
 
     try:
