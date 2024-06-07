@@ -68,17 +68,9 @@ def get_average_sensor_value(num_samples=5):
     total = 0
     for i in range(num_samples):
         try:
-            # Read baseline and raw eTape sensor values from the ADC
-            baseline = adc.read_adc(1, gain=GAIN)
+            # Read raw eTape sensor values from the ADC
             raw_val = adc.read_adc(0, gain=GAIN)
-            print(f"Sample {i + 1}: Baseline = {baseline}, Raw value = {raw_val}")
-
-            if baseline == 0:
-                raise ValueError("Baseline reading is zero, which can lead to division by zero.")
-
-            # Calculate the reading ratio
-            reading = raw_val / baseline
-            total += reading
+            total += raw_val
             time.sleep(0.1)  # Small delay between readings for sensor stability
         except Exception as e:
             print(f"Error reading sensor values: {e}")
