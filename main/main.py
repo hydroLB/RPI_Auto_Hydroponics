@@ -10,7 +10,7 @@ from Water_Level_Sensor.adjust_water_level_and_nutrients import fill_water, dose
 from Water_Level_Sensor.ETAPE_Calibration import initialize_water_sensor
 from Water_level_nutrients_ph_manager.ph_manager import balance_PH_exact, balance_ph
 from user_config.user_configurator import SKIP_SYSTEM_SETUP_WATER_LEVEL, configure_system, ECSensor, PHSensor, \
-    ph_dosing_time, WATER_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS
+    ph_dosing_time, WATER_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS, FRESH_WATER_PUMP_PIN
 from file_operations.logging_water_and_ppm import read_from_file, write_to_file
 
 # Global variables
@@ -64,7 +64,7 @@ def setup_hydroponic_system():
             test_fresh_water_pump()
 
             # Fill the system with water
-            fill_water()
+            fill_water(FRESH_WATER_PUMP_PIN)
 
             # Test temperature sensor
             test_temp_sensor()

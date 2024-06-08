@@ -4,10 +4,10 @@ from Atlas_and_pump_utilities.pumps import end_fresh_water_pump, start_fresh_wat
 from Water_Level_Sensor.Water_Level_ETAPE import get_water_level
 from Water_level_nutrients_ph_manager.ph_manager import balance_PH_exact
 from file_operations.logging_water_and_ppm import write_to_file, read_from_file
-from user_config.user_configurator import FRESH_WATER_PUMP_PIN, PH_PPM_SAFETY_MARGIN, ph_dosing_time, Plant
+from user_config.user_configurator import PH_PPM_SAFETY_MARGIN, ph_dosing_time, Plant, FRESH_WATER_PUMP_PIN
 
 
-def fill_water():
+def fill_water(fresh_water_pin):
     """
     Fill the water reservoir until the target water level is reached.
 
@@ -24,15 +24,15 @@ def fill_water():
             # Display the current water level while adding water
             print("Adding water... level %f" % get_water_level)
             # Start the water pump to fill the reservoir
-            start_fresh_water_pump(FRESH_WATER_PUMP_PIN)
+            start_fresh_water_pump(fresh_water_pin)
             # Wait for 5 seconds to allow the water pump to operate
             sleep(4)
         # Stop the water pump once the target water level is reached
-        end_fresh_water_pump(FRESH_WATER_PUMP_PIN)
+        end_fresh_water_pump(fresh_water_pin)
     except Exception as ee:
         print("Error", ee)
         # Log the error message and stop the water pump in case of an exception
-        end_fresh_water_pump(FRESH_WATER_PUMP_PIN)
+        end_fresh_water_pump(fresh_water_pin)
 
 
 def dose_nutrients(target_ppm_local, pump_info):
@@ -126,7 +126,7 @@ def adjust_water_level_and_nutrients(plant, ph_pump_list):
         target_ppm = proprietary_ppm_update_algorithm(target_ppm, pre_fillup_ppm)
 
         # Fill water to the target level
-        fill_water()
+        fill_water(FRESH_WATER_PUMP_PIN)
         sleep(15)  # Wait for PPM readings to settle
 
         # Dose nutrients, first making sure it's under the amount needed, then balance pH, increasing it,
