@@ -14,7 +14,7 @@ def read_temp_file():
         with open(W1_TEMP_PATH, 'r') as temp_file:
             return temp_file.readline()
     except FileNotFoundError:
-        print("Error: Temperature file not found.")
+        print("Error: Temperature file not found in read_temp_file.")
         return None
 
 

@@ -73,7 +73,7 @@ def get_average_sensor_value(num_samples=5):
             total += raw_val
             time.sleep(0.1)  # Small delay between readings for sensor stability
         except Exception as e:
-            print(f"Error reading sensor values: {e}")
+            print(f"Error reading sensor values in get_average_sensor_value: {e}")
             raise
     average_value = total / num_samples
     print(f"Average sensor value: {average_value}")
@@ -90,10 +90,10 @@ def initialize_water_sensor():
     try:
         dir_name = os.path.dirname(coefficients_file)
         if dir_name and not os.access(dir_name, os.W_OK):
-            print(f"Warning: Directory {dir_name} is not writable.")
+            print(f"Warning: Directory {dir_name} is not writable in initialize_water_sensor.")
             return
     except Exception as e:
-        print(f"Error checking directory write access: {e}")
+        print(f"Error checking directory write access in initialize_water_sensor: {e}")
         return
 
     print("Please adjust the water to the specified levels.")
@@ -108,7 +108,7 @@ def initialize_water_sensor():
                     calibration_data.append((target_level, average_sensor_value))
                     print(f"Averaged sensor value at {target_level} inches: {average_sensor_value}")
                 except Exception as e:
-                    print(f"Error during calibration at {target_level} inches: {e}")
+                    print(f"Error during calibration at {target_level} inches in initialize_water_sensor: {e}")
                     return
                 break
             else:
@@ -116,7 +116,7 @@ def initialize_water_sensor():
                 print(f"Example: Type 'confirm {target_level}' to confirm the water level.")
 
     if len(calibration_data) < 3:
-        print("Insufficient calibration data collected. Calibration requires at least 3 data points.")
+        print("Insufficient calibration data collected. Calibration requires at least 3 data points in initialize_water_sensor")
         return
 
     levels, sensor_values = zip(*calibration_data)
@@ -126,7 +126,7 @@ def initialize_water_sensor():
         popt, popv = curve_fit(quadratic_model, sensor_values, levels)
         print("Curve fitting successful.")
     except Exception as e:
-        print(f"Error during curve fitting: {e}")
+        print(f"Error during curve fitting in initialize_water_sensor: {e}")
         return
 
     coefficients = {'a': popt[0], 'b': popt[1], 'c': popt[2]}
@@ -135,4 +135,4 @@ def initialize_water_sensor():
     try:
         save_coefficients(coefficients)
     except Exception as e:
-        print(f"Error saving coefficients: {e}")
+        print(f"Error saving coefficients in initialize_water_sensor: {e}")

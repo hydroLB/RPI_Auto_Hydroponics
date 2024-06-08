@@ -26,7 +26,7 @@ def log_sensor_data():
 
         # Validate sensor values
         if water_level is None or ppm is None or ph is None:
-            print("Error: One or more sensor values could not be retrieved. Skipping logging for this hour.")
+            print("Error in log_sensor_data: One or more sensor values could not be retrieved. Skipping logging for this hour.")
             return
 
         # Append the data to the file
@@ -36,4 +36,4 @@ def log_sensor_data():
         print("Time, Water level, PPM, and pH logged successfully.")
 
     except Exception as e:
-        print(f"Error logging sensor data: {e}")
+        print(f"Error in log_sensor_data: logging sensor data: {e}")

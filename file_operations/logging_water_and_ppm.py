@@ -25,14 +25,14 @@ def write_to_file(target_ppm, target_water_level):
             file.write(f"{target_ppm},{target_water_level}")
 
     except ValueError as e:
-        raise ValueError("Value error occurred: {}".format(e))
+        raise ValueError("Value error occurred in write_to_file: {}".format(e))
 
     except IOError as ioe:
         # Handle I/O errors (e.g., file not found, permission issues)
-        print(f"IOError: {ioe}")
+        print(f"IOError in write_to_file: {ioe}")
 
     except Exception as e:
-        raise Exception("An unexpected error occurred: {}".format(e))
+        raise Exception("An unexpected error occurred in write_to_file: {}".format(e))
 
 
 # Function to read target_ppm and target_water_level from a file
@@ -60,16 +60,16 @@ def read_from_file():
 
     except FileNotFoundError as fnfe:
         # Handle file not found errors specifically
-        print(f"FileNotFoundError: {fnfe}")
+        print(f"FileNotFoundError in read_from_file: {fnfe}")
 
     except ValueError as ve:
         # Handle value errors specifically (e.g., conversion issues)
-        print(f"ValueError: {ve}")
+        print(f"ValueError in read_from_file: {ve}")
 
     except IOError as ioe:
         # Handle I/O errors (e.g., file not found, permission issues)
-        print(f"IOError: {ioe}")
+        print(f"IOError in read_from_file: {ioe}")
 
     except Exception as e:
         # Handle any other exceptions
-        print(f"An unexpected error occurred: {e}")
+        print(f"An unexpected error occurred in read_from_file: {e}")
