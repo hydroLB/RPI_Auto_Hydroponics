@@ -7,7 +7,6 @@ import time
 import copy
 
 from Atlas_and_pump_utilities.pumps import start_fresh_water_pump, end_fresh_water_pump
-from user_config.user_configurator import FRESH_WATER_PUMP_PIN
 
 
 def read_temp_file():
@@ -386,6 +385,7 @@ def calibrate_sensor(sensor, sensor_type):
 
 
 def test_fresh_water_pump():
+    from user_config.user_configurator import FRESH_WATER_PUMP_PIN
     """Guide the user through testing the fresh water pump using GPIO pins and IoT relay."""
     print("Starting fresh water pump test...")
 
