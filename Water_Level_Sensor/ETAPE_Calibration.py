@@ -51,13 +51,25 @@ def quadratic_model(x, a, b, c):
 
 
 def save_coefficients(coefficients):
-    # File to store calibration coefficients
-    coefficients_file = 'calibration_coefficients.txt'
-    """Save calibration coefficients to a file."""
+    """
+    Save calibration coefficients to a file.
+
+    Args:
+        coefficients (dict): The calibration coefficients to be saved.
+    """
     try:
-        with open(coefficients_file, 'w') as file:
+        # Define the directory and file path
+        directory = "created_saved_values"
+        file_path = os.path.join(directory, "calibration_coefficients.txt")
+
+        # Ensure the directory exists
+        os.makedirs(directory, exist_ok=True)
+
+        # Open the file in write mode and save the coefficients
+        with open(file_path, 'w') as file:
             json.dump(coefficients, file)
-        print(f"Calibration coefficients saved to {coefficients_file}")
+        print(f"Calibration coefficients saved to {file_path}")
+
     except IOError as e:
         print(f"Error saving calibration coefficients: {e}")
         raise

@@ -1,4 +1,6 @@
 import json
+import os
+
 from Water_Level_Sensor.ETAPE_Calibration import quadratic_model, get_average_sensor_value
 
 # Set the gain value for the ADC
@@ -17,7 +19,12 @@ def load_coefficients():
         None: If the file is not found or an error occurs during loading.
     """
     try:
-        with open(coefficients_file, 'r') as file:
+        # Define the directory and file path
+        directory = "created_saved_values"
+        file_path = os.path.join(directory, "calibration_coefficients.txt")
+
+        # Open the file in read mode and load the coefficients
+        with open(file_path, 'r') as file:
             coefficients = json.load(file)
 
             if not isinstance(coefficients, dict):

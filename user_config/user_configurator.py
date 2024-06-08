@@ -1,3 +1,4 @@
+import os
 import pickle
 import RPi.GPIO as GPIO
 from adafruit_motorkit import MotorKit
@@ -118,10 +119,26 @@ def find_motor_name_and_direction():
                 print(f"Pump {chosen_name} mapped to motor {motor_num} on driver with address {hex(address)}. \n")
             else:
                 print(f"No pump assigned to motor {motor_num} on driver with address {hex(address)}.")
+        try:
+            # Define the directory and file path
+            directory = "created_saved_values"
+            file_path = os.path.join(directory, "pump_configurations.pkl")
 
-        # Save pump objects to a file
-        with open('pump_configurations.pkl', 'wb') as file:
-            pickle.dump(pump_objects, file)
+            # Ensure the directory exists
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+
+            # Open the file in write binary mode and save the pump objects
+            with open(file_path, 'wb') as file:
+                pickle.dump(pump_objects, file)
+
+        except IOError as ioe:
+            # Handle I/O errors (e.g., file not found, permission issues)
+            print(f"IOError in save_pump_objects: {ioe}")
+
+        except Exception as e:
+            # Handle any other exceptions
+            print(f"An unexpected error occurred in save_pump_objects: {e}")
 
         print("\n All motors have been named and tested for correct direction \n ")
 
@@ -241,8 +258,12 @@ def create_pump(config):
 
 def load_motor_name_and_direction():
     try:
-        # Check if the file exists and is readable
-        with open('pump_configurations.pkl', 'rb') as file:
+        # Define the directory and file path
+        directory = "created_saved_values"
+        file_path = os.path.join(directory, "pump_configurations.pkl")
+
+        # Open the file in read binary mode and load the pump objects
+        with open(file_path, 'rb') as file:
             pump_objects = pickle.load(file)
 
         # Ensure pump_objects is the correct type (assuming it should be a list or dict)
