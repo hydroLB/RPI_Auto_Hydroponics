@@ -78,7 +78,7 @@ def find_motor_name_and_direction():
                         address, motor_num))
 
             temp_pump = Pump(motor, 1)  # Temporary pump with default direction
-            print(f"Testing motor # {motor_num} on driver with address: {hex(address)}")
+            print(f"\n\nTesting motor # {motor_num} on driver with address: {hex(address)}")
 
             temp_pump.start()
             feedback = input("Is the direction correct, water is flowing towards bucket? (yes/no): ").strip().lower()
@@ -86,17 +86,17 @@ def find_motor_name_and_direction():
 
             if feedback in ['no', 'n']:
                 direction = temp_pump.direction * -1
-                print("Direction reversed.")
+                print("\n Direction reversed. \n")
             else:
                 direction = 1
-                print("Direction confirmed as forward.")
+                print("\nDirection confirmed as forward.\n")
 
             for idx, name in enumerate(pump_names):
                 print(f"{idx + 1}: {name}")
 
             while True:
                 name_choice = input(
-                    "Enter the number for selected pump name (1,2,3...) (or type 'none' for no pump): ").strip().lower()
+                    "\n Enter the number for selected pump name (1,2,3...) (or 'none' for no pump): ").strip().lower()
                 if name_choice == "none" or name_choice == "n":
                     chosen_name = None
                     break
@@ -123,7 +123,7 @@ def find_motor_name_and_direction():
         with open('pump_configurations.pkl', 'wb') as file:
             pickle.dump(pump_objects, file)
 
-        print("All motors have been named and tested for correct direction.")
+        print("\n All motors have been named and tested for correct direction \n ")
 
         # Assign variables to each pump based on their names
         return assign_pumps(pump_objects)
