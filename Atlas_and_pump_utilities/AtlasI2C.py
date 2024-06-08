@@ -346,6 +346,8 @@ def test_ec_sensor(sensor):
     # Ask the user if they want to calibrate the EC sensor
     calibrate_ec = input("Would you like to calibrate the EC sensor? (yes/no): ").strip().lower()
     if calibrate_ec == 'yes':
+        calibrate_sensor(sensor, 'ec')
+
 
 
 def calibrate_sensor(sensor, sensor_type):
