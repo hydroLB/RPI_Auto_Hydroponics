@@ -275,7 +275,7 @@ def test_temp_sensor():
             temp_c = get_temp_c()
             # Get the temperature in Fahrenheit
             temp_f = get_temp_f()
-            print("Temperature Sensor Test for PH and EC compensation")
+            print("\n Temperature Sensor Test for PH and EC compensation")
             if temp_c is not None and temp_f is not None:
                 # Print the temperature in both Celsius and Fahrenheit
                 print(f"Temperature: {temp_c:.2f} °C / {temp_f:.2f} °F")
@@ -300,7 +300,7 @@ def test_temp_sensor():
 def test_ph_sensor(sensor):
     """Continuously read and display pH values until interrupted."""
     try:
-        print("Type 'done' to stop the test.")
+        print(" \n PH Sensor Test, type 'done' to stop the test.")
         while True:
             # Get the pH value with temperature compensation
             ph_value = get_ph()
@@ -327,7 +327,7 @@ def test_ph_sensor(sensor):
 def test_ec_sensor(sensor):
     """Continuously read and display EC values (in PPM) until interrupted."""
     try:
-        print("Type 'done' to stop the test.")
+        print(" \n EC sensor test, type 'done' to stop test. ")
         while True:
             # Get the EC value and convert it to PPM
             ec_value = get_ppm()
@@ -387,11 +387,11 @@ def calibrate_sensor(sensor, sensor_type):
 def test_fresh_water_pump():
     from user_config.user_configurator import FRESH_WATER_PUMP_PIN
     """Guide the user through testing the fresh water pump using GPIO pins and IoT relay."""
-    print("Starting fresh water pump test...")
+    print("\n Starting fresh water pump test...")
 
     while True:
         # Prompt the user to start the pump or quit
-        user_input = input("Type 'start' to begin the pump test or 'quit' to cancel: ").strip().lower()
+        user_input = input("Type 'start' to begin the pump test or 'done' to cancel: ").strip().lower()
         if user_input == 'start':
             # Start the fresh water pump
             start_fresh_water_pump(FRESH_WATER_PUMP_PIN)
@@ -405,7 +405,7 @@ def test_fresh_water_pump():
             end_fresh_water_pump(FRESH_WATER_PUMP_PIN)
             print("Fresh water pump stopped.")
             break
-        elif user_input == 'quit':
+        elif user_input == 'done':
             print("Fresh water pump test canceled.")
             return
         else:

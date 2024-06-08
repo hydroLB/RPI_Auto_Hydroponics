@@ -19,14 +19,12 @@ def fill_water(fresh_water_pin):
         target_ppm, target_water_level = read_from_file()
         # Continuously check the current water level in the reservoir
         while get_water_level() < target_water_level:
-            if get_water_level() > target_water_level + 1:
-                print("warning: water level is higher than target by over an inch, may need manual adjustment")
             # Display the current water level while adding water
-            print("Adding water... level %f" % get_water_level)
+            print("Adding water... level %f" % get_water_level())
             # Start the water pump to fill the reservoir
             start_fresh_water_pump(fresh_water_pin)
             # Wait for 5 seconds to allow the water pump to operate
-            sleep(4)
+            sleep(5)
         # Stop the water pump once the target water level is reached
         end_fresh_water_pump(fresh_water_pin)
     except Exception as ee:

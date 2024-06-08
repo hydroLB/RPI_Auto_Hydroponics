@@ -68,7 +68,7 @@ def save_coefficients(coefficients):
         # Open the file in write mode and save the coefficients
         with open(file_path, 'w') as file:
             json.dump(coefficients, file)
-        print(f"Calibration coefficients saved to {file_path}")
+        print(f"\n Calibration coefficients saved to {file_path} \n")
 
     except IOError as e:
         print(f"Error saving calibration coefficients: {e}")
@@ -76,7 +76,7 @@ def save_coefficients(coefficients):
 
 
 def get_average_sensor_value(num_samples=5):
-    """Get the RAW average sensor value over a number of samples."""
+    """Get the RAW average sensor value over a number of samples for the Etape."""
     total = 0
     for i in range(num_samples):
         try:
@@ -88,7 +88,6 @@ def get_average_sensor_value(num_samples=5):
             print(f"Error reading sensor values in get_average_sensor_value: {e}")
             raise
     average_value = total / num_samples
-    print(f"Average sensor value: {average_value}")
     return average_value
 
 
@@ -137,13 +136,12 @@ def initialize_water_sensor():
     # Perform curve fitting
     try:
         popt, _ = curve_fit(quadratic_model, sensor_values, levels)
-        print("Curve fitting successful.")
     except Exception as e:
         print(f"Error during curve fitting in initialize_water_sensor: {e}")
         return
 
     coefficients = {'a': popt[0], 'b': popt[1], 'c': popt[2]}
-    print(f"Calibration complete. Coefficients: {coefficients}")
+    print(f" \n Calibration complete. Coefficients: {coefficients} \n ")
 
     try:
         save_coefficients(coefficients)

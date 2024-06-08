@@ -345,7 +345,7 @@ SKIP_SYSTEM_SETUP_WATER_LEVEL = 1.5
 ###########################################################
 
 # pin used to turn on a pump to pull fresh water in
-FRESH_WATER_PUMP_PIN = 20
+FRESH_WATER_PUMP_PIN = 21
 GPIO.setup(FRESH_WATER_PUMP_PIN, GPIO.OUT)  # Set pin as an output
 
 ###########################################################
