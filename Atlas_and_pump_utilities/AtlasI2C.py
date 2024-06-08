@@ -12,30 +12,30 @@ def read_temp_file():
     """Read temperature file and return its content."""
     try:
         with open(W1_TEMP_PATH, 'r') as temp_file:
-            return temp_file.readlines()
+            first_line = temp_file.readline().strip()
+            if not first_line:
+                return temp_file.readline().strip()
+            else:
+                return first_line
     except FileNotFoundError:
         print("Error: Temperature file not found in read_temp_file.")
         return None
 
 
 def get_temp_c():
-    lines = read_temp_file()
-    while lines[0].strip()[-3:] != 'YES':
-        time.sleep(0.2)
-        lines = read_temp_file()
-    equals_pos = lines[1].find('t=')
-    if equals_pos != -1:
-        temp_string = lines[1][equals_pos + 2:]
-        temp_c = float(temp_string) / 1000.0
-        return temp_c
+    """Return temperature in Celsius."""
+    temp_data = read_temp_file()
+    if temp_data is not None:
+        return int(temp_data) / 1000
+    else:
+        return None
 
 
 def get_temp_f():
     """Return temperature in Fahrenheit."""
     temp_c = get_temp_c()
     if temp_c is not None:
-        return temp_c * 9.0 / 5.0 + 32.0
-
+        return temp_c * 9 / 5 + 32
     else:
         return None
 
