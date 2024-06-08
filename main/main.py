@@ -1,7 +1,8 @@
 import sys
 from time import sleep
 from file_operations.log_sensor_data import log_sensor_data
-from Atlas_and_pump_utilities.AtlasI2C import test_temp_sensor, test_ph_sensor, test_ec_sensor, get_ppm, get_ph
+from Atlas_and_pump_utilities.AtlasI2C import test_temp_sensor, test_ph_sensor, test_ec_sensor, get_ppm, get_ph, \
+    test_fresh_water_pump
 from Water_Level_Sensor.Water_Level_ETAPE import get_water_level
 from Atlas_and_pump_utilities.pumps import run_pumps_list, stop_pumps_list, prime
 from Water_Level_Sensor.adjust_water_level_and_nutrients import fill_water, dose_nutrients, \
@@ -59,6 +60,8 @@ def setup_hydroponic_system():
 
             # Initialize water sensor to get the water level
             initialize_water_sensor()
+
+            test_fresh_water_pump()
 
             # Fill the system with water
             fill_water()

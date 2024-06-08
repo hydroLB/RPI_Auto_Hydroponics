@@ -302,11 +302,11 @@ def configure_system():
         nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump, pHUpPump, pHDownPump = motor_data
 
         # Set nutrient pump times
-        NUTRIENT1_TIME = 5
-        NUTRIENT2_TIME = 5
-        NUTRIENT3_TIME = 5
-        NUTRIENT4_TIME = 5
-        BACTERIAL_TIME = 5
+        NUTRIENT1_TIME = 12
+        NUTRIENT2_TIME = 12
+        NUTRIENT3_TIME = 12
+        NUTRIENT4_TIME = 12
+        BACTERIAL_TIME = 12
 
         # Create lists of pumps and their respective times
         nutrient_pump_list = [(pump, time) for pump, time in
@@ -360,9 +360,9 @@ WAIT_TIME_BETWEEN_CHECKS = 3600
 # Margin (in ppm) between the actual target PPM in the nutrient dosing cycle
 # to avoid overloading the nutrients when the pH is finally balanced at the end (which always raises it to some degree).
 PH_PPM_SAFETY_MARGIN = 50
-PH_UP_SLEEP_TIME = 0.3  # Sleep time for pH up pump (how long is it on aka how much of it per cycle)
-PH_DOWN_SLEEP_TIME = 0.3  # time for pH down pump (how long is it on aka how much of it per cycle)
-LOOP_SLEEP_TIME = 7  # Sleep time for the loop ((how long to wait between each increment dosing)
+PH_UP_SLEEP_TIME = 8  # Sleep time for pH up pump (how long is it on aka how much of it per cycle)
+PH_DOWN_SLEEP_TIME = 8  # time for pH down pump (how long is it on aka how much of it per cycle)
+LOOP_SLEEP_TIME = 6  # Sleep time for the loop ((how long to wait between each increment dosing)
 
 ph_dosing_time = PH_UP_SLEEP_TIME, PH_DOWN_SLEEP_TIME, LOOP_SLEEP_TIME
 ############################################################################################

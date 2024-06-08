@@ -6,6 +6,9 @@ import fcntl
 import time
 import copy
 
+from Atlas_and_pump_utilities.pumps import start_fresh_water_pump, end_fresh_water_pump
+from user_config.user_configurator import FRESH_WATER_PUMP_PIN
+
 
 def read_temp_file():
     from user_config.user_configurator import W1_TEMP_PATH
@@ -380,3 +383,30 @@ def calibrate_sensor(sensor, sensor_type):
                 return
             else:
                 print("Invalid input. Please follow the format 'confirm <point>' or type 'cancel' to stop.")
+
+
+def test_fresh_water_pump():
+    """Guide the user through testing the fresh water pump using GPIO pins and IoT relay."""
+    print("Starting fresh water pump test...")
+
+    while True:
+        # Prompt the user to start the pump or quit
+        user_input = input("Type 'start' to begin the pump test or 'quit' to cancel: ").strip().lower()
+        if user_input == 'start':
+            # Start the fresh water pump
+            start_fresh_water_pump(FRESH_WATER_PUMP_PIN)
+            print("Fresh water pump started.")
+
+            # Wait for 5 seconds to allow the water pump to operate
+            time.sleep(5)
+            print("Water pump operation for 5 seconds complete.")
+
+            # Stop the fresh water pump once the target water level is reached
+            end_fresh_water_pump(FRESH_WATER_PUMP_PIN)
+            print("Fresh water pump stopped.")
+            break
+        elif user_input == 'quit':
+            print("Fresh water pump test canceled.")
+            return
+        else:
+            print("Invalid input. Please type 'start' to begin or 'quit' to cancel.")
