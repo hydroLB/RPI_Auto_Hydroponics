@@ -207,9 +207,6 @@ def create_pump(config):
             if not isinstance(config['motor'], (list, tuple)) or len(config['motor']) != 2:
                 raise ValueError("create_pump: config['motor'] must be a list or tuple with two elements")
 
-            if not isinstance(config['direction'], str):
-                raise ValueError("create_pump: config['direction'] must be a string")
-
             address, motor_num = config['motor']
             direction = config['direction']
 
