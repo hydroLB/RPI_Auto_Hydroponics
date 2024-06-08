@@ -18,8 +18,7 @@ class Pump:
             direction: Integer representing the motor direction (1 or -1).
         """
         if not isinstance(direction, int):
-            raise TypeError("Expected direction to be an integer, but got type {}. "
-                            "Error in Pump.__init__.".format(type(direction).__name__))
+            direction = int(direction)  # Ensure direction is an integer
         if direction not in [1, -1]:
             raise ValueError("Expected direction to be 1 or -1, but got {}. "
                              "Error in Pump.__init__.".format(direction))

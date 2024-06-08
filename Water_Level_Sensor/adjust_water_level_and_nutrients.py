@@ -18,6 +18,8 @@ def fill_water():
         target_ppm, target_water_level = read_from_file()
         # Continuously check the current water level in the reservoir
         while get_water_level < target_water_level:
+            if float(get_water_level) > float(target_water_level + 1.0):
+                print("warning: water level is higher than target by over an inch, may need manual adjustment")
             # Display the current water level while adding water
             print("Adding water... level %f" % get_water_level)
             # Start the water pump to fill the reservoir
