@@ -1,14 +1,6 @@
-from time import sleep
 import sys
-import os
-
-# Append the project root directory to PYTHONPATH
-
+from time import sleep
 from file_operations.log_sensor_data import log_sensor_data
-
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.append(project_root)
-
 from Atlas_and_pump_utilities.AtlasI2C import test_temp_sensor, test_ph_sensor, test_ec_sensor, get_ppm, get_ph
 from Water_Level_Sensor.Water_Level_ETAPE import get_water_level
 from Atlas_and_pump_utilities.pumps import run_pumps_list, stop_pumps_list, prime
@@ -45,8 +37,7 @@ def setup_hydroponic_system():
             all_pumps = [pump for pump, _ in plant.nutrient_pump_time_list] + ph_pump_list
 
             # Write initial target levels from user config file to settings.txt
-            with open("settings.txt", "w") as file:
-                file.write(f"{plant.target_ppm},{plant.target_water_level}")
+            write_to_file(plant.target_ppm, plant.target_water_level)
 
             # Inform user about priming the pumps
             print("Pumps must now be primed for proper pH nutrient dosing...")
@@ -174,20 +165,20 @@ def main():
             # If the plant is already configured, start monitoring the system
             monitor_hydroponic_system()
 
-    except NameError as e:
-        raise NameError("Name error occurred in main: {}".format(e))
+    except NameError as e1:
+        raise NameError("Name error occurred in main: {}".format(e1))
 
-    except TypeError as e:
-        raise TypeError("Type error occurred in main: {}".format(e))
+    except TypeError as e2:
+        raise TypeError("Type error occurred in main: {}".format(e2))
 
-    except ValueError as e:
-        raise ValueError("Value error occurred in main: {}".format(e))
+    except ValueError as e3:
+        raise ValueError("Value error occurred in main: {}".format(e3))
 
-    except KeyError as e:
-        raise KeyError("Key error occurred in main: {}".format(e))
+    except KeyError as e4:
+        raise KeyError("Key error occurred in main: {}".format(e4))
 
-    except Exception as e:
-        raise Exception("An unexpected error occurred in main: {}".format(e))
+    except Exception as e5:
+        raise Exception("An unexpected error occurred in main: {}".format(e5))
 
 
 if __name__ == "__main__":

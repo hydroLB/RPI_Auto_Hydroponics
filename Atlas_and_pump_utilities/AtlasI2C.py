@@ -349,7 +349,6 @@ def test_ec_sensor(sensor):
         calibrate_sensor(sensor, 'ec')
 
 
-
 def calibrate_sensor(sensor, sensor_type):
     """Guide the user through the calibration process for the specified sensor type."""
     print(f"Starting {sensor_type.upper()} sensor calibration...")
@@ -368,7 +367,8 @@ def calibrate_sensor(sensor, sensor_type):
         while True:
             # Prompt the user to place the sensor in the appropriate calibration solution
             user_input = input(
-                f"Place the sensor in the {point} calibration solution and type 'confirm {point}', or type 'cancel' to stop: ").strip().lower()
+                f"Place the sensor in the {point} calibration solution and type 'confirm {point}', or type "
+                f"'cancel' to stop: ").strip().lower()
             if user_input == f"confirm {point}":
                 # Send the calibration command to the sensor
                 response = sensor.query(f'Cal,{point}')
@@ -380,5 +380,3 @@ def calibrate_sensor(sensor, sensor_type):
                 return
             else:
                 print("Invalid input. Please follow the format 'confirm <point>' or type 'cancel' to stop.")
-
-

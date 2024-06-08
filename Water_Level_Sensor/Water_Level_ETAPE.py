@@ -72,7 +72,7 @@ def get_water_level():
                 "Expected water_level to be an int or float, but got type {}. Error in get_water_level.".format(
                     type(water_level).__name__))
 
-        return round(water_level, 2)
+        return float(round(water_level, 2))
 
     except TypeError as e:
         raise TypeError("Type error occurred in get_water_level: {}".format(e))

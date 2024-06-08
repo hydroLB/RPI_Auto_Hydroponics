@@ -54,7 +54,7 @@ def read_from_file():
 
             # Parse the values as integers
             target_ppm = int(data[0])
-            target_water_level = int(data[1])
+            target_water_level = float(data[1])
 
         return target_ppm, target_water_level
 

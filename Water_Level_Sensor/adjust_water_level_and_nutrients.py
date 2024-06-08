@@ -13,12 +13,13 @@ def fill_water():
 
     param target_level: The desired water level to be reached in the reservoir.
     """
+    # noinspection PyBroadException
     try:
         # Read target PPM and water level from file
         target_ppm, target_water_level = read_from_file()
         # Continuously check the current water level in the reservoir
-        while get_water_level < target_water_level:
-            if float(get_water_level) > float(target_water_level + 1.0):
+        while get_water_level() < target_water_level:
+            if get_water_level() > target_water_level + 1:
                 print("warning: water level is higher than target by over an inch, may need manual adjustment")
             # Display the current water level while adding water
             print("Adding water... level %f" % get_water_level)
@@ -29,6 +30,7 @@ def fill_water():
         # Stop the water pump once the target water level is reached
         end_fresh_water_pump(FRESH_WATER_PUMP_PIN)
     except Exception as ee:
+        print("Error", ee)
         # Log the error message and stop the water pump in case of an exception
         end_fresh_water_pump(FRESH_WATER_PUMP_PIN)
 
