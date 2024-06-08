@@ -28,7 +28,7 @@ def quadratic_model(x, a, b, c):
         float: The calculated value of the quadratic model.
     """
     try:
-        if not isinstance(x, (int, float)):
+        if not isinstance(x, (int, float, np.ndarray)):
             raise TypeError(
                 "Expected x to be an int or float, but got type {}. Error in quadratic_model.".format(type(x).__name__))
         if not isinstance(a, (int, float)):
@@ -84,7 +84,7 @@ def initialize_water_sensor():
     # File to store calibration coefficients
     coefficients_file = 'calibration_coefficients.txt'
     """Calibrate the water sensor."""
-    print("Starting water sensor calibration...")
+    print("\n Starting water sensor calibration...")
 
     # Enhanced directory writability check
     try:
@@ -116,14 +116,15 @@ def initialize_water_sensor():
                 print(f"Example: Type 'confirm {target_level}' to confirm the water level.")
 
     if len(calibration_data) < 3:
-        print("Insufficient calibration data collected. Calibration requires at least 3 data points in initialize_water_sensor")
+        print("Insufficient calibration data collected. Calibration requires at "
+              "least 3 data points in initialize_water_sensor")
         return
 
     levels, sensor_values = zip(*calibration_data)
 
     # Perform curve fitting
     try:
-        popt, popv = curve_fit(quadratic_model, sensor_values, levels)
+        popt, _ = curve_fit(quadratic_model, sensor_values, levels)
         print("Curve fitting successful.")
     except Exception as e:
         print(f"Error during curve fitting in initialize_water_sensor: {e}")

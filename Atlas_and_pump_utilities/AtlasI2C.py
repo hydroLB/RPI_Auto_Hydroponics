@@ -264,14 +264,52 @@ def get_ppm():
 #######################################################
 # SENSOR TESTS FOR MAIN INITIALIZATION
 
+def test_temp_sensor():
+    """Continuously read and display temperature values until interrupted or user types 'done'."""
+    try:
+        print("Type 'done' to stop the test.")
+        while True:
+            # Get the temperature in Celsius
+            temp_c = get_temp_c()
+            # Get the temperature in Fahrenheit
+            temp_f = get_temp_f()
+            print("Temperature Sensor Test for PH and EC compensation")
+            if temp_c is not None and temp_f is not None:
+                # Print the temperature in both Celsius and Fahrenheit
+                print(f"Temperature: {temp_c:.2f} °C / {temp_f:.2f} °F")
+            else:
+                print("Failed to read temperature.")
+
+            # Prompt the user for input and check if they type 'done'
+            print("Press enter to continue or type 'done' to stop.")
+            user_input = input().strip().lower()
+            if user_input == 'done':
+                break
+
+            # Wait for 2 seconds before the next reading
+            time.sleep(2)
+    except KeyboardInterrupt:
+        # Handle the interruption to stop the test
+        print("Stopping temperature sensor test.")
+
+    print("Temperature sensor test stopped.")
+
+
 def test_ph_sensor(sensor):
     """Continuously read and display pH values until interrupted."""
     try:
+        print("Type 'done' to stop the test.")
         while True:
             # Get the pH value with temperature compensation
             ph_value = get_ph()
             # Print the pH value
-            print(f"pH Value: {ph_value:.2f}, press Ctrl/Cmd+C keys to exit")
+            print(f"pH Value: {ph_value:.2f}, press enter to continue or type 'done' to exit")
+
+            # Prompt the user for input and check if they type 'done'
+            user_input = input().strip().lower()
+            if user_input == 'done':
+                break
+
             # Wait for 0.5 seconds before the next reading
             time.sleep(0.5)
     except KeyboardInterrupt:
@@ -287,11 +325,18 @@ def test_ph_sensor(sensor):
 def test_ec_sensor(sensor):
     """Continuously read and display EC values (in PPM) until interrupted."""
     try:
+        print("Type 'done' to stop the test.")
         while True:
             # Get the EC value and convert it to PPM
             ec_value = get_ppm()
             # Print the EC value in PPM
-            print(f"PPM Value: {ec_value:.2f}, press Ctrl/Cmd+C keys to exit")
+            print(f"PPM Value: {ec_value:.2f}, press enter to continue or type 'done' to exit")
+
+            # Prompt the user for input and check if they type 'done'
+            user_input = input().strip().lower()
+            if user_input == 'done':
+                break
+
             # Wait for 0.5 seconds before the next reading
             time.sleep(0.5)
     except KeyboardInterrupt:
@@ -301,7 +346,6 @@ def test_ec_sensor(sensor):
     # Ask the user if they want to calibrate the EC sensor
     calibrate_ec = input("Would you like to calibrate the EC sensor? (yes/no): ").strip().lower()
     if calibrate_ec == 'yes':
-        calibrate_sensor(sensor, 'ec')
 
 
 def calibrate_sensor(sensor, sensor_type):
@@ -322,32 +366,17 @@ def calibrate_sensor(sensor, sensor_type):
         while True:
             # Prompt the user to place the sensor in the appropriate calibration solution
             user_input = input(
-                f"Place the sensor in the {point} calibration solution and type 'confirm {point}': ").strip().lower()
+                f"Place the sensor in the {point} calibration solution and type 'confirm {point}', or type 'cancel' to stop: ").strip().lower()
             if user_input == f"confirm {point}":
                 # Send the calibration command to the sensor
                 response = sensor.query(f'Cal,{point}')
                 # Print the response from the sensor
                 print(response)
                 break
+            elif user_input == 'cancel':
+                print("Calibration process canceled.")
+                return
             else:
-                print("Invalid input. Please follow the format 'confirm <point>'.")
+                print("Invalid input. Please follow the format 'confirm <point>' or type 'cancel' to stop.")
 
 
-def test_temp_sensor():
-    """Continuously read and display temperature values until interrupted."""
-    try:
-        while True:
-            # Get the temperature in Celsius
-            temp_c = get_temp_c()
-            # Get the temperature in Fahrenheit
-            temp_f = get_temp_f()
-            if temp_c is not None and temp_f is not None:
-                # Print the temperature in both Celsius and Fahrenheit
-                print(f"Temperature: {temp_c:.2f} °C / {temp_f:.2f} °F")
-            else:
-                print("Failed to read temperature.")
-            # Wait for 2 seconds before the next reading
-            time.sleep(2)
-    except KeyboardInterrupt:
-        # Handle the interruption to stop the test
-        print("Stopping temperature sensor test.")

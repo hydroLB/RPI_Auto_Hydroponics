@@ -63,16 +63,15 @@ def prime(pumps_list):
             raise TypeError(
                 "Expected pumps_list to be a list, but got type {}. Error in prime.".format(type(pumps_list).__name__))
 
+        counter = 1
         for pump in pumps_list:
             if not hasattr(pump, 'start') or not hasattr(pump, 'stop'):
                 raise AttributeError(
                     "Each pump object in the list must have 'start' and 'stop' methods. Error in prime.")
 
-            counter = 1
             try:
                 print("Press enter to start priming pump " + str(counter) +
                       ", then press enter to stop when liquid level reaches the end of the pump's tubing")
-                counter += 1
                 sys.stdin.readline()  # Wait for user to hit enter to start priming
                 pump.start()  # Start the pump
                 sys.stdin.readline()  # Wait for user to hit enter to stop priming
@@ -80,7 +79,9 @@ def prime(pumps_list):
             except Exception as e:
                 raise Exception("An error occurred while priming pump {}: {}. Error in prime.".format(counter, e))
 
-        print("All pumps primed")
+            counter += 1
+
+        print("All pumps primed successfully.\n")
 
     except TypeError as e:
         raise TypeError("Type error occurred in prime: {}".format(e))
