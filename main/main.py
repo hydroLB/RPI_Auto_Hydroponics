@@ -199,6 +199,6 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         print("\nProgram interrupted. Exiting...")
-        sys.exit(0)a
+        sys.exit(0)
     except Exception as e:
         print(f"An error occurred in the main function: {e}")
