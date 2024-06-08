@@ -302,11 +302,11 @@ def configure_system():
         nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump, pHUpPump, pHDownPump = motor_data
 
         # Set nutrient pump times
-        NUTRIENT1_TIME = 12
-        NUTRIENT2_TIME = 12
-        NUTRIENT3_TIME = 12
-        NUTRIENT4_TIME = 12
-        BACTERIAL_TIME = 12
+        NUTRIENT1_TIME = 10
+        NUTRIENT2_TIME = 10
+        NUTRIENT3_TIME = 10
+        NUTRIENT4_TIME = 10
+        BACTERIAL_TIME = 10
 
         # Create lists of pumps and their respective times
         nutrient_pump_list = [(pump, time) for pump, time in
@@ -351,7 +351,7 @@ GPIO.setup(FRESH_WATER_PUMP_PIN, GPIO.OUT)  # Set pin as an output
 ###########################################################
 
 # Water level change threshold (in inches) (acts as the plants 'dry-back' function and time between checks (in seconds)
-#Example: Bucket will be filled to 6 inches, threshold is 2, so at 4 inches, the bucket will refill
+# Example: Bucket will be filled to 6 inches, threshold is 2, so at 4 inches, the bucket will refill
 WATER_THRESHOLD = 2
 # TIME TO WAIT BETWEEN SYSTEM WATER LEVEL CHECK -> PPM ADJUST, PH CHECK
 # 60 SECONDS AND 60 MINUTES = 60*60=3600 = 1 hour

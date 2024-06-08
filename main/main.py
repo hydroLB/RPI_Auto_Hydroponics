@@ -83,7 +83,7 @@ def setup_hydroponic_system():
 
             print("Startup completed")  # Log that startup is complete
         else:
-            print("Hydroponic system already set up")  # Log if the system is already set up
+            print("Hydroponic system already set up")  # water is above the skip_system water level
 
     except (TypeError, ValueError, KeyError) as ex:
         raise Exception(f"Specific error occurred in setup_hydroponic_system: {ex}")
@@ -128,7 +128,7 @@ def monitor_hydroponic_system():
                 # Adjust water level and nutrients if below threshold
                 adjust_water_level_and_nutrients(plant, ph_pump_list)
             else:
-                # Balance the pH if water level is within the acceptable range
+                # Balance the pH in a range if water level is within the acceptable range
                 balance_ph(ph_dosing_time, plant, ph_pump_list)
 
             # Wait for a specified time before the next check

@@ -121,7 +121,7 @@ def adjust_water_level_and_nutrients(plant, ph_pump_list):
         pre_fillup_ppm = get_ppm()
 
         # Call proprietary algorithm for updating target PPM
-        target_ppm = proprietary_ppm_update_algorithm(target_ppm, pre_fillup_ppm)
+        new_target_ppm = proprietary_ppm_update_algorithm(target_ppm, pre_fillup_ppm)
 
         # Fill water to the target level
         fill_water(FRESH_WATER_PUMP_PIN)
@@ -129,14 +129,14 @@ def adjust_water_level_and_nutrients(plant, ph_pump_list):
 
         # Dose nutrients, first making sure it's under the amount needed, then balance pH, increasing it,
         # then finally ensure it's exactly at the target PPM
-        dose_nutrients(target_ppm - PH_PPM_SAFETY_MARGIN, plant.nutrient_pump_time_list)
+        dose_nutrients(new_target_ppm - PH_PPM_SAFETY_MARGIN, plant.nutrient_pump_time_list)
 
         balance_PH_exact(ph_dosing_time, plant, ph_pump_list)
 
-        dose_nutrients(target_ppm, plant.nutrient_pump_time_list)
+        dose_nutrients(new_target_ppm, plant.nutrient_pump_time_list)
 
         # Write the new water level and new ppm to the file
-        write_to_file(target_ppm, target_water_level)
+        write_to_file(new_target_ppm, target_water_level)
 
     except TypeError as e:
         raise TypeError("Type error occurred in adjust_water_level_and_nutrients: {}".format(e))
