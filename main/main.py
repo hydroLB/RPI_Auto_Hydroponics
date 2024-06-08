@@ -13,16 +13,12 @@ from user_config.user_configurator import SKIP_SYSTEM_SETUP_WATER_LEVEL, configu
     ph_dosing_time, WATER_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS, FRESH_WATER_PUMP_PIN
 from file_operations.logging_water_and_ppm import read_from_file, write_to_file
 
-# Global variables
-global plant, ph_pump_list, all_pumps
-
 
 def setup_hydroponic_system():
     """
     Sets up the hydroponic system, including configuring pumps, priming pumps,
     initializing sensors, and dosing nutrients, only if water level is below threshold to skip this step.
     """
-    global plant, ph_pump_list, all_pumps
 
     try:
         # Check the water level to determine if setup is needed
@@ -104,7 +100,8 @@ def monitor_hydroponic_system():
     Continuously monitors the hydroponic system, including water level, PPM level, and pH level.
     Adjusts water level and nutrients or balances pH as needed based on target values.
     """
-    global plant, ph_pump_list, all_pumps
+    # Configure the system and get the plant and pH pump list
+    plant, ph_pump_list = configure_system()
 
     while True:
         try:
@@ -153,23 +150,9 @@ def main():
     Main function to set up and monitor the hydroponic system.
     """
     try:
-        global plant, ph_pump_list, all_pumps
-
         # Initial setup of the hydroponic system
         setup_hydroponic_system()
-
-        if plant is None:
-            # If the plant is not configured, configure the system
-            plant, ph_pump_list = configure_system()
-
-            # Create a global list of all pumps
-            all_pumps = [pump for pump, _ in plant.nutrient_pump_time_list] + ph_pump_list
-        else:
-            # If the plant is already configured, start monitoring the system
-            monitor_hydroponic_system()
-
-    except NameError as e1:
-        raise NameError("Name error occurred in main: {}".format(e1))
+        monitor_hydroponic_system()
 
     except TypeError as e2:
         raise TypeError("Type error occurred in main: {}".format(e2))

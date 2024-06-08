@@ -10,7 +10,10 @@ def log_sensor_data():
 
     # Check if file exists, if not, create it with headers
     try:
-        if not os.path.exists(filename):
+        # Define the directory and file path
+        directory = "created_saved_values"
+        file_path = os.path.join(directory, filename)
+        if not os.path.exists(file_path):
             with open(filename, "w") as file:
                 file.write("Timestamp,Water Level,PPM,pH\n")
     except Exception as e:
@@ -31,7 +34,7 @@ def log_sensor_data():
             return
 
         # Append the data to the file
-        with open(filename, "a") as file:
+        with open(file_path, "a") as file:
             file.write(f"{current_time},{water_level},{ppm},{ph}\n")
 
         print("Time, Water level, PPM, and pH logged successfully.")

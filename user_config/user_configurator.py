@@ -351,6 +351,7 @@ GPIO.setup(FRESH_WATER_PUMP_PIN, GPIO.OUT)  # Set pin as an output
 ###########################################################
 
 # Water level change threshold (in inches) (acts as the plants 'dry-back' function and time between checks (in seconds)
+#Example: Bucket will be filled to 6 inches, threshold is 2, so at 4 inches, the bucket will refill
 WATER_THRESHOLD = 2
 # TIME TO WAIT BETWEEN SYSTEM WATER LEVEL CHECK -> PPM ADJUST, PH CHECK
 # 60 SECONDS AND 60 MINUTES = 60*60=3600 = 1 hour
