@@ -52,7 +52,7 @@ def get_water_level():
         # Load the coefficients for the quadratic model
         coefficients = load_coefficients()
         if coefficients is None:
-            raise ValueError("Failed to load coefficients. Error in get_water_level.")
+            return None
 
         # Get the average sensor value
         sensor_value = get_average_sensor_value()
