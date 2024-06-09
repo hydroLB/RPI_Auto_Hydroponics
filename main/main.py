@@ -12,6 +12,7 @@ from Water_level_nutrients_ph_manager.ph_manager import balance_PH_exact, balanc
 from user_config.user_configurator import SKIP_SYSTEM_SETUP_WATER_LEVEL, configure_system, ECSensor, PHSensor, \
     ph_dosing_time, WATER_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS, FRESH_WATER_PUMP_PIN
 from file_operations.logging_water_and_ppm import read_from_file, write_to_file
+import atexit
 
 
 def setup_hydroponic_system():
@@ -57,8 +58,10 @@ def setup_hydroponic_system():
             # Initialize water sensor to get the water level
             initialize_water_sensor()
 
+            # test the pump control over bringing in fresh water during a refill
             test_fresh_water_pump()
 
+            print("You will need to remove water until it is below the chosen maximum height of the water.")
             # Fill the system with water
             fill_water(FRESH_WATER_PUMP_PIN)
 
@@ -83,7 +86,8 @@ def setup_hydroponic_system():
 
             print("Startup completed")  # Log that startup is complete
         else:
-            print("Hydroponic system already set up")  # water is above the skip_system water level
+            # water is above the skip_system water level
+            print("Hydroponic system already set up, moving to monitoring")
 
     except (TypeError, ValueError, KeyError) as ex:
         raise Exception(f"Specific error occurred in setup_hydroponic_system: {ex}")
@@ -167,6 +171,15 @@ def main():
         raise Exception("An unexpected error occurred in main: {}".format(e5))
 
 
+def ensure_pumps_off():
+    try:
+        # Configure the system and get the plant and pH pump list
+        plant, ph_pump_list = configure_system()
+        atexit.register(stop_pumps_list([pump for pump, _ in plant.nutrient_pump_time_list] + ph_pump_list))
+    except Exception as g:
+        print(f"An error occurred in ensure_pumps_off function in main: {g}")
+
+
 if __name__ == "__main__":
     """
         Entry point for the script. This block ensures that the script runs
@@ -174,8 +187,12 @@ if __name__ == "__main__":
     """
     try:
         main()
+        ensure_pumps_off()
     except KeyboardInterrupt:
         print("\nProgram interrupted. Exiting...")
+        ensure_pumps_off()
         sys.exit(0)
     except Exception as e:
         print(f"An error occurred in the main function: {e}")
+        ensure_pumps_off()
+        sys.exit(0)

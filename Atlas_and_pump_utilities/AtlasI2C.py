@@ -26,11 +26,15 @@ def read_temp_file():
 
 def get_temp_c():
     """Return temperature in Celsius."""
-    temp_data = read_temp_file()
-    if temp_data is not None:
-        return int(temp_data) / 1000
-    else:
-        return None
+    attempts = 5
+    for attempt in range(attempts):
+        temp_data = read_temp_file()
+        if temp_data is not None:
+            return int(temp_data) / 1000
+        else:
+            time.sleep(1)  # Wait for 1 second before trying again
+    print("Warning: Failed to read temperature data after 5 attempts.")
+    return None
 
 
 def get_temp_f():
@@ -229,15 +233,19 @@ class AtlasI2C:
 def get_ph():
     from main.main import PHSensor
     """Return pH value."""
-    temp_c = get_temp_c()
-    if temp_c is not None:
-        try:
-            return float(PHSensor.query('RT,' + str(temp_c)).rstrip('\0'))
-        except ValueError:
-            print("Error: Unable to parse pH value.")
-            return None
-    else:
-        return None
+    attempts = 5
+    for attempt in range(attempts):
+        temp_c = get_temp_c()
+        if temp_c is not None:
+            try:
+                return float(PHSensor.query('RT,' + str(temp_c)).rstrip('\0'))
+            except ValueError:
+                print("Error: Unable to parse pH value.")
+                return None
+        else:
+            time.sleep(1)  # Wait for 1 second before trying again
+    print("Warning: Failed to get pH value after 5 attempts.")
+    return None
 
 
 def get_ec():
@@ -256,11 +264,15 @@ def get_ec():
 
 def get_ppm():
     """Return PPM value."""
-    ec = get_ec()
-    if ec is not None:
-        return ec * 0.5
-    else:
-        return None
+    attempts = 5
+    for attempt in range(attempts):
+        ec = get_ec()
+        if ec is not None:
+            return ec * 0.5
+        else:
+            time.sleep(1)  # Wait for 1 second before trying again
+    print("Warning: Failed to get PPM value after 5 attempts.")
+    return None
 
 
 #######################################################

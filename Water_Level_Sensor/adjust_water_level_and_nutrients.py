@@ -13,7 +13,6 @@ def fill_water(fresh_water_pin):
 
     param target_level: The desired water level to be reached in the reservoir.
     """
-    # noinspection PyBroadException
     try:
         # Read target PPM and water level from file
         target_ppm, target_water_level = read_from_file()

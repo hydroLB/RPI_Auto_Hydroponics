@@ -76,18 +76,33 @@ def save_coefficients(coefficients):
 
 
 def get_average_sensor_value(num_samples=5):
-    """Get the RAW average sensor value over a number of samples for the Etape."""
+    """Get the RAW average sensor value over a number of samples for the E-tape."""
     total = 0
+    successful_reads = 0
+
     for i in range(num_samples):
-        try:
-            # Read raw eTape sensor values from the ADC
-            raw_val = adc.read_adc(0, gain=GAIN)
-            total += raw_val
-            time.sleep(0.1)  # Small delay between readings for sensor stability
-        except Exception as e:
-            print(f"Error reading sensor values in get_average_sensor_value: {e}")
-            raise
-    average_value = total / num_samples
+        attempts = 5
+        for attempt in range(attempts):
+            try:
+                # Read raw eTape sensor values from the ADC
+                raw_val = adc.read_adc(0, gain=GAIN)
+                if raw_val is not None:
+                    total += raw_val
+                    successful_reads += 1
+                    break
+                else:
+                    time.sleep(0.1)  # Small delay before retrying
+            except Exception as e:
+                print(f"Error reading sensor values in get_average_sensor_value: {e}")
+                raise
+        else:
+            print(f"Warning: Failed to read sensor value after 5 attempts for sample {i+1}.")
+            return None
+
+    if successful_reads == 0:
+        return None
+
+    average_value = total / successful_reads
     return average_value
 
 
