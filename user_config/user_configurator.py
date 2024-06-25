@@ -1,13 +1,13 @@
 import os
 import pickle
-from time import sleep
 
 import RPi.GPIO as GPIO
 from adafruit_motorkit import MotorKit
 
 from Atlas_and_pump_utilities.AtlasI2C import AtlasI2C
-from Atlas_and_pump_utilities.pumps import Pump, stop_pumps_list, prime
+from Atlas_and_pump_utilities.pumps import Pump, prime, clear_lines
 from file_operations.clear_terminal import clear_terminal
+from file_operations.logging_water_and_ppm import read_from_file
 
 
 class Plant:
@@ -155,13 +155,7 @@ def find_motor_name_and_direction():
                 }
                 print(f"Pump {chosen_name} mapped to motor {motor_num} on driver with address {hex(address)}. \n")
 
-                # Additional code: Reversing and priming the pumps
-                print("Reversing pump direction for 25 seconds...")
-                # Reversing the pump direction for 25 seconds
-                for x in range(1, 26):
-                    sleep(1)
-                    print(26 - x, "seconds left")
-                stop_pumps_list([temp_pump])  # Stop the pump after reversing
+                clear_lines(temp_pump)
 
                 # Prime the pump to fill it completely
                 prime(temp_pump)
@@ -341,6 +335,20 @@ def load_motor_name_and_direction():
 
 def configure_system():
     try:
+        # Configuration Section
+        # User can modify these values directly
+        PLANT_NAME = "Raspberry plant"
+        PH_TARGET = 5.7
+        PH_MIN = 5.6
+        PH_MAX = 5.8
+        DEFAULT_TARGET_PPM = 800
+        DEFAULT_TARGET_WATER_LEVEL = 5.6
+        NUTRIENT1_TIME = 10
+        NUTRIENT2_TIME = 10
+        NUTRIENT3_TIME = 10
+        NUTRIENT4_TIME = 10
+        BACTERIAL_TIME = 10
+
         # Load motor names and directions
         motor_data = load_motor_name_and_direction()
 
@@ -352,13 +360,6 @@ def configure_system():
 
         nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump, pHUpPump, pHDownPump = motor_data
 
-        # Set nutrient pump times
-        NUTRIENT1_TIME = 10
-        NUTRIENT2_TIME = 10
-        NUTRIENT3_TIME = 10
-        NUTRIENT4_TIME = 10
-        BACTERIAL_TIME = 10
-
         # Create lists of pumps and their respective times
         nutrient_pump_list = [(pump, time) for pump, time in
                               zip([nutrientPump1, nutrientPump2, nutrientPump3, nutrientPump4, BacterialPump],
@@ -366,9 +367,20 @@ def configure_system():
 
         ph_pump_list = [pHUpPump, pHDownPump]
 
+        # Read target_ppm and target_water_level from file
+        try:
+            target_ppm, target_water_level = read_from_file()
+            if target_ppm is None:
+                target_ppm = DEFAULT_TARGET_PPM
+            if target_water_level is None:
+                target_water_level = DEFAULT_TARGET_WATER_LEVEL
+        except Exception:
+            target_ppm = DEFAULT_TARGET_PPM
+            target_water_level = DEFAULT_TARGET_WATER_LEVEL
+
         ############################################################################################
         # Create a Plant object
-        plant = Plant("Raspberry plant", 5.7, 5.6, 5.8, 800, 5.6, nutrient_pump_list)
+        plant = Plant(PLANT_NAME, PH_TARGET, PH_MIN, PH_MAX, target_ppm, target_water_level, nutrient_pump_list)
         ############################################################################################
 
         return plant, ph_pump_list

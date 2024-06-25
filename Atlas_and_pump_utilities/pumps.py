@@ -1,9 +1,6 @@
 # Handles pumps start, stop, reverse, the list of all the pumps,  and priming using list
 # Also handles fresh water pump on and off using GPIO high/low
 
-# Import components from the main module: motor drivers and nutrient pump times.
-import sys
-
 # Import the MotorKit class from the Adafruit Motor HAT library.
 import RPi.GPIO as GPIO
 
@@ -64,13 +61,18 @@ def prime(pump: Pump):
             raise AttributeError(
                 "Pump object must have 'start' and 'stop' methods. Error in prime.")
 
+        # Ask the user if they want to prime the pump
+        response = input("[HIGHLY RECOMMENDED] Do you want to prime the pump? (yes/no): ").strip().lower()
+        if response != 'yes':
+            print("Pump priming skipped.")
+            return
+
         # Interact with the user to prime the pump
-        print(
-            "Press enter to start priming the pump, then press enter to stop when liquid level reaches the end of the "
-            "pump's tubing")
-        sys.stdin.readline()  # Wait for user to hit enter to start priming
+        print("Press enter to start priming the pump, then press enter to stop when liquid level reaches the end of "
+              "the pump's tubing.")
+        input()  # Wait for user to hit enter to start priming
         pump.start()  # Start the pump
-        sys.stdin.readline()  # Wait for user to hit enter to stop priming
+        input()  # Wait for user to hit enter to stop priming
         pump.stop()  # Stop the pump
 
         print("Pump primed successfully.\n")
@@ -79,6 +81,42 @@ def prime(pump: Pump):
         raise AttributeError("Attribute error occurred in prime: {}".format(e))
     except Exception as e:
         raise Exception("An unexpected error occurred in prime: {}".format(e))
+
+
+def clear_lines(pump: Pump):
+    """
+    Clears the lines of the provided pump with user assistance.
+
+    Args:
+        pump (object): A pump object with 'start', 'stop', and 'startReverse' methods.
+    """
+    try:
+        # Check if the pump object has the necessary 'start', 'stop', and 'startReverse' methods
+        if not hasattr(pump, 'start') or not hasattr(pump, 'stop') or not hasattr(pump, 'startReverse'):
+            raise AttributeError(
+                "Pump object must have 'start', 'stop', and 'startReverse' methods. Error in clear_lines.")
+
+        # Ask the user if they want to clear the pump lines
+        response = input("Do you want to clear the pump lines? (yes/no): ").strip().lower()
+        if response != 'yes':
+            print("Pump line clearing aborted by user.")
+            return
+
+        # Interact with the user to clear the pump lines
+        print("Press enter to start reversing the pump, then press enter to stop when liquid is removed from tube.\n"
+              "If very sticky residue is present, very warm water sucked by reverse side of the pump will clear all "
+              "stains.")
+        input()  # Wait for user to hit enter to start reversing
+        pump.startReverse()  # Start the pump in reverse
+        input()  # Wait for user to hit enter to stop reversing
+        pump.stop()  # Stop the pump
+
+        print("Pump line cleaned successfully.\n")
+
+    except AttributeError as e:
+        raise AttributeError("Attribute error occurred in clear_lines: {}".format(e))
+    except Exception as e:
+        raise Exception("An unexpected error occurred in clear_lines: {}".format(e))
 
 
 def run_pumps_list(pumps_list, reverse=False):
