@@ -142,6 +142,7 @@ def pump_control(pin):
 
 
 def initialize_water_sensor():
+    from Water_Level_Sensor.Water_Level_ETAPE import load_coefficients
     """
     Main function to initialize the water sensor calibration process.
 

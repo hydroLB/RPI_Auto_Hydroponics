@@ -88,7 +88,3 @@ def read_from_file():
         # Handle any other exceptions
         print(f"An unexpected error occurred in read_from_file: {e}")
 
-
-# Example usage
-write_to_file(500, 2.5)
-print(read_from_file())
