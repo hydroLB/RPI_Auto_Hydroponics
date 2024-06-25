@@ -155,10 +155,11 @@ def find_motor_name_and_direction():
                 }
                 print(f"Pump {chosen_name} mapped to motor {motor_num} on driver with address {hex(address)}. \n")
 
-                clear_lines(temp_pump)
+                clear_lines(Pump(motor, direction))
 
                 # Prime the pump to fill it completely
-                prime(temp_pump)
+                prime(Pump(motor, direction))
+
                 clear_terminal()
             else:
                 print(f"No pump assigned to motor {motor_num} on driver with address {hex(address)}.")
