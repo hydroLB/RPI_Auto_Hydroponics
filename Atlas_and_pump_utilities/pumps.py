@@ -152,20 +152,21 @@ def stop_pumps_list(pumps_list):
         raise Exception("An unexpected error occurred in stop_pumps_list: {}".format(e))
 
 
-def start_fresh_water_pump(pin_number):
+def start_fresh_water_pump(pin):
+    # noinspection GrazieInspection
     """
-    Activates the fresh water pump by setting the specified GPIO pin to HIGH.
+        Activates the fresh water pump by setting the specified GPIO pin to HIGH.
 
-    Args:
-        pin_number (int): The GPIO pin number connected to the pump relay.
-    """
+        Args:
+            pin (int): The GPIO pin connected to the pump relay.
+        """
     try:
-        if not isinstance(pin_number, int):
+        if not isinstance(pin, int):
             raise TypeError("Expected pin_number to be an integer, but got type {}. "
-                            "Error in start_fresh_water_pump.".format(type(pin_number).__name__))
+                            "Error in start_fresh_water_pump.".format(type(pin).__name__))
 
         # Set the GPIO pin to HIGH to start the pump
-        GPIO.output(pin_number, GPIO.HIGH)
+        GPIO.output(pin, GPIO.HIGH)
 
     except TypeError as e:
         raise TypeError("Type error occurred in start_fresh_water_pump: {}".format(e))
@@ -174,20 +175,21 @@ def start_fresh_water_pump(pin_number):
         raise Exception("An unexpected error occurred in start_fresh_water_pump: {}".format(e))
 
 
-def end_fresh_water_pump(pin_number):
+def end_fresh_water_pump(pin):
+    # noinspection GrazieInspection
     """
-    Deactivates the fresh water pump by setting the specified GPIO pin to LOW.
+        Deactivates the fresh water pump by setting the specified GPIO pin to LOW.
 
-    Args:
-        pin_number (int): The GPIO pin number connected to the pump relay.
-    """
+        Args:
+            pin (int): The GPIO pin connected to the pump relay.
+        """
     try:
-        if not isinstance(pin_number, int):
+        if not isinstance(pin, int):
             raise TypeError("Expected pin_number to be an integer, but got type {}. "
-                            "Error in end_fresh_water_pump.".format(type(pin_number).__name__))
+                            "Error in end_fresh_water_pump.".format(type(pin).__name__))
 
         # Set the GPIO pin to LOW to stop the pump
-        GPIO.output(pin_number, GPIO.LOW)
+        GPIO.output(pin, GPIO.LOW)
 
     except TypeError as e:
         raise TypeError("Type error occurred in end_fresh_water_pump: {}".format(e))

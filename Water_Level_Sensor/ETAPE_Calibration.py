@@ -4,6 +4,7 @@ import numpy as np
 import json
 from scipy.optimize import curve_fit
 import time
+import threading
 
 from Atlas_and_pump_utilities.pumps import start_fresh_water_pump, end_fresh_water_pump
 # Initialize the ADC using the Adafruit_ADS1x15 library
@@ -13,6 +14,9 @@ adc = Adafruit_ADS1x15.ADS1115(busnum=ADC_BUSNUM, address=ADC_I2C_ADDRESS)
 
 # Set the gain value for the ADC
 GAIN = 1
+
+# Define stop_event at the module level
+stop_event = threading.Event()
 
 
 def quadratic_model(x, a, b, c):
@@ -97,7 +101,7 @@ def get_average_sensor_value(num_samples=5):
                 print(f"Error reading sensor values in get_average_sensor_value: {e}")
                 raise
         else:
-            print(f"Warning: Failed to read sensor value after 5 attempts for sample {i+1}.")
+            print(f"Warning: Failed to read sensor value after 5 attempts for sample {i + 1}.")
             return None
 
     if successful_reads == 0:
@@ -107,63 +111,68 @@ def get_average_sensor_value(num_samples=5):
     return average_value
 
 
+def pump_control(pin):
+    """Control the pump intermittently."""
+    while not stop_event.is_set():
+        start_fresh_water_pump(pin)
+        time.sleep(2)
+        end_fresh_water_pump(pin)
+        if stop_event.is_set():
+            break
+        time.sleep(2)
+
+
 def initialize_water_sensor():
-    # File to store calibration coefficients
     coefficients_file = 'calibration_coefficients.txt'
-    """Calibrate the water sensor."""
-    print("\n Starting water sensor calibration...")
+    if os.path.exists(coefficients_file):
+        try:
+            with open(coefficients_file, 'r') as f:
+                coefficients = eval(f.read())  # Using eval is risky; consider using json for parsing
+            if all(key in coefficients for key in ['a', 'b', 'c']):
+                print("Calibration coefficients already exist. Initialization aborted.")
+                return
+        except Exception as e:
+            print(f"Error reading or validating coefficients: {e}")
 
-    # Enhanced directory writability check
-    try:
-        dir_name = os.path.dirname(coefficients_file)
-        if dir_name and not os.access(dir_name, os.W_OK):
-            print(f"Warning: Directory {dir_name} is not writable in initialize_water_sensor.")
-            return
-    except Exception as e:
-        print(f"Error checking directory write access in initialize_water_sensor: {e}")
-        return
-
-    print("Please adjust the water to the specified levels.")
+    print("\nStarting water sensor calibration...")
     calibration_data = []
-    for target_level in np.arange(1.5, 7, 0.5):  # 1.5, 2, ..., 6.5 inches
+    for target_level in np.arange(1.5, 6.5, 0.5):  # 1.5, 2, ..., 6.0 inches
+        stop_event.clear()
+        pump_thread = threading.Thread(target=pump_control, args=(FRESH_WATER_PUMP_PIN,))
+        pump_thread.start()
+
         while True:
-            start_fresh_water_pump(FRESH_WATER_PUMP_PIN)
             user_input = input(
                 f"Type 'confirm {target_level}' when the water is at {target_level} inches: ").strip().lower()
             if user_input == f"confirm {target_level}":
-                end_fresh_water_pump(FRESH_WATER_PUMP_PIN)
+                stop_event.set()
+                pump_thread.join()  # Ensure the thread finishes before continuing
                 try:
                     average_sensor_value = get_average_sensor_value()
                     calibration_data.append((target_level, average_sensor_value))
                     print(f"Averaged sensor value at {target_level} inches: {average_sensor_value}")
+                    time.sleep(5)
                 except Exception as e:
-                    print(f"Error during calibration at {target_level} inches in initialize_water_sensor: {e}")
+                    print(f"Error during calibration at {target_level} inches: {e}")
                     return
                 break
             else:
-                end_fresh_water_pump(FRESH_WATER_PUMP_PIN)
                 print("Invalid input. Please follow the format 'confirm <level>'.")
-                print(f"Example: Type 'confirm {target_level}' to confirm the water level.")
-                time.sleep(3)
+                time.sleep(5)
+
+        stop_event.set()
+        if pump_thread.is_alive():
+            pump_thread.join()
 
     if len(calibration_data) < 3:
-        print("Insufficient calibration data collected. Calibration requires at "
-              "least 3 data points in initialize_water_sensor")
+        print("Insufficient calibration data collected. Calibration requires at least 3 data points.")
         return
 
     levels, sensor_values = zip(*calibration_data)
-
-    # Perform curve fitting
     try:
         popt, _ = curve_fit(quadratic_model, sensor_values, levels)
-    except Exception as e:
-        print(f"Error during curve fitting in initialize_water_sensor: {e}")
-        return
-
-    coefficients = {'a': popt[0], 'b': popt[1], 'c': popt[2]}
-    print(f" \n Calibration complete. Coefficients: {coefficients} \n ")
-
-    try:
+        coefficients = {'a': popt[0], 'b': popt[1], 'c': popt[2]}
+        print(f"\nCalibration complete. Coefficients: {coefficients}\n")
         save_coefficients(coefficients)
     except Exception as e:
-        print(f"Error saving coefficients in initialize_water_sensor: {e}")
+        print(f"Error during curve fitting: {e}")

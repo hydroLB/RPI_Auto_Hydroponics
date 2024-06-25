@@ -22,8 +22,8 @@ def fill_water(fresh_water_pin):
             print("Adding water... level %f" % get_water_level())
             # Start the water pump to fill the reservoir
             start_fresh_water_pump(fresh_water_pin)
-            # Wait for 5 seconds to allow the water pump to operate
-            sleep(5)
+            # Wait for 3.5 seconds to allow the water pump to operate
+            sleep(3.5)
         # Stop the water pump once the target water level is reached
         end_fresh_water_pump(fresh_water_pin)
     except Exception as ee:
@@ -168,7 +168,7 @@ def proprietary_ppm_update_algorithm(target_ppm, pre_fillup_ppm):
     # before and what it is now before the fillup, what did the plant do?
     # If the plant was hungry -> ppm would have dropped as it ate more and there is less food (ppm) in the water
     # If the plant was full -> ppm would have rose as it ate less and there is more food (ppm) in the water
-    # For example if the "targetppm" was 100, and a fillup is triggered and the ppm is seen to be 120,
+    # For example if the "target_ppm" was 100, and a fillup is triggered and the ppm is seen to be 120,
     # It will be calculated as 100-120= -20, meaning the target_ppm should be lowered by that amount
     try:
         if not isinstance(target_ppm, (int, float)):

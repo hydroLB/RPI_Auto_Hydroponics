@@ -1,10 +1,12 @@
 import os
 import pickle
+from time import sleep
+
 import RPi.GPIO as GPIO
 from adafruit_motorkit import MotorKit
 
 from Atlas_and_pump_utilities.AtlasI2C import AtlasI2C
-from Atlas_and_pump_utilities.pumps import Pump
+from Atlas_and_pump_utilities.pumps import Pump, stop_pumps_list, prime
 
 
 class Plant:
@@ -70,8 +72,6 @@ def find_motor_name_and_direction():
 
         for address, motor_num in motor_map:
             motor = motor_map[(address, motor_num)]
-
-            # Ensure motor is a valid object (replace with appropriate checks if necessary)
             if motor is None:
                 raise ValueError(
                     "Motor at address {} and motor number {} is invalid. "
@@ -117,8 +117,21 @@ def find_motor_name_and_direction():
                     'direction': direction
                 }
                 print(f"Pump {chosen_name} mapped to motor {motor_num} on driver with address {hex(address)}. \n")
+
+                # Additional code: Reversing and priming the pumps
+                print("Reversing pump direction for 25 seconds...")
+                # Reversing the pump direction for 25 seconds
+                for x in range(1, 26):
+                    sleep(1)
+                    print(26 - x, "seconds left")
+                stop_pumps_list([temp_pump])  # Stop the pump after reversing
+
+                # Prime the pump to fill it completely
+                prime([temp_pump])  # Assuming 'prime' function exists and handles list of pumps
+                print("Pump priming complete.")
             else:
                 print(f"No pump assigned to motor {motor_num} on driver with address {hex(address)}.")
+
         try:
             # Define the directory and file path
             directory = "created_saved_values"
@@ -133,11 +146,9 @@ def find_motor_name_and_direction():
                 pickle.dump(pump_objects, file)
 
         except IOError as ioe:
-            # Handle I/O errors (e.g., file not found, permission issues)
             print(f"IOError in save_pump_objects: {ioe}")
 
         except Exception as e:
-            # Handle any other exceptions
             print(f"An unexpected error occurred in save_pump_objects: {e}")
 
         print("\n All motors have been named and tested for correct direction \n ")

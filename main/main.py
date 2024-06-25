@@ -4,7 +4,7 @@ from file_operations.log_sensor_data import log_sensor_data
 from Atlas_and_pump_utilities.AtlasI2C import test_temp_sensor, test_ph_sensor, test_ec_sensor, get_ppm, get_ph, \
     test_fresh_water_pump
 from Water_Level_Sensor.Water_Level_ETAPE import get_water_level
-from Atlas_and_pump_utilities.pumps import run_pumps_list, stop_pumps_list, prime
+from Atlas_and_pump_utilities.pumps import stop_pumps_list
 from Water_Level_Sensor.adjust_water_level_and_nutrients import fill_water, dose_nutrients, \
     adjust_water_level_and_nutrients
 from Water_Level_Sensor.ETAPE_Calibration import initialize_water_sensor
@@ -31,29 +31,8 @@ def setup_hydroponic_system():
             # Configure the system and get the plant and pH pump list
             plant, ph_pump_list = configure_system()
 
-            # Create a global list of all pumps
-            all_pumps = [pump for pump, _ in plant.nutrient_pump_time_list] + ph_pump_list
-
             # Write initial target levels from user config file to settings.txt
             write_to_file(plant.target_ppm, plant.target_water_level)
-
-            # Inform user about priming the pumps
-            print("Pumps must now be primed for proper pH nutrient dosing...")
-
-            # Clear pumps out
-            print("Press enter to start reverse sequence...")
-            sys.stdin.readline()  # Wait for user to hit enter to start reversing pumps
-            print("Reversing all pumps for 25 seconds...")
-            run_pumps_list(all_pumps, reverse=True)  # Run all pumps in reverse
-
-            # Wait for 25 seconds while pumps are reversing
-            for x in range(1, 26):
-                sleep(1)
-                print(26 - x, "seconds left")
-            stop_pumps_list(all_pumps)  # Stop all pumps after reversing
-
-            # Prime the pumps to fill them completely
-            prime(all_pumps)
 
             # test the pump control over bringing in fresh water during a refill
             test_fresh_water_pump()
