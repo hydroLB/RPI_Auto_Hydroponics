@@ -7,6 +7,7 @@ import time
 import copy
 
 from Atlas_and_pump_utilities.pumps import start_fresh_water_pump, end_fresh_water_pump
+from file_operations.clear_terminal import clear_terminal
 
 
 def read_temp_file():
@@ -374,6 +375,7 @@ def calibrate_sensor(sensor, sensor_type):
         points = ['dry', 'single', 'dual']
     else:
         print("Unknown sensor type for calibration.")
+        clear_terminal()
         return
 
     # Loop through each calibration point
@@ -391,6 +393,7 @@ def calibrate_sensor(sensor, sensor_type):
                 break
             elif user_input == 'cancel':
                 print("Calibration process canceled.")
+                clear_terminal()
                 return
             else:
                 print("Invalid input. Please follow the format 'confirm <point>' or type 'cancel' to stop.")
@@ -399,26 +402,30 @@ def calibrate_sensor(sensor, sensor_type):
 def test_fresh_water_pump():
     from user_config.user_configurator import FRESH_WATER_PUMP_PIN
     """Guide the user through testing the fresh water pump using GPIO pins and IoT relay."""
-    print("\n Starting fresh water pump test...")
+    print("\n\nStarting fresh water pump test...\n")
 
     while True:
         # Prompt the user to start the pump or quit
-        user_input = input("Type 'start' to begin the pump test or 'done' to cancel: ").strip().lower()
+        user_input = input(
+            "Type 'start' to begin a fresh water pump test or 'quit' to cancel and exit: ").strip().lower()
+
         if user_input == 'start':
             # Start the fresh water pump
             start_fresh_water_pump(FRESH_WATER_PUMP_PIN)
-            print("Fresh water pump started.")
+            print("\nFresh water pump started.")
 
             # Wait for 5 seconds to allow the water pump to operate
             time.sleep(5)
-            print("Water pump operation for 5 seconds complete.")
+            print("\nWater pump operation for 5 seconds complete.")
 
-            # Stop the fresh water pump once the target water level is reached
+            # Stop the fresh water pump
             end_fresh_water_pump(FRESH_WATER_PUMP_PIN)
-            print("Fresh water pump stopped.")
+            print("\nFresh water pump stopped.\n")
             break
-        elif user_input == 'done':
-            print("Fresh water pump test canceled.")
-            return
+        elif user_input in ['stop', 'cancel', 'end', 'done', 'exit', 'quit', 'halt', 'terminate', 'q', 'finish',
+                            'abort', 'close', 'suspend', 'shutdown', 'discontinue', 'leave']:
+            print("\nFresh water pump test canceled.\n")
+            clear_terminal()
+            return  # Exit the function
         else:
-            print("Invalid input. Please type 'start' to begin or 'quit' to cancel.")
+            print("\nInvalid input. Please type 'start' to begin or 'quit' to cancel.")

@@ -51,44 +51,32 @@ class Pump:
             raise Exception("An error occurred in Pump.startReverse: {}".format(e))
 
 
-def prime(pumps_list):
+def prime(pump: Pump):
     """
-    Primes each pump in the provided list with user assistance.
+    Primes the provided pump with user assistance.
 
     Args:
-        pumps_list (list): A list of pump objects, each with 'start' and 'stop' methods.
+        pump (object): A pump object with 'start' and 'stop' methods.
     """
     try:
-        if not isinstance(pumps_list, list):
-            raise TypeError(
-                "Expected pumps_list to be a list, but got type {}. Error in prime.".format(type(pumps_list).__name__))
+        # Check if the pump object has the necessary 'start' and 'stop' methods
+        if not hasattr(pump, 'start') or not hasattr(pump, 'stop'):
+            raise AttributeError(
+                "Pump object must have 'start' and 'stop' methods. Error in prime.")
 
-        counter = 1
-        for pump in pumps_list:
-            if not hasattr(pump, 'start') or not hasattr(pump, 'stop'):
-                raise AttributeError(
-                    "Each pump object in the list must have 'start' and 'stop' methods. Error in prime.")
+        # Interact with the user to prime the pump
+        print(
+            "Press enter to start priming the pump, then press enter to stop when liquid level reaches the end of the "
+            "pump's tubing")
+        sys.stdin.readline()  # Wait for user to hit enter to start priming
+        pump.start()  # Start the pump
+        sys.stdin.readline()  # Wait for user to hit enter to stop priming
+        pump.stop()  # Stop the pump
 
-            try:
-                print("Press enter to start priming pump " + str(counter) +
-                      ", then press enter to stop when liquid level reaches the end of the pump's tubing")
-                sys.stdin.readline()  # Wait for user to hit enter to start priming
-                pump.start()  # Start the pump
-                sys.stdin.readline()  # Wait for user to hit enter to stop priming
-                pump.stop()  # Stop the pump
-            except Exception as e:
-                raise Exception("An error occurred while priming pump {}: {}. Error in prime.".format(counter, e))
-
-            counter += 1
-
-        print("All pumps primed successfully.\n")
-
-    except TypeError as e:
-        raise TypeError("Type error occurred in prime: {}".format(e))
+        print("Pump primed successfully.\n")
 
     except AttributeError as e:
         raise AttributeError("Attribute error occurred in prime: {}".format(e))
-
     except Exception as e:
         raise Exception("An unexpected error occurred in prime: {}".format(e))
 

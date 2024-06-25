@@ -7,6 +7,8 @@ import time
 import threading
 
 from Atlas_and_pump_utilities.pumps import start_fresh_water_pump, end_fresh_water_pump
+from Water_Level_Sensor.Water_Level_ETAPE import load_coefficients
+from file_operations.clear_terminal import clear_terminal
 # Initialize the ADC using the Adafruit_ADS1x15 library
 from user_config.user_configurator import ADC_BUSNUM, ADC_I2C_ADDRESS, FRESH_WATER_PUMP_PIN
 
@@ -112,102 +114,134 @@ def get_average_sensor_value(num_samples=5):
 
 
 def pump_control(pin):
-    """Control the pump intermittently."""
-    while not stop_event.is_set():
-        start_fresh_water_pump(pin)
-        time.sleep(2)
-        end_fresh_water_pump(pin)
-        if stop_event.is_set():
-            break
-        time.sleep(2)
+    """
+    Control the pump intermittently.
+
+    Args:
+        pin (int): Pin num to control the pump.
+
+    Raises:
+        Exception: If there is an unexpected error during pump control.
+
+    Notes:
+        This function controls the pump by starting and stopping it in intervals.
+        It checks a global threading.Event (`stop_event`) to know when to stop the pump.
+        Uses functions `start_fresh_water_pump()` and `end_fresh_water_pump()` from external modules.
+    """
+    try:
+        while not stop_event.is_set():
+            start_fresh_water_pump(pin)
+            time.sleep(2)
+            end_fresh_water_pump(pin)
+            if stop_event.is_set():
+                break
+            time.sleep(2)
+    except Exception as e:
+        raise Exception(f"Unexpected error during pump control: {e}")
 
 
 def initialize_water_sensor():
     """
-    Calibrates the water sensor by collecting sensor data at specified levels. If calibration data already exists,
-    it skips recalibration. The function manages the pump with threading for real-time user interaction.
+    Main function to initialize the water sensor calibration process.
 
-    Variables:
-        coefficients_file (str): Path to the calibration coefficients file.
-        calibration_data (list): List of (water level, sensor value) tuples.
-        stop_event (threading.Event): Controls the stopping of the pump thread.
-        pump_thread (threading.Thread): Manages the water pump operations.
+    Raises:
+        IOError: If there is an error reading or writing calibration coefficients.
+        ValueError: If insufficient calibration data is collected.
+        Exception: For any unexpected errors during calibration.
 
-    Returns:
-        None: Writes calibration coefficients to a file or exits if coefficients are valid or errors occur.
+    Notes:
+        - Checks if calibration coefficients already exist using `load_coefficients()`.
+        - If coefficients don't exist, initiates the calibration process using `calibrate_water_sensor()`.
+        - Performs curve fitting and saves coefficients if enough calibration data is collected.
+        - Uses functions `curve_fit()`, `save_coefficients()`, and `calibrate_water_sensor()` from this module.
     """
+    try:
+        # Check if calibration coefficients already exist
+        if load_coefficients() is not None:
+            return
 
-    coefficients_file = 'calibration_coefficients.txt'
+        print("\nStarting water sensor calibration...\n")
+        calibration_data = calibrate_water_sensor()
 
-    # Check if a file containing previously calculated coefficients exists
-    if os.path.exists(coefficients_file):
-        try:
-            # Open and read the coefficients from the file
-            with open(coefficients_file, 'r') as f:
-                coefficients = eval(f.read())  # Using eval; consider JSON for safer parsing
-            # Check if all necessary coefficients are present in the file
-            if all(key in coefficients for key in ['a', 'b', 'c']):
-                print("Calibration coefficients for water sensor already exist.")
-                return  # Skip calibration if coefficients already exist
-        except Exception as e:
-            print(f"Error reading or validating coefficients: {e}")  # Handle errors during file read
-
-    # Begin the calibration process
-    print("\nStarting water sensor calibration...")
-    calibration_data = []
-    # Iterate through a range of target water levels from 1.5 to 6.0 inches
-    for target_level in np.arange(1.5, 6.5, 0.5):
-        stop_event.clear()  # Clear any previous stop signals for the pump control thread
-        # Start a thread to control the pump operation asynchronously
-        pump_thread = threading.Thread(target=pump_control, args=(FRESH_WATER_PUMP_PIN,))
-        pump_thread.start()
-
-        # Loop to handle user input during calibration
-        while True:
+        # Check if enough calibration data was collected
+        if len(calibration_data) >= 3:
             try:
-                # Prompt user to confirm when water level reaches the target level
-                user_input = input(
-                    f"Type 'confirm {target_level}' when the water is at {target_level} inches: ").strip().lower()
-                if user_input == f"confirm {target_level}":
-                    stop_event.set()  # Signal the pump thread to stop pumping
-                    # Wait up to 10 seconds for the pump thread to finish
+                # Curve fitting using collected calibration data
+                levels, sensor_values = zip(*calibration_data)
+                popt, _ = curve_fit(quadratic_model, sensor_values, levels)
+                coefficients = {'a': popt[0], 'b': popt[1], 'c': popt[2]}
+                print(f"\nCalibration complete. Coefficients: {coefficients}\n")
+                save_coefficients(coefficients)
+            except Exception as e:
+                raise Exception(f"Error during curve fitting: {e}")
+        else:
+            raise ValueError("Insufficient calibration data collected. Calibration requires at least 3 data points.")
+
+    except IOError as e:
+        print(f"Error reading or writing calibration coefficients: {e}")
+        raise
+    except ValueError as e:
+        print(f"ValueError: {e}")
+        raise
+    except Exception as e:
+        print(f"Unexpected error during water sensor initialization: {e}")
+        raise
+
+
+def calibrate_water_sensor():
+    """
+    Performs the calibration process for the water sensor.
+    Returns a list of (water level, sensor value) tuples.
+
+    Raises:
+        Exception: If there is an unexpected error during the calibration process.
+
+    Notes:
+        - Iterates through target water levels and prompts user confirmation.
+        - Uses threading to control pump operation asynchronously.
+        - Handles user input validation and error conditions during calibration.
+        - Calls `get_average_sensor_value()`, `clear_terminal()`, and `pump_control()` functions.
+    """
+    calibration_data = []
+    try:
+        for target_level in np.arange(1.5, 6.5, 0.5):
+            stop_event.clear()
+            pump_thread = threading.Thread(target=pump_control, args=(FRESH_WATER_PUMP_PIN,))
+            pump_thread.start()
+
+            while True:
+                try:
+                    user_input = input(
+                        f"Type 'confirm {target_level}' when the water is at {target_level} inches: ").strip().lower()
+                    if user_input == f"confirm {target_level}":
+                        stop_event.set()
+                        pump_thread.join(timeout=10)
+                        if pump_thread.is_alive():
+                            print("Warning: Pump control thread did not terminate correctly.")
+                        average_sensor_value = get_average_sensor_value()
+                        calibration_data.append((target_level, average_sensor_value))
+                        print(f"Averaged sensor value at {target_level} inches: {average_sensor_value}")
+                        time.sleep(3)
+                        clear_terminal()
+                        time.sleep(2)
+                        break
+                    else:
+                        print("\nInvalid input. Please follow the format 'confirm <level>'.")
+                        time.sleep(5)
+                except Exception as e:
+                    print(f"Unexpected error during user interaction: {e}")
+                    stop_event.set()
                     pump_thread.join(timeout=10)
                     if pump_thread.is_alive():
-                        print("Warning: Pump control thread did not terminate correctly.")
-                    # Measure the average sensor value at this water level
-                    average_sensor_value = get_average_sensor_value()
-                    calibration_data.append((target_level, average_sensor_value))
-                    print(f"Averaged sensor value at {target_level} inches: {average_sensor_value}")
-                    time.sleep(5)  # Pause to stabilize water level before moving to the next
-                    break
-                else:
-                    print("Invalid input. Please follow the format 'confirm <level>'.")
-            except Exception as e:
-                print(f"Unexpected error during user interaction: {e}")
-                stop_event.set()  # Ensure the pump stops in case of error
-                pump_thread.join(timeout=10)  # Attempt to safely terminate the thread
-                if pump_thread.is_alive():
-                    print("Critical error: Unable to properly stop pump control thread.")
-                return  # Exit the function on critical error
+                        print("Critical error: Unable to properly stop pump control thread.")
+                    return []
 
-        # Prepare for the next calibration point
-        stop_event.set()
-        if pump_thread.is_alive():
-            pump_thread.join()  # Ensure the pump control thread has terminated
+            stop_event.set()
+            if pump_thread.is_alive():
+                pump_thread.join()
 
-    # Check if enough calibration data was collected
-    if len(calibration_data) < 3:
-        print("Insufficient calibration data collected. Calibration requires at least 3 data points.")
-        return
-
-    # Curve fitting using collected calibration data
-    try:
-        levels, sensor_values = zip(*calibration_data)  # Unpack level and sensor value data
-        # Fit the sensor values to a quadratic model to find calibration coefficients
-        popt, _ = curve_fit(quadratic_model, sensor_values, levels)
-        coefficients = {'a': popt[0], 'b': popt[1], 'c': popt[2]}
-        print(f"\nCalibration complete. Coefficients: {coefficients}\n")
-        # Save the new coefficients back to the file
-        save_coefficients(coefficients)
     except Exception as e:
-        print(f"Error during curve fitting: {e}")  # Handle errors in curve fitting
+        print(f"Error during calibration process: {e}")
+        raise
+
+    return calibration_data

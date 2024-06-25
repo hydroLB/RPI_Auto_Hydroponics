@@ -7,6 +7,7 @@ from adafruit_motorkit import MotorKit
 
 from Atlas_and_pump_utilities.AtlasI2C import AtlasI2C
 from Atlas_and_pump_utilities.pumps import Pump, stop_pumps_list, prime
+from file_operations.clear_terminal import clear_terminal
 
 
 class Plant:
@@ -163,10 +164,12 @@ def find_motor_name_and_direction():
                 stop_pumps_list([temp_pump])  # Stop the pump after reversing
 
                 # Prime the pump to fill it completely
-                prime([temp_pump])  # Assuming 'prime' function exists and handles list of pumps
+                prime(temp_pump)
                 print("Pump priming complete.")
+                clear_terminal()
             else:
                 print(f"No pump assigned to motor {motor_num} on driver with address {hex(address)}.")
+                clear_terminal()
 
         try:
             # Define the directory and file path
@@ -187,7 +190,8 @@ def find_motor_name_and_direction():
         except Exception as e:
             print(f"An unexpected error occurred in save_pump_objects: {e}")
 
-        print("\n All motors have been named and tested for correct direction \n ")
+        print("\n All motors have been named, tested for correct direction, reversed, and primed \n ")
+        clear_terminal()
 
         # Assign variables to each pump based on their names
         return assign_pumps(pump_objects)
@@ -313,7 +317,7 @@ def load_motor_name_and_direction():
         with open(file_path, 'rb') as file:
             pump_objects = pickle.load(file)
 
-        # Ensure pump_objects is the correct type (assuming it should be a list or dict)
+        # Ensure pump_objects is the correct type
         if not isinstance(pump_objects, (list, dict)):
             raise TypeError(
                 "Expected pump_objects to be a list or dict, but got type {}. "
