@@ -8,6 +8,7 @@ from user_config.user_configurator import PH_PPM_SAFETY_MARGIN, ph_dosing_time, 
 
 
 def fill_water(fresh_water_pin):
+    import time
     """
     Fill the water reservoir until the target water level is reached.
 
@@ -19,13 +20,11 @@ def fill_water(fresh_water_pin):
         # Continuously check the current water level in the reservoir
         while get_water_level() < target_water_level:
             # Display the current water level while adding water
-            print("Adding water... level %f" % get_water_level())
-            # Start the water pump to fill the reservoir
+            print("Filling...  current level: %f" % get_water_level() + ",target level: %f" % target_water_level)
             start_fresh_water_pump(fresh_water_pin)
-            # Wait for 3.5 seconds to allow the water pump to operate
-            sleep(3.5)
-        # Stop the water pump once the target water level is reached
-        end_fresh_water_pump(fresh_water_pin)
+            time.sleep(2.5)
+            end_fresh_water_pump(fresh_water_pin)
+            time.sleep(1)
     except Exception as ee:
         print("Error", ee)
         # Log the error message and stop the water pump in case of an exception

@@ -75,7 +75,9 @@ def save_coefficients(coefficients):
         # Open the file in write mode and save the coefficients
         with open(file_path, 'w') as file:
             json.dump(coefficients, file)
-        print(f"\n Calibration coefficients saved to {file_path} \n")
+        print(f"\nCalibration coefficients saved to {file_path} \n")
+        time.sleep(3)
+        clear_terminal()
 
     except IOError as e:
         print(f"Error saving calibration coefficients: {e}")
@@ -135,7 +137,7 @@ def pump_control(pin):
             end_fresh_water_pump(pin)
             if stop_event.is_set():
                 break
-            time.sleep(2)
+            time.sleep(2.5)
     except Exception as e:
         raise Exception(f"Unexpected error during pump control: {e}")
 
