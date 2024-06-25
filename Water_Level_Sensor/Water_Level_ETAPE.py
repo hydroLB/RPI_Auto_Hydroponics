@@ -6,9 +6,6 @@ from Water_Level_Sensor.ETAPE_Calibration import quadratic_model, get_average_se
 # Set the gain value for the ADC
 GAIN = 1
 
-# File to store calibration coefficients
-coefficients_file = 'calibration_coefficients.txt'
-
 
 def load_coefficients():
     """
