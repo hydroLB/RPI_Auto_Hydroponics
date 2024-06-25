@@ -159,7 +159,6 @@ def find_motor_name_and_direction():
 
                 # Prime the pump to fill it completely
                 prime(temp_pump)
-                print("Pump priming complete.")
                 clear_terminal()
             else:
                 print(f"No pump assigned to motor {motor_num} on driver with address {hex(address)}.")
