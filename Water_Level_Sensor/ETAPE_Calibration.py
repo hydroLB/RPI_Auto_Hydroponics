@@ -7,7 +7,6 @@ import time
 import threading
 
 from Atlas_and_pump_utilities.pumps import start_fresh_water_pump, end_fresh_water_pump
-from Water_Level_Sensor.Water_Level_ETAPE import load_coefficients
 from file_operations.clear_terminal import clear_terminal
 # Initialize the ADC using the Adafruit_ADS1x15 library
 from user_config.user_configurator import ADC_BUSNUM, ADC_I2C_ADDRESS, FRESH_WATER_PUMP_PIN

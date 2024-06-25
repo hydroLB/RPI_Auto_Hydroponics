@@ -1,8 +1,6 @@
 import json
 import os
 
-from Water_Level_Sensor.ETAPE_Calibration import quadratic_model, get_average_sensor_value
-
 # Set the gain value for the ADC
 GAIN = 1
 
@@ -45,6 +43,7 @@ def load_coefficients():
 
 
 def get_water_level():
+    from Water_Level_Sensor.ETAPE_Calibration import quadratic_model, get_average_sensor_value
     """
     Calculates the water level using sensor data and preloaded coefficients.
 
