@@ -5,8 +5,9 @@ import json
 from scipy.optimize import curve_fit
 import time
 
+from Atlas_and_pump_utilities.pumps import start_fresh_water_pump, end_fresh_water_pump
 # Initialize the ADC using the Adafruit_ADS1x15 library
-from user_config.user_configurator import ADC_BUSNUM, ADC_I2C_ADDRESS
+from user_config.user_configurator import ADC_BUSNUM, ADC_I2C_ADDRESS, FRESH_WATER_PUMP_PIN
 
 adc = Adafruit_ADS1x15.ADS1115(busnum=ADC_BUSNUM, address=ADC_I2C_ADDRESS)
 
@@ -126,9 +127,11 @@ def initialize_water_sensor():
     calibration_data = []
     for target_level in np.arange(1.5, 7, 0.5):  # 1.5, 2, ..., 6.5 inches
         while True:
+            start_fresh_water_pump(FRESH_WATER_PUMP_PIN)
             user_input = input(
                 f"Type 'confirm {target_level}' when the water is at {target_level} inches: ").strip().lower()
             if user_input == f"confirm {target_level}":
+                end_fresh_water_pump(FRESH_WATER_PUMP_PIN)
                 try:
                     average_sensor_value = get_average_sensor_value()
                     calibration_data.append((target_level, average_sensor_value))
@@ -138,8 +141,10 @@ def initialize_water_sensor():
                     return
                 break
             else:
+                end_fresh_water_pump(FRESH_WATER_PUMP_PIN)
                 print("Invalid input. Please follow the format 'confirm <level>'.")
                 print(f"Example: Type 'confirm {target_level}' to confirm the water level.")
+                time.sleep(3)
 
     if len(calibration_data) < 3:
         print("Insufficient calibration data collected. Calibration requires at "

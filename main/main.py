@@ -55,13 +55,12 @@ def setup_hydroponic_system():
             # Prime the pumps to fill them completely
             prime(all_pumps)
 
-            # Initialize water sensor to get the water level
-            initialize_water_sensor()
-
             # test the pump control over bringing in fresh water during a refill
             test_fresh_water_pump()
 
-            print("You will need to remove water until it is below the chosen maximum height of the water.")
+            # Initialize water sensor to get the water level
+            initialize_water_sensor()
+
             # Fill the system with water
             fill_water(FRESH_WATER_PUMP_PIN)
 
