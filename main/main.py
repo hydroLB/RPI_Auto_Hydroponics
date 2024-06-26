@@ -12,7 +12,6 @@ from Water_level_nutrients_ph_manager.ph_manager import balance_PH_exact, balanc
 from user_config.user_configurator import SKIP_SYSTEM_SETUP_WATER_LEVEL, configure_system, \
     ph_dosing_time, WATER_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS, FRESH_WATER_PUMP_PIN
 from file_operations.logging_water_and_ppm import read_from_file, write_to_file
-import atexit
 
 
 def setup_hydroponic_system():
@@ -153,7 +152,7 @@ def ensure_pumps_off():
     try:
         # Configure the system and get the plant and pH pump list
         plant, ph_pump_list = configure_system()
-        atexit.register(stop_pumps_list([pump for pump, _ in plant.nutrient_pump_time_list] + ph_pump_list))
+        stop_pumps_list([pump for pump, _ in plant.nutrient_pump_time_list] + ph_pump_list)
     except Exception as g:
         print(f"An error occurred in ensure_pumps_off function in main: {g}")
 

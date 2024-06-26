@@ -136,7 +136,7 @@ def pump_control(pin):
             end_fresh_water_pump(pin)
             if stop_event.is_set():
                 break
-            time.sleep(2.5)
+            time.sleep(3.5)
     except Exception as e:
         raise Exception(f"Unexpected error during pump control: {e}")
 

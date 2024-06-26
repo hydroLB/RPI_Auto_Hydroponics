@@ -4,7 +4,8 @@ from Atlas_and_pump_utilities.pumps import end_fresh_water_pump, start_fresh_wat
 from Water_Level_Sensor.Water_Level_ETAPE import get_water_level
 from Water_level_nutrients_ph_manager.ph_manager import balance_PH_exact
 from file_operations.logging_water_and_ppm import write_to_file, read_from_file
-from user_config.user_configurator import PH_PPM_SAFETY_MARGIN, ph_dosing_time, Plant, FRESH_WATER_PUMP_PIN
+from user_config.user_configurator import PH_PPM_SAFETY_MARGIN, ph_dosing_time, Plant, FRESH_WATER_PUMP_PIN, \
+    PPM_LOOP_SLEEP_TIME
 
 
 def fill_water(fresh_water_pin):
@@ -72,8 +73,8 @@ def dose_nutrients(target_ppm_local, pump_info):
                 # Stop the pump
                 pump.stop()
 
-            # Sleep for 10 seconds before checking the PPM again
-            sleep(10)
+            # Sleep for PPM_LOOP_SLEEP_TIME before checking the PPM again
+            sleep(PPM_LOOP_SLEEP_TIME)
 
     except TypeError as e:
         raise TypeError("Type error occurred in dose_nutrients: {}".format(e))
@@ -123,7 +124,6 @@ def adjust_water_level_and_nutrients(plant, ph_pump_list):
 
         # Fill water to the target level
         fill_water(FRESH_WATER_PUMP_PIN)
-        sleep(15)  # Wait for PPM readings to settle
 
         # Dose nutrients, first making sure it's under the amount needed, then balance pH, increasing it,
         # then finally ensure it's exactly at the target PPM

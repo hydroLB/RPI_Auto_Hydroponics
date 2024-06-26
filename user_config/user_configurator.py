@@ -64,7 +64,7 @@ WAIT_TIME_BETWEEN_CHECKS = 3600
 PH_PPM_SAFETY_MARGIN = 50
 PH_UP_SLEEP_TIME = 8  # Sleep time for pH up pump (how long is it on aka how much of it per cycle)
 PH_DOWN_SLEEP_TIME = 8  # time for pH down pump (how long is it on aka how much of it per cycle)
-LOOP_SLEEP_TIME = 6  # Sleep time for the loop ((how long to wait between each increment dosing)
+LOOP_SLEEP_TIME = 30  # Sleep time for the loop ((how long to wait between each increment dosing)
 
 ph_dosing_time = PH_UP_SLEEP_TIME, PH_DOWN_SLEEP_TIME, LOOP_SLEEP_TIME
 ############################################################################################
@@ -339,6 +339,9 @@ def load_motor_name_and_direction():
 
     except Exception as e:
         raise Exception("An unexpected error occurred in load_motor_name_and_direction: {}".format(e))
+
+
+PPM_LOOP_SLEEP_TIME = 30
 
 
 def configure_system():

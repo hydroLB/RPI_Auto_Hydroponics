@@ -486,7 +486,7 @@ def calibrate_sensor(sensor, sensor_type):
     """Guide the user through the calibration process for the specified sensor type."""
     print(f"Starting {sensor_type.upper()} sensor calibration...")
     if sensor_type == 'ph':
-        points = ['low', 'mid', 'high']
+        points = ['mid', 'low',  'high']
     elif sensor_type == 'ec':
         points = ['dry', 'single', 'dual']
     else:
