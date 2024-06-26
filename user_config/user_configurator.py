@@ -107,6 +107,13 @@ def find_motor_name_and_direction():
                       "pHDownPump"]
         pump_objects = {}
 
+        # Ask user if they want to clear lines and reverse pumps or skip
+        user_choice = input("Do you want to clear lines and reverse pumps or skip this step? (enter 'yes' to clear "
+                            "lines or no to skip ").strip().lower()
+        if user_choice not in ['yes', 'no']:
+            print("Invalid choice. Defaulting to 'yes'.")
+            user_choice = 'yes'
+
         for address, motor_num in motor_map:
             motor = motor_map[(address, motor_num)]
             if motor is None:
@@ -155,10 +162,11 @@ def find_motor_name_and_direction():
                 }
                 print(f"Pump {chosen_name} mapped to motor {motor_num} on driver with address {hex(address)}. \n")
 
-                clear_lines(Pump(motor, direction))
+                if user_choice == 'yes':
+                    clear_lines(Pump(motor, direction))
 
-                # Prime the pump to fill it completely
-                prime(Pump(motor, direction))
+                    # Prime the pump to fill it completely
+                    prime(Pump(motor, direction))
 
                 clear_terminal()
             else:
