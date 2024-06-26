@@ -283,16 +283,22 @@ class AtlasI2C:
 def get_ph():
     ph_sensor = AtlasI2C(address=99)  # Initialize the pH sensor with the specified I2C address
     """Return pH value."""
-    attempts = 5  # Number of attempts to read the temperature and pH value
+    total_measurements = 8  # Total number of measurements to take (3 to discard + 5 to average)
+    discard_count = 3  # Number of initial measurements to discard
+    valid_measurements = []  # List to store the valid measurements
 
-    for attempt in range(attempts):
+    for attempt in range(total_measurements):
         temp_c = get_temp_c()  # Get the temperature in Celsius
 
         if temp_c is not None:
             try:
                 # Send the read command to the pH sensor with temperature compensation
                 response = ph_sensor.query(f'RT,{temp_c:.2f}').rstrip('\0')
-                return float(response)  # Convert the response to a float and return it
+                ph_value = float(response)  # Convert the response to a float
+
+                # Only store the measurement if it is one of the 5 valid measurements to average
+                if attempt >= discard_count:
+                    valid_measurements.append(ph_value)
 
             except ValueError:
                 # Handle the case where the response cannot be converted to a float
@@ -313,9 +319,17 @@ def get_ph():
             # If the temperature reading fails, wait for 1 second before retrying
             time.sleep(1)
 
-    # If all attempts fail to get a valid pH value, print a warning message
-    print("Warning: Failed to get pH value after 5 attempts.")
-    return None
+        # Wait for 0.5 seconds before taking the next measurement
+        time.sleep(0.5)
+
+    # If there are not enough valid measurements, print a warning message
+    if len(valid_measurements) < 5:
+        print("Warning: Not enough valid measurements to calculate average pH value.")
+        return None
+
+    # Calculate and return the average of the valid measurements
+    average_ph = sum(valid_measurements) / len(valid_measurements)
+    return average_ph
 
 
 def get_ec():
@@ -351,15 +365,21 @@ def get_ec():
 
 def get_ppm():
     """Return PPM value."""
-    attempts = 5  # Number of attempts to read the EC value
+    total_measurements = 8  # Total number of measurements to take (3 to discard + 5 to average)
+    discard_count = 3  # Number of initial measurements to discard
+    valid_measurements = []  # List to store the valid measurements
 
-    for attempt in range(attempts):
+    for attempt in range(total_measurements):
         ec = get_ec()  # Get the EC value
 
         if ec is not None:
             try:
                 # Convert the EC value to PPM (Parts Per Million)
-                return ec * 0.5
+                ppm = ec * 0.5
+
+                # Store the measurement if it is beyond the discard count
+                if attempt >= discard_count:
+                    valid_measurements.append(ppm)
 
             except TypeError as e:
                 # Handle the case where the EC value is not a number
@@ -372,12 +392,19 @@ def get_ppm():
                 return None
 
         else:
-            # If the EC reading fails, wait for 1 second before retrying
-            time.sleep(1)
+            print("Warning: Failed to read EC value.")
 
-    # If all attempts fail to get a valid PPM value, print a warning message
-    print("Warning: Failed to get PPM value after 5 attempts.")
-    return None
+        # Wait for 0.5 seconds before taking the next measurement
+        time.sleep(0.5)
+
+    # If there are not enough valid measurements, print a warning message
+    if len(valid_measurements) < 5:
+        print("Warning: Not enough valid measurements to calculate average PPM value.")
+        return None
+
+    # Calculate and return the average of the valid measurements
+    average_ppm = sum(valid_measurements) / len(valid_measurements)
+    return average_ppm
 
 
 #######################################################
