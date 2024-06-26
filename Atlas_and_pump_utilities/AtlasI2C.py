@@ -11,39 +11,104 @@ from file_operations.clear_terminal import clear_terminal
 
 
 def read_temp_file():
-    from user_config.user_configurator import W1_TEMP_PATH
+    from user_config.user_configurator import W1_TEMP_PATH  # Import the temperature file path
     """Read temperature file and return its content."""
     try:
+        # Attempt to open the temperature file in read mode
         with open(W1_TEMP_PATH, 'r') as temp_file:
-            first_line = temp_file.readline().strip()
+            first_line = temp_file.readline().strip()  # Read the first line and strip any leading/trailing whitespace
+
             if not first_line:
+                # If the first line is empty, try to read the next line
                 return temp_file.readline().strip()
             else:
+                # If the first line is not empty, return it
                 return first_line
+
     except FileNotFoundError:
+        # Handle the case where the temperature file is not found
         print("Error: Temperature file not found in read_temp_file.")
+        return None
+
+    except PermissionError:
+        # Handle the case where there are permission issues accessing the file
+        print("Error: Permission denied when accessing the temperature file in read_temp_file.")
+        return None
+
+    except IOError as e:
+        # Handle any other I/O errors that may occur
+        print(f"IOError occurred: {e}")
+        return None
+
+    except Exception as e:
+        # Handle any other unexpected exceptions
+        print(f"An unexpected error occurred: {e}")
         return None
 
 
 def get_temp_c():
     """Return temperature in Celsius."""
-    attempts = 5
+    attempts = 5  # Number of attempts to read the temperature data
+
     for attempt in range(attempts):
-        temp_data = read_temp_file()
-        if temp_data is not None:
-            return int(temp_data) / 1000
-        else:
-            time.sleep(1)  # Wait for 1 second before trying again
+        try:
+            temp_data = read_temp_file()  # Read the temperature data from the file
+
+            if temp_data is not None:
+                try:
+                    # Convert the temperature data to Celsius
+                    return int(temp_data) / 1000
+
+                except ValueError as e:
+                    # Handle the case where the temperature data cannot be converted to an integer
+                    print(f"ValueError occurred: {e}")
+                    return None
+
+                except TypeError as e:
+                    # Handle the case where the temperature data is of an unexpected type
+                    print(f"TypeError occurred: {e}")
+                    return None
+
+            else:
+                # If the temperature reading fails, wait for 1 second before retrying
+                time.sleep(1)
+
+        except IOError as e:
+            # Handle any I/O errors that occur while reading the temperature file
+            print(f"IOError occurred: {e}")
+            return None
+
+        except Exception as e:
+            # Handle any other unexpected exceptions
+            print(f"An unexpected error occurred: {e}")
+            return None
+
+    # If all attempts fail to get a valid temperature value, print a warning message
     print("Warning: Failed to read temperature data after 5 attempts.")
     return None
 
 
 def get_temp_f():
     """Return temperature in Fahrenheit."""
-    temp_c = get_temp_c()
+    temp_c = get_temp_c()  # Get the temperature in Celsius
+
     if temp_c is not None:
-        return temp_c * 9 / 5 + 32
+        try:
+            # Convert the temperature from Celsius to Fahrenheit
+            return temp_c * 9 / 5 + 32
+
+        except TypeError as e:
+            # Handle the case where the temperature data is not a number
+            print(f"TypeError occurred: {e}")
+            return None
+
+        except Exception as e:
+            # Handle any other unexpected exceptions
+            print(f"An unexpected error occurred: {e}")
+            return None
+
     else:
+        # If the temperature reading in Celsius fails, return None
         return None
 
 
@@ -168,23 +233,12 @@ class AtlasI2C:
             return self._module + " " + str(self.address) + " " + self._name
 
     def read(self, num_of_bytes=31):
-        """
-        reads a specified number of bytes from I2C, then parses and displays the result
-        """
-
         raw_data = self.file_read.read(num_of_bytes)
-        response = self.get_response(raw_data=raw_data)
-        # print(response)
-        is_valid, error_code = self.response_valid(response=response)
-
-        if is_valid:
-            char_list = self.handle_raspi_glitch(response[1:])
-            result = str(''.join(char_list))
-            # result = "Success: " +  str(''.join(char_list))
+        response = [x for x in raw_data if x != 0]
+        if response[0] == 1:
+            return ''.join([chr(x & ~0x80) for x in response[1:]])
         else:
-            result = "Error " + self.get_device_info() + ": " + error_code
-
-        return result
+            return f"Error: {response[0]}"
 
     def get_command_timeout(self, command):
         timeout = None
@@ -196,17 +250,12 @@ class AtlasI2C:
         return timeout
 
     def query(self, command):
-        """
-        write a command to the board, wait the correct timeout,
-        and read the response
-        """
         self.write(command)
-        current_timeout = self.get_command_timeout(command=command)
-        if not current_timeout:
-            return "sleep mode"
-        else:
-            time.sleep(current_timeout)
-            return self.read()
+        if command.upper().startswith(("R", "CAL")):
+            time.sleep(self.LONG_TIMEOUT)
+        elif not command.upper().startswith("SLEEP"):
+            time.sleep(self.SHORT_TIMEOUT)
+        return self.read()
 
     def close(self):
         self.file_read.close()
@@ -232,46 +281,101 @@ class AtlasI2C:
 
 
 def get_ph():
-    from main.main import PHSensor
+    ph_sensor = AtlasI2C(address=99)  # Initialize the pH sensor with the specified I2C address
     """Return pH value."""
-    attempts = 5
+    attempts = 5  # Number of attempts to read the temperature and pH value
+
     for attempt in range(attempts):
-        temp_c = get_temp_c()
+        temp_c = get_temp_c()  # Get the temperature in Celsius
+
         if temp_c is not None:
             try:
-                return float(PHSensor.query('RT,' + str(temp_c)).rstrip('\0'))
+                # Send the read command to the pH sensor with temperature compensation
+                response = ph_sensor.query(f'RT,{temp_c:.2f}').rstrip('\0')
+                return float(response)  # Convert the response to a float and return it
+
             except ValueError:
+                # Handle the case where the response cannot be converted to a float
                 print("Error: Unable to parse pH value.")
                 return None
+
+            except IOError as e:
+                # Handle any I/O errors that occur during communication with the sensor
+                print(f"IOError occurred: {e}")
+                return None
+
+            except Exception as e:
+                # Handle any other unexpected exceptions
+                print(f"An unexpected error occurred: {e}")
+                return None
+
         else:
-            time.sleep(1)  # Wait for 1 second before trying again
+            # If the temperature reading fails, wait for 1 second before retrying
+            time.sleep(1)
+
+    # If all attempts fail to get a valid pH value, print a warning message
     print("Warning: Failed to get pH value after 5 attempts.")
     return None
 
 
 def get_ec():
-    from main.main import ECSensor
+    ec_sensor = AtlasI2C(address=100)  # Initialize the EC sensor with the specified I2C address
     """Return EC value."""
-    temp_c = get_temp_c()
+    temp_c = get_temp_c()  # Get the temperature in Celsius
+
     if temp_c is not None:
         try:
-            return float(ECSensor.query('RT,' + str(temp_c)).rstrip('\0'))
+            # Send the read command to the EC sensor with temperature compensation
+            response = ec_sensor.query(f'RT,{temp_c:.2f}').rstrip('\0')
+            return float(response)  # Convert the response to a float and return it
+
         except ValueError:
+            # Handle the case where the response cannot be converted to a float
             print("Error: Unable to parse EC value.")
             return None
+
+        except IOError as e:
+            # Handle any I/O errors that occur during communication with the sensor
+            print(f"IOError occurred: {e}")
+            return None
+
+        except Exception as e:
+            # Handle any other unexpected exceptions
+            print(f"An unexpected error occurred: {e}")
+            return None
+
     else:
+        # If the temperature reading fails, return None
         return None
 
 
 def get_ppm():
     """Return PPM value."""
-    attempts = 5
+    attempts = 5  # Number of attempts to read the EC value
+
     for attempt in range(attempts):
-        ec = get_ec()
+        ec = get_ec()  # Get the EC value
+
         if ec is not None:
-            return ec * 0.5
+            try:
+                # Convert the EC value to PPM (Parts Per Million)
+                return ec * 0.5
+
+            except TypeError as e:
+                # Handle the case where the EC value is not a number
+                print(f"TypeError occurred: {e}")
+                return None
+
+            except Exception as e:
+                # Handle any other unexpected exceptions
+                print(f"An unexpected error occurred: {e}")
+                return None
+
         else:
-            time.sleep(1)  # Wait for 1 second before trying again
+            # If the EC reading fails, wait for 1 second before retrying
+            time.sleep(1)
+
+    # If all attempts fail to get a valid PPM value, print a warning message
     print("Warning: Failed to get PPM value after 5 attempts.")
     return None
 
@@ -282,13 +386,12 @@ def get_ppm():
 def test_temp_sensor():
     """Continuously read and display temperature values until interrupted or user types 'done'."""
     try:
-        print("Type 'done' to stop the test.")
+        print("\n Starting temperature sensor test. \n")
         while True:
             # Get the temperature in Celsius
             temp_c = get_temp_c()
             # Get the temperature in Fahrenheit
             temp_f = get_temp_f()
-            print("\n Temperature Sensor Test for PH and EC compensation")
             if temp_c is not None and temp_f is not None:
                 # Print the temperature in both Celsius and Fahrenheit
                 print(f"Temperature: {temp_c:.2f} °C / {temp_f:.2f} °F")
@@ -296,9 +399,9 @@ def test_temp_sensor():
                 print("Failed to read temperature.")
 
             # Prompt the user for input and check if they type 'done'
-            print("Press enter to continue or type 'done' to stop.")
-            user_input = input().strip().lower()
+            user_input = input("Press enter to continue or type 'done' to stop: ").strip().lower()
             if user_input == 'done':
+                clear_terminal()
                 break
 
             # Wait for 2 seconds before the next reading
@@ -310,90 +413,69 @@ def test_temp_sensor():
     print("Temperature sensor test stopped.")
 
 
-def test_ph_sensor(sensor):
-    """Continuously read and display pH values until interrupted."""
-    try:
-        print(" \n PH Sensor Test, type 'done' to stop the test.")
-        while True:
-            # Get the pH value with temperature compensation
-            ph_value = get_ph()
-            # Print the pH value
-            print(f"pH Value: {ph_value:.2f}, press enter to continue or type 'done' to exit")
-
-            # Prompt the user for input and check if they type 'done'
-            user_input = input().strip().lower()
-            if user_input == 'done':
-                break
-
-            # Wait for 0.5 seconds before the next reading
-            time.sleep(0.5)
-    except KeyboardInterrupt:
-        # Handle the interruption to stop the test
-        print("Stopping pH sensor test.")
-
-    # Ask the user if they want to calibrate the pH sensor
-    calibrate_ph = input("Would you like to calibrate the pH sensor? (yes/no): ").strip().lower()
-    if calibrate_ph == 'yes':
-        calibrate_sensor(sensor, 'ph')
-
-
-def test_ec_sensor(sensor):
+def test_ec_sensor():
+    ec_sensor = AtlasI2C(address=100)
     """Continuously read and display EC values (in PPM) until interrupted."""
     try:
-        print(" \n EC sensor test, type 'done' to stop test. ")
+        print("\nStarting EC sensor test\n")
         while True:
-            # Get the EC value and convert it to PPM
             ec_value = get_ppm()
-            # Print the EC value in PPM
-            print(f"PPM Value: {ec_value:.2f}, press enter to continue or type 'done' to exit")
-
+            print(f"PPM Value: {ec_value:.2f}")
             # Prompt the user for input and check if they type 'done'
-            user_input = input().strip().lower()
+            user_input = input("Press enter to continue or type 'done' to stop: ").strip().lower()
             if user_input == 'done':
+                clear_terminal()
                 break
-
-            # Wait for 0.5 seconds before the next reading
             time.sleep(0.5)
     except KeyboardInterrupt:
-        # Handle the interruption to stop the test
         print("Stopping EC sensor test.")
-
-    # Ask the user if they want to calibrate the EC sensor
     calibrate_ec = input("Would you like to calibrate the EC sensor? (yes/no): ").strip().lower()
     if calibrate_ec == 'yes':
-        calibrate_sensor(sensor, 'ec')
+        calibrate_sensor(ec_sensor, 'ec')
+
+
+def test_ph_sensor():
+    ph_sensor = AtlasI2C(address=99)
+    """Continuously read and display pH values until interrupted."""
+    try:
+        print("\nStarting PH Sensor Test\n")
+        while True:
+            ph_value = get_ph()
+            print(f"pH Value: {ph_value:.2f}")
+            # Prompt the user for input and check if they type 'done'
+            user_input = input("Press enter to continue or type 'done' to stop: ").strip().lower()
+            if user_input == 'done':
+                clear_terminal()
+                break
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        print("Stopping pH sensor test.")
+    calibrate_ph = input("Would you like to calibrate the pH sensor? (yes/no): ").strip().lower()
+    if calibrate_ph == 'yes':
+        calibrate_sensor(ph_sensor, 'ph')
 
 
 def calibrate_sensor(sensor, sensor_type):
     """Guide the user through the calibration process for the specified sensor type."""
     print(f"Starting {sensor_type.upper()} sensor calibration...")
-
-    # Determine the calibration points based on the sensor type
     if sensor_type == 'ph':
         points = ['low', 'mid', 'high']
     elif sensor_type == 'ec':
         points = ['dry', 'single', 'dual']
     else:
         print("Unknown sensor type for calibration.")
-        clear_terminal()
         return
-
-    # Loop through each calibration point
     for point in points:
         while True:
-            # Prompt the user to place the sensor in the appropriate calibration solution
             user_input = input(
                 f"Place the sensor in the {point} calibration solution and type 'confirm {point}', or type "
                 f"'cancel' to stop: ").strip().lower()
             if user_input == f"confirm {point}":
-                # Send the calibration command to the sensor
                 response = sensor.query(f'Cal,{point}')
-                # Print the response from the sensor
                 print(response)
                 break
             elif user_input == 'cancel':
                 print("Calibration process canceled.")
-                clear_terminal()
                 return
             else:
                 print("Invalid input. Please follow the format 'confirm <point>' or type 'cancel' to stop.")

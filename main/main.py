@@ -9,7 +9,7 @@ from Water_Level_Sensor.adjust_water_level_and_nutrients import fill_water, dose
     adjust_water_level_and_nutrients
 from Water_Level_Sensor.ETAPE_Calibration import initialize_water_sensor
 from Water_level_nutrients_ph_manager.ph_manager import balance_PH_exact, balance_ph
-from user_config.user_configurator import SKIP_SYSTEM_SETUP_WATER_LEVEL, configure_system, ECSensor, PHSensor, \
+from user_config.user_configurator import SKIP_SYSTEM_SETUP_WATER_LEVEL, configure_system, \
     ph_dosing_time, WATER_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS, FRESH_WATER_PUMP_PIN
 from file_operations.logging_water_and_ppm import read_from_file, write_to_file
 import atexit
@@ -47,8 +47,8 @@ def setup_hydroponic_system():
             test_temp_sensor()
 
             # Test pH and EC sensors
-            test_ph_sensor(PHSensor)
-            test_ec_sensor(ECSensor)
+            test_ph_sensor()
+            test_ec_sensor()
 
             # Get the target PPM and water level from settings file
             target_ppm, target_water_level = read_from_file()
