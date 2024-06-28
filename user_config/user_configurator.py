@@ -10,6 +10,8 @@ from file_operations.clear_terminal import clear_terminal
 from file_operations.logging_water_and_ppm import read_from_file
 
 
+########################################################################################################################
+
 class Plant:
     def __init__(self, name, target_ph, min_ph, max_ph, target_ppm, target_water_level, nutrient_pump_time_list):
         self.name = name
@@ -21,10 +23,11 @@ class Plant:
         self.nutrient_pump_time_list = nutrient_pump_time_list
 
 
-###########################################################
+########################################################################################################################
+
 # Initialize EC and pH sensors with I2C addresses
-PHSensor = AtlasI2C(63)
-ECSensor = AtlasI2C(64)
+PHSensor = AtlasI2C(address=99)  # Initialize the pH sensor with the specified I2C address
+ECSensor = AtlasI2C(address=100)  # Initialize the EC sensor with the specified I2C address
 
 # ADC configuration
 ADC_I2C_ADDRESS = 0x48
@@ -34,22 +37,30 @@ ADC_GAIN = 1
 # Set the GPIO numbering mode
 GPIO.setmode(GPIO.BCM)  # or GPIO.BOARD
 
-###########################################################
+########################################################################################################################
 
 # Vars for 1-wire temp sensor receiving data
 W1_DEVICE_PATH = '/sys/bus/w1/devices/'
 W1_DEVICE_NAME = '28-3c09f6495e17'
 W1_TEMP_PATH = W1_DEVICE_PATH + W1_DEVICE_NAME + '/temperature'
-###########################################################
+
+########################################################################################################################
 
 SKIP_SYSTEM_SETUP_WATER_LEVEL = 1.5
-###########################################################
+
+########################################################################################################################
 
 # pin used to turn on a pump to pull fresh water in
 FRESH_WATER_PUMP_PIN = 21
 GPIO.setup(FRESH_WATER_PUMP_PIN, GPIO.OUT)  # Set pin as an output
+# how long is the pump on at a time, this is to control how much water comes out at a time to not overwhelm speed of
+# the etape capturing the change
+fresh_water_pump_time_on = 2
 
-###########################################################
+#how long is the pump off at a time
+fresh_water_pump_time_off = 3
+
+########################################################################################################################
 
 # Water level change threshold (in inches) (acts as the plants 'dry-back' function and time between checks (in seconds)
 # Example: Bucket will be filled to 6 inches, threshold is 2, so at 4 inches, the bucket will refill
@@ -57,7 +68,13 @@ WATER_THRESHOLD = 2
 # TIME TO WAIT BETWEEN SYSTEM WATER LEVEL CHECK -> PPM ADJUST, PH CHECK
 # 60 SECONDS AND 60 MINUTES = 60*60=3600 = 1 hour
 WAIT_TIME_BETWEEN_CHECKS = 3600
-###########################################################
+
+########################################################################################################################
+
+#How long system waits between each dosing (all nutrient pumps cycle on/off) until target amount of nutrients is reached
+PPM_LOOP_SLEEP_TIME = 30
+
+########################################################################################################################
 
 # Margin (in ppm) between the actual target PPM in the nutrient dosing cycle
 # to avoid overloading the nutrients when the pH is finally balanced at the end (which always raises it to some degree).
@@ -67,9 +84,8 @@ PH_DOWN_SLEEP_TIME = 8  # time for pH down pump (how long is it on aka how much 
 LOOP_SLEEP_TIME = 30  # Sleep time for the loop ((how long to wait between each increment dosing)
 
 ph_dosing_time = PH_UP_SLEEP_TIME, PH_DOWN_SLEEP_TIME, LOOP_SLEEP_TIME
-############################################################################################
 
-###########################################################
+########################################################################################################################
 
 # Initialize motor drivers with I2C addresses
 driver0 = MotorKit(address=0x60)
@@ -93,6 +109,8 @@ motors = [
     (0x60, 4), (0x61, 4), (0x60, 1)
 ]
 
+
+########################################################################################################################
 
 def find_motor_name_and_direction():
     try:
@@ -341,11 +359,10 @@ def load_motor_name_and_direction():
         raise Exception("An unexpected error occurred in load_motor_name_and_direction: {}".format(e))
 
 
-PPM_LOOP_SLEEP_TIME = 30
-
-
 def configure_system():
     try:
+########################################################################################################################
+
         # Configuration Section
         # User can modify these values directly
         PLANT_NAME = "Raspberry plant"
@@ -359,6 +376,8 @@ def configure_system():
         NUTRIENT3_TIME = 10
         NUTRIENT4_TIME = 10
         BACTERIAL_TIME = 10
+
+########################################################################################################################
 
         # Load motor names and directions
         motor_data = load_motor_name_and_direction()
@@ -389,10 +408,8 @@ def configure_system():
             target_ppm = DEFAULT_TARGET_PPM
             target_water_level = DEFAULT_TARGET_WATER_LEVEL
 
-        ############################################################################################
         # Create a Plant object
         plant = Plant(PLANT_NAME, PH_TARGET, PH_MIN, PH_MAX, target_ppm, target_water_level, nutrient_pump_list)
-        ############################################################################################
 
         return plant, ph_pump_list
 

@@ -9,9 +9,11 @@ import threading
 from Atlas_and_pump_utilities.pumps import start_fresh_water_pump, end_fresh_water_pump
 from file_operations.clear_terminal import clear_terminal
 # Initialize the ADC using the Adafruit_ADS1x15 library
-from user_config.user_configurator import ADC_BUSNUM, ADC_I2C_ADDRESS, FRESH_WATER_PUMP_PIN
+from user_config.user_configurator import ADC_BUSNUM, ADC_I2C_ADDRESS, FRESH_WATER_PUMP_PIN, fresh_water_pump_time_off, \
+    fresh_water_pump_time_on
 
 adc = Adafruit_ADS1x15.ADS1115(busnum=ADC_BUSNUM, address=ADC_I2C_ADDRESS)
+from Water_Level_Sensor.Water_Level_ETAPE import load_coefficients
 
 # Set the gain value for the ADC
 GAIN = 1
@@ -132,17 +134,16 @@ def pump_control(pin):
     try:
         while not stop_event.is_set():
             start_fresh_water_pump(pin)
-            time.sleep(2)
+            time.sleep(fresh_water_pump_time_on)
             end_fresh_water_pump(pin)
             if stop_event.is_set():
                 break
-            time.sleep(3.5)
+            time.sleep(fresh_water_pump_time_off)
     except Exception as e:
         raise Exception(f"Unexpected error during pump control: {e}")
 
 
 def initialize_water_sensor():
-    from Water_Level_Sensor.Water_Level_ETAPE import load_coefficients
     """
     Main function to initialize the water sensor calibration process.
 

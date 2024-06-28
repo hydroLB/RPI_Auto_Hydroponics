@@ -5,12 +5,18 @@ from Water_Level_Sensor.Water_Level_ETAPE import get_water_level
 from Water_level_nutrients_ph_manager.ph_manager import balance_PH_exact
 from file_operations.logging_water_and_ppm import write_to_file, read_from_file
 from user_config.user_configurator import PH_PPM_SAFETY_MARGIN, ph_dosing_time, Plant, FRESH_WATER_PUMP_PIN, \
-    PPM_LOOP_SLEEP_TIME
+    PPM_LOOP_SLEEP_TIME, fresh_water_pump_time_on, fresh_water_pump_time_off
 from website.app import log_message
 
 
+def fresh_water_pump_cycle_on_off(fresh_water_pin):
+    start_fresh_water_pump(fresh_water_pin)
+    sleep(fresh_water_pump_time_on)
+    end_fresh_water_pump(fresh_water_pin)
+    sleep(fresh_water_pump_time_off)
+
+
 def fill_water(fresh_water_pin):
-    import time
     """
     Fill the water reservoir until the target water level is reached.
 
@@ -24,10 +30,8 @@ def fill_water(fresh_water_pin):
         while get_water_level() < target_water_level:
             # Display the current water level while adding water
             print("Filling...  current level: %f" % get_water_level() + ",target level: %f" % target_water_level)
-            start_fresh_water_pump(fresh_water_pin)
-            time.sleep(2.5)
-            end_fresh_water_pump(fresh_water_pin)
-            time.sleep(1)
+            fresh_water_pump_cycle_on_off(fresh_water_pin)
+
         log_message("Water level filling completed successfully...")
     except Exception as ee:
         print("Error", ee)

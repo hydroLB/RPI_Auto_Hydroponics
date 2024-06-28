@@ -15,7 +15,13 @@ from user_config.user_configurator import SKIP_SYSTEM_SETUP_WATER_LEVEL, configu
 from file_operations.logging_water_and_ppm import read_from_file, write_to_file
 from website.app import temperature_value_lock, ppm_value_lock, water_level_lock, ph_value_lock, log_message
 
+previous_ph_value = 7.0
+previous_ppm_value = 0.0
+previous_temperature_value = 70.0
+previous_water_level = 0.0
 
+
+# noinspection PyCompatibility
 def setup_hydroponic_system():
     """
     Sets up the hydroponic system, including configuring pumps, priming pumps,
@@ -101,6 +107,37 @@ def write_to_website_file(file_path, value):
         f.write(str(value))
 
 
+def common_sense_checks(new_ph_value, new_ppm_value, new_temperature_value, new_water_level):
+    global previous_ph_value, previous_ppm_value, previous_temperature_value, previous_water_level
+
+    if not (3 <= new_ph_value <= 11):
+        log_message("CSC: pH out of range (3-11).")
+    if abs(new_ph_value - previous_ph_value) > 2:
+        log_message("CSC: pH changed more than 2 values in one hour.")
+
+    if not (50 <= new_ppm_value <= 1800):  # Adjust the PPM range based on your system's requirements
+        log_message("CSC: PPM out of range (50-1800).")
+    if abs(new_ppm_value - previous_ppm_value) > 300:  # Example threshold for significant PPM change
+        log_message("CSC: PPM changed more than 300 in one hour.")
+
+    if not (50 <= new_temperature_value <= 85):  # Example temperature range in Fahrenheit
+        log_message("CSC: Temperature out of range (50-85 F).")
+    if abs(new_temperature_value - previous_temperature_value) > 15:  # Example threshold for significant temperature
+        # change
+        log_message("CSC: Temperature changed more than 15 F in one hour.")
+
+    if not (0.5 <= new_water_level <= 7):  # Example water level range in inches
+        log_message("CSC: Water level out of range (0.5-7 in).")
+    if abs(new_water_level - previous_water_level) > 1.5:  # Example threshold for significant water level change
+        log_message("CSC: Water level changed more than 1.5 inches in one hour.")
+
+    # Update previous values
+    previous_ph_value = new_ph_value
+    previous_ppm_value = new_ppm_value
+    previous_temperature_value = new_temperature_value
+    previous_water_level = new_water_level
+
+
 def monitor_hydroponic_system():
     """
     Continuously monitors the hydroponic system, including water level, PPM level, and pH level.
@@ -118,6 +155,8 @@ def monitor_hydroponic_system():
             new_temperature_value = get_temp_f()
             print(f"pH: {new_ph_value:.2f}, Water Level: {new_water_level:.2f} in, PPM: {new_ppm_value:.2f}, "
                   f"Temperature: {new_temperature_value:.2f} F")
+
+            common_sense_checks(new_ph_value, new_ppm_value, new_temperature_value, new_water_level)
 
             # Update global variables with new sensor values
             with ph_value_lock:

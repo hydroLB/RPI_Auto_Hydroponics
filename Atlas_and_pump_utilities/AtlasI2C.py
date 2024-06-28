@@ -8,6 +8,7 @@ import copy
 
 from Atlas_and_pump_utilities.pumps import start_fresh_water_pump, end_fresh_water_pump
 from file_operations.clear_terminal import clear_terminal
+from user_config.user_configurator import ECSensor, PHSensor, FRESH_WATER_PUMP_PIN
 
 
 def read_temp_file():
@@ -281,7 +282,6 @@ class AtlasI2C:
 
 
 def get_ph():
-    ph_sensor = AtlasI2C(address=99)  # Initialize the pH sensor with the specified I2C address
     """Return pH value."""
     total_measurements = 8  # Total number of measurements to take (3 to discard + 5 to average)
     discard_count = 3  # Number of initial measurements to discard
@@ -293,7 +293,7 @@ def get_ph():
         if temp_c is not None:
             try:
                 # Send the read command to the pH sensor with temperature compensation
-                response = ph_sensor.query(f'RT,{temp_c:.2f}').rstrip('\0')
+                response = PHSensor.query(f'RT,{temp_c:.2f}').rstrip('\0')
                 ph_value = float(response)  # Convert the response to a float
 
                 # Only store the measurement if it is one of the 5 valid measurements to average
@@ -316,11 +316,11 @@ def get_ph():
                 return None
 
         else:
-            # If the temperature reading fails, wait for 1 second before retrying
-            time.sleep(1)
+            # If the temperature reading fails, wait for 5 second before retrying
+            time.sleep(5)
 
-        # Wait for 0.5 seconds before taking the next measurement
-        time.sleep(0.5)
+        # Wait for 4 seconds before taking the next measurement
+        time.sleep(4)
 
     # If there are not enough valid measurements, print a warning message
     if len(valid_measurements) < 5:
@@ -333,14 +333,13 @@ def get_ph():
 
 
 def get_ec():
-    ec_sensor = AtlasI2C(address=100)  # Initialize the EC sensor with the specified I2C address
     """Return EC value."""
     temp_c = get_temp_c()  # Get the temperature in Celsius
 
     if temp_c is not None:
         try:
             # Send the read command to the EC sensor with temperature compensation
-            response = ec_sensor.query(f'RT,{temp_c:.2f}').rstrip('\0')
+            response = ECSensor.query(f'RT,{temp_c:.2f}').rstrip('\0')
             return float(response)  # Convert the response to a float and return it
 
         except ValueError:
@@ -394,8 +393,8 @@ def get_ppm():
         else:
             print("Warning: Failed to read EC value.")
 
-        # Wait for 0.5 seconds before taking the next measurement
-        time.sleep(0.5)
+        # Wait for 5 seconds before taking the next measurement
+        time.sleep(4)
 
     # If there are not enough valid measurements, print a warning message
     if len(valid_measurements) < 5:
@@ -432,7 +431,7 @@ def test_temp_sensor():
                 break
 
             # Wait for 2 seconds before the next reading
-            time.sleep(2)
+            time.sleep(5)
     except KeyboardInterrupt:
         # Handle the interruption to stop the test
         print("Stopping temperature sensor test.")
@@ -441,7 +440,6 @@ def test_temp_sensor():
 
 
 def test_ec_sensor():
-    ec_sensor = AtlasI2C(address=100)
     """Continuously read and display EC values (in PPM) until interrupted."""
     try:
         print("\nStarting EC sensor test\n")
@@ -458,11 +456,10 @@ def test_ec_sensor():
         print("Stopping EC sensor test.")
     calibrate_ec = input("Would you like to calibrate the EC sensor? (yes/no): ").strip().lower()
     if calibrate_ec == 'yes':
-        calibrate_sensor(ec_sensor, 'ec')
+        calibrate_sensor(ECSensor, 'ec')
 
 
 def test_ph_sensor():
-    ph_sensor = AtlasI2C(address=99)
     """Continuously read and display pH values until interrupted."""
     try:
         print("\nStarting PH Sensor Test\n")
@@ -479,7 +476,7 @@ def test_ph_sensor():
         print("Stopping pH sensor test.")
     calibrate_ph = input("Would you like to calibrate the pH sensor? (yes/no): ").strip().lower()
     if calibrate_ph == 'yes':
-        calibrate_sensor(ph_sensor, 'ph')
+        calibrate_sensor(PHSensor, 'ph')
 
 
 def calibrate_sensor(sensor, sensor_type):
@@ -509,7 +506,6 @@ def calibrate_sensor(sensor, sensor_type):
 
 
 def test_fresh_water_pump():
-    from user_config.user_configurator import FRESH_WATER_PUMP_PIN
     """Guide the user through testing the fresh water pump using GPIO pins and IoT relay."""
     print("\n\nStarting fresh water pump test...\n")
 
