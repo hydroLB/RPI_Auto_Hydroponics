@@ -26,7 +26,8 @@ def fill_water(fresh_water_pin):
         # Read target PPM and water level from file
         target_ppm, target_water_level = read_from_file()
         # Continuously check the current water level in the reservoir
-        log_message("Water level filling beginning...")
+        if get_water_level() < target_water_level:
+            log_message("Water level filling beginning...")
         while get_water_level() < target_water_level:
             # Display the current water level while adding water
             print("Filling...  current level: %f" % get_water_level() + ",target level: %f" % target_water_level)
@@ -57,8 +58,8 @@ def dose_nutrients(target_ppm_local, pump_info):
             raise TypeError("Expected pump_info to be a list, but got type {}. Error in dose_nutrients.".format(
                 type(pump_info).__name__))
 
-        log_message("Nutrient Dosing Sequence Starting...")
-
+        if get_ppm() < target_ppm_local:
+            log_message("Nutrient Dosing Sequence Starting...")
         while get_ppm() < target_ppm_local:
             # Iterate through each pump and its corresponding dosing time in the pump_info list
             for pump, dosing_time in pump_info:

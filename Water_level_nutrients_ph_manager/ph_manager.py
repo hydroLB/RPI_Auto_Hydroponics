@@ -43,8 +43,8 @@ def balance_ph(ph_dosing_time, plant, ph_pump_list):
         ph_down_sleep_time = ph_dosing_time[1]
         loop_sleep_time = ph_dosing_time[2]
 
-        log_message("non-exact pH balancing starting...")
-
+        if (get_ph() < MIN_PH) or (get_ph() > MAX_PH):
+            log_message("non-exact pH balancing starting...")
         if get_ph() < MIN_PH:  # Check if the current pH value is less than the minimum pH value
             while get_ph() < TARGET_PH:  # Keep running the loop while the pH value is less than the target pH value
                 print("Increasing PH, PH: %f" % (get_ph()))  # Print current pH val and indicate it's being increased
@@ -109,8 +109,8 @@ def balance_PH_exact(ph_dosing_time, plant, ph_pump_list):
         pHDownPump = ph_pump_list[1]
 
         current_ph = get_ph()
-
-        log_message("EXACT pH balancing starting...")
+        if (current_ph < plant.target_ph) or (current_ph > plant.target_ph):
+            log_message("EXACT pH balancing starting...")
         if current_ph < plant.target_ph:  # Check if the current pH value is less than the target pH value
             while get_ph() < plant.target_ph:  # Keep running loop while  pH value is less than the target pH value
                 print(
