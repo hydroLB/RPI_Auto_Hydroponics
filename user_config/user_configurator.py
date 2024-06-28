@@ -4,8 +4,8 @@ import pickle
 import RPi.GPIO as GPIO
 from adafruit_motorkit import MotorKit
 
-from Atlas_and_pump_utilities.AtlasI2C import AtlasI2C
-from Atlas_and_pump_utilities.pumps import Pump, prime, clear_lines
+from ph_ppm_pump_sensor.AtlasI2C import AtlasI2C
+from ph_ppm_pump_sensor.pumps import Pump, prime, clear_lines
 from file_operations.clear_terminal import clear_terminal
 from file_operations.logging_water_and_ppm import read_from_file
 

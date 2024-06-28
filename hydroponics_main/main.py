@@ -2,14 +2,14 @@ import sys
 import threading
 from time import sleep
 from file_operations.log_sensor_data import log_sensor_data
-from Atlas_and_pump_utilities.AtlasI2C import test_temp_sensor, test_ph_sensor, test_ec_sensor, get_ppm, get_ph, \
+from ph_ppm_pump_sensor.AtlasI2C import test_temp_sensor, test_ph_sensor, test_ec_sensor, get_ppm, get_ph, \
     test_fresh_water_pump, get_temp_f
-from Water_Level_Sensor.Water_Level_ETAPE import get_water_level
-from Atlas_and_pump_utilities.pumps import stop_pumps_list
-from Water_Level_Sensor.adjust_water_level_and_nutrients import fill_water, dose_nutrients, \
+from water_level_sensor.Water_Level_ETAPE import get_water_level
+from ph_ppm_pump_sensor.pumps import stop_pumps_list
+from nutrient_dosing.adjust_water_level_and_nutrients import fill_water, dose_nutrients, \
     adjust_water_level_and_nutrients
-from Water_Level_Sensor.ETAPE_Calibration import initialize_water_sensor
-from Water_level_nutrients_ph_manager.ph_manager import balance_PH_exact, balance_ph
+from water_level_sensor.ETAPE_Calibration import initialize_water_sensor
+from ph_manager.ph_manager import balance_PH_exact, balance_ph
 from user_config.user_configurator import SKIP_SYSTEM_SETUP_WATER_LEVEL, configure_system, \
     ph_dosing_time, WATER_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS, FRESH_WATER_PUMP_PIN
 from file_operations.logging_water_and_ppm import read_from_file, write_to_file

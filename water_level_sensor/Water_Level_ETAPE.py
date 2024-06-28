@@ -43,7 +43,7 @@ def load_coefficients():
 
 
 def get_water_level():
-    from Water_Level_Sensor.ETAPE_Calibration import quadratic_model, get_average_sensor_value
+    from water_level_sensor.ETAPE_Calibration import quadratic_model, get_average_sensor_value
     """
     Calculates the water level using sensor data and preloaded coefficients.
 

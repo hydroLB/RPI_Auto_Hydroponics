@@ -6,7 +6,7 @@ import fcntl
 import time
 import copy
 
-from Atlas_and_pump_utilities.pumps import start_fresh_water_pump, end_fresh_water_pump
+from ph_ppm_pump_sensor.pumps import start_fresh_water_pump, end_fresh_water_pump
 from file_operations.clear_terminal import clear_terminal
 from user_config.user_configurator import ECSensor, PHSensor, FRESH_WATER_PUMP_PIN
 

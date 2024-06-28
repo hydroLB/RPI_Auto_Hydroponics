@@ -3,7 +3,7 @@
 from time import sleep
 
 # Target pH values and limits
-from Atlas_and_pump_utilities.AtlasI2C import get_ph
+from ph_ppm_pump_sensor.AtlasI2C import get_ph
 from user_config.user_configurator import Plant
 from website.app import log_message
 

@@ -1,8 +1,8 @@
 from time import sleep
-from Atlas_and_pump_utilities.AtlasI2C import get_ppm
-from Atlas_and_pump_utilities.pumps import end_fresh_water_pump, start_fresh_water_pump
-from Water_Level_Sensor.Water_Level_ETAPE import get_water_level
-from Water_level_nutrients_ph_manager.ph_manager import balance_PH_exact
+from ph_ppm_pump_sensor.AtlasI2C import get_ppm
+from ph_ppm_pump_sensor.pumps import end_fresh_water_pump, start_fresh_water_pump
+from water_level_sensor.Water_Level_ETAPE import get_water_level
+from ph_manager.ph_manager import balance_PH_exact
 from file_operations.logging_water_and_ppm import write_to_file, read_from_file
 from user_config.user_configurator import PH_PPM_SAFETY_MARGIN, ph_dosing_time, Plant, FRESH_WATER_PUMP_PIN, \
     PPM_LOOP_SLEEP_TIME, fresh_water_pump_time_on, fresh_water_pump_time_off

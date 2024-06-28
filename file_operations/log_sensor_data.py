@@ -1,8 +1,8 @@
 import os
 from datetime import datetime
 
-from Atlas_and_pump_utilities.AtlasI2C import get_ppm, get_ph, get_temp_f
-from Water_Level_Sensor.Water_Level_ETAPE import get_water_level
+from ph_ppm_pump_sensor.AtlasI2C import get_ppm, get_ph, get_temp_f
+from water_level_sensor.Water_Level_ETAPE import get_water_level
 
 
 def log_sensor_data():
