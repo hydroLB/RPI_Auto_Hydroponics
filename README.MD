@@ -88,9 +88,9 @@ You will need to configure the following variables in the `user_controlled_const
 
 ## 🚀 Usage
 
-1. Run the main script to start the automatic hydroponic system:
+1. Run the main script to start the automatic hydroponic system when your in the entire project folder:
 ```bash
-python3 main.py
+python3 run_this.py
 ```
 
 2. Follow the prompts to reset and prime the pumps and input the target PPM and water level for your system.

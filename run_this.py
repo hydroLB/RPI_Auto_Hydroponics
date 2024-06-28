@@ -3,7 +3,7 @@ import os
 
 # Define paths to the scripts
 app_script = os.path.join('website', 'app.py')
-main_script = os.path.join('main', 'main.py')
+main_script = os.path.join('hydroponics_main', 'main.py')
 
 # Start both scripts
 app_process = subprocess.Popen(['python', app_script])
