@@ -5,6 +5,7 @@ from time import sleep
 # Target pH values and limits
 from Atlas_and_pump_utilities.AtlasI2C import get_ph
 from user_config.user_configurator import Plant
+from website.app import log_message
 
 
 def balance_ph(ph_dosing_time, plant, ph_pump_list):
@@ -42,6 +43,8 @@ def balance_ph(ph_dosing_time, plant, ph_pump_list):
         ph_down_sleep_time = ph_dosing_time[1]
         loop_sleep_time = ph_dosing_time[2]
 
+        log_message("non-exact pH balancing starting...")
+
         if get_ph() < MIN_PH:  # Check if the current pH value is less than the minimum pH value
             while get_ph() < TARGET_PH:  # Keep running the loop while the pH value is less than the target pH value
                 print("Increasing PH, PH: %f" % (get_ph()))  # Print current pH val and indicate it's being increased
@@ -58,6 +61,7 @@ def balance_ph(ph_dosing_time, plant, ph_pump_list):
                 pHDownPump.stop()  # Stop the pH down pump
                 sleep(loop_sleep_time)  # Pause the program for the specified time
             pHDownPump.stop()  # Ensure the pH down pump is stopped when the pH value reaches the target value
+        log_message("non-exact pH balancing completed...")
 
     except TypeError as e:
         raise TypeError("Type error occurred in balance_ph: {}".format(e))
@@ -106,6 +110,7 @@ def balance_PH_exact(ph_dosing_time, plant, ph_pump_list):
 
         current_ph = get_ph()
 
+        log_message("EXACT pH balancing starting...")
         if current_ph < plant.target_ph:  # Check if the current pH value is less than the target pH value
             while get_ph() < plant.target_ph:  # Keep running loop while  pH value is less than the target pH value
                 print(
@@ -124,6 +129,7 @@ def balance_PH_exact(ph_dosing_time, plant, ph_pump_list):
                 pHDownPump.stop()  # Stop the pH down pump
                 sleep(loop_sleep_time)  # Pause the program for the specified time
             pHDownPump.stop()  # Ensure the pH down pump is stopped when the pH value reaches the target value
+        log_message("EXACT pH balancing completed...")
 
     except TypeError as e:
         raise TypeError("Type error occurred in balance_PH_exact: {}".format(e))

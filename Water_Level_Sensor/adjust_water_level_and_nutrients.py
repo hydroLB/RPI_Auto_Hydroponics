@@ -6,6 +6,7 @@ from Water_level_nutrients_ph_manager.ph_manager import balance_PH_exact
 from file_operations.logging_water_and_ppm import write_to_file, read_from_file
 from user_config.user_configurator import PH_PPM_SAFETY_MARGIN, ph_dosing_time, Plant, FRESH_WATER_PUMP_PIN, \
     PPM_LOOP_SLEEP_TIME
+from website.app import log_message
 
 
 def fill_water(fresh_water_pin):
@@ -19,6 +20,7 @@ def fill_water(fresh_water_pin):
         # Read target PPM and water level from file
         target_ppm, target_water_level = read_from_file()
         # Continuously check the current water level in the reservoir
+        log_message("Water level filling beginning...")
         while get_water_level() < target_water_level:
             # Display the current water level while adding water
             print("Filling...  current level: %f" % get_water_level() + ",target level: %f" % target_water_level)
@@ -26,6 +28,7 @@ def fill_water(fresh_water_pin):
             time.sleep(2.5)
             end_fresh_water_pump(fresh_water_pin)
             time.sleep(1)
+        log_message("Water level filling completed successfully...")
     except Exception as ee:
         print("Error", ee)
         # Log the error message and stop the water pump in case of an exception
@@ -49,6 +52,8 @@ def dose_nutrients(target_ppm_local, pump_info):
         if not isinstance(pump_info, list):
             raise TypeError("Expected pump_info to be a list, but got type {}. Error in dose_nutrients.".format(
                 type(pump_info).__name__))
+
+        log_message("Nutrient Dosing Sequence Starting...")
 
         while get_ppm() < target_ppm_local:
             # Iterate through each pump and its corresponding dosing time in the pump_info list
@@ -75,6 +80,7 @@ def dose_nutrients(target_ppm_local, pump_info):
 
             # Sleep for PPM_LOOP_SLEEP_TIME before checking the PPM again
             sleep(PPM_LOOP_SLEEP_TIME)
+        log_message("Nutrient Dosing Sequence Completed successfully...")
 
     except TypeError as e:
         raise TypeError("Type error occurred in dose_nutrients: {}".format(e))
@@ -117,10 +123,10 @@ def adjust_water_level_and_nutrients(plant, ph_pump_list):
                             "Error in adjust_water_level_and_nutrients.".format(type(target_water_level).__name__))
 
         # Measure PPM before adjusting water level
-        pre_fillup_ppm = get_ppm()
+        pre_fill_up_ppm = get_ppm()
 
         # Call proprietary algorithm for updating target PPM
-        new_target_ppm = proprietary_ppm_update_algorithm(target_ppm, pre_fillup_ppm)
+        new_target_ppm = proprietary_ppm_update_algorithm(target_ppm, pre_fill_up_ppm)
 
         # Fill water to the target level
         fill_water(FRESH_WATER_PUMP_PIN)
@@ -149,13 +155,13 @@ def adjust_water_level_and_nutrients(plant, ph_pump_list):
         raise Exception("An unexpected error occurred in adjust_water_level_and_nutrients: {}".format(e))
 
 
-def proprietary_ppm_update_algorithm(target_ppm, pre_fillup_ppm):
+def proprietary_ppm_update_algorithm(target_ppm, pre_fill_up_ppm):
     """
     Updates the target PPM based on the plant's nutrient consumption rate.
 
     Args:
         target_ppm (float): The initial target PPM value.
-        pre_fillup_ppm (float): The PPM value measured before the fillup.
+        pre_fill_up_ppm (float): The PPM value measured before the fill_up.
 
     Returns:
         float: The updated target PPM.
@@ -164,21 +170,21 @@ def proprietary_ppm_update_algorithm(target_ppm, pre_fillup_ppm):
     # based on the plant's nutrient consumption rate.
 
     # the new feed amount will be found by finding the difference (the drift) from the target ppm set
-    # before and what it is now before the fillup, what did the plant do?
+    # before and what it is now before the fill_up, what did the plant do?
     # If the plant was hungry -> ppm would have dropped as it ate more and there is less food (ppm) in the water
     # If the plant was full -> ppm would have rose as it ate less and there is more food (ppm) in the water
-    # For example if the "target_ppm" was 100, and a fillup is triggered and the ppm is seen to be 120,
+    # For example if the "target_ppm" was 100, and a fill_up is triggered and the ppm is seen to be 120,
     # It will be calculated as 100-120= -20, meaning the target_ppm should be lowered by that amount
     try:
         if not isinstance(target_ppm, (int, float)):
             raise TypeError("Expected target_ppm to be an int or float, but got type {}. "
                             "Error in proprietary_ppm_update_algorithm.".format(type(target_ppm).__name__))
-        if not isinstance(pre_fillup_ppm, (int, float)):
-            raise TypeError("Expected pre_fillup_ppm to be an int or float, but got type {}. "
-                            "Error in proprietary_ppm_update_algorithm.".format(type(pre_fillup_ppm).__name__))
+        if not isinstance(pre_fill_up_ppm, (int, float)):
+            raise TypeError("Expected pre_fill_up_ppm to be an int or float, but got type {}. "
+                            "Error in proprietary_ppm_update_algorithm.".format(type(pre_fill_up_ppm).__name__))
 
         # Calculate the updated PPM based on the plant's nutrient consumption rate
-        updated_ppm = target_ppm + (target_ppm - pre_fillup_ppm)
+        updated_ppm = target_ppm + (target_ppm - pre_fill_up_ppm)
         return updated_ppm
 
     except TypeError as e:

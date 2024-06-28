@@ -1,8 +1,9 @@
 import sys
+import threading
 from time import sleep
 from file_operations.log_sensor_data import log_sensor_data
 from Atlas_and_pump_utilities.AtlasI2C import test_temp_sensor, test_ph_sensor, test_ec_sensor, get_ppm, get_ph, \
-    test_fresh_water_pump
+    test_fresh_water_pump, get_temp_f
 from Water_Level_Sensor.Water_Level_ETAPE import get_water_level
 from Atlas_and_pump_utilities.pumps import stop_pumps_list
 from Water_Level_Sensor.adjust_water_level_and_nutrients import fill_water, dose_nutrients, \
@@ -12,6 +13,7 @@ from Water_level_nutrients_ph_manager.ph_manager import balance_PH_exact, balanc
 from user_config.user_configurator import SKIP_SYSTEM_SETUP_WATER_LEVEL, configure_system, \
     ph_dosing_time, WATER_THRESHOLD, WAIT_TIME_BETWEEN_CHECKS, FRESH_WATER_PUMP_PIN
 from file_operations.logging_water_and_ppm import read_from_file, write_to_file
+from website.app import temperature_value_lock, ppm_value_lock, water_level_lock, ph_value_lock, log_message
 
 
 def setup_hydroponic_system():
@@ -25,6 +27,8 @@ def setup_hydroponic_system():
         water_level = get_water_level()
         if water_level is None or water_level < SKIP_SYSTEM_SETUP_WATER_LEVEL:
             print("Welcome to RPI Auto Hydroponics, aka RAH, press enter to begin configuring the pumps")
+            log_message("Hydroponics setup has begun")
+
             sys.stdin.readline()  # Wait for user to hit enter to start configuration
 
             # Configure the system and get the plant and pH pump list
@@ -38,6 +42,7 @@ def setup_hydroponic_system():
 
             # Initialize water sensor to get the water level
             initialize_water_sensor()
+            log_message("Water sensor initialization begun")
 
             # Fill the system with water
             fill_water(FRESH_WATER_PUMP_PIN)
@@ -62,6 +67,8 @@ def setup_hydroponic_system():
             write_to_file(get_ppm(), get_water_level())
 
             print("Startup completed")  # Log that startup is complete
+            log_message("Startup sequence completed, moving to monitoring!")
+
         else:
             # water is above the skip_system water level
             print("Hydroponic system already set up, moving to monitoring")
@@ -76,6 +83,24 @@ def setup_hydroponic_system():
         raise Exception(f"An unexpected error occurred in setup_hydroponic_system: {ex}")
 
 
+def write_value_to_file(file_path, value):
+    """Write a float value to a file."""
+    with open(file_path, 'w') as file:
+        file.write(str(value))
+
+
+# Define file paths for shared data
+ph_value_file = 'website_vals/ph_value.txt'
+water_level_file = 'website_vals/water_level.txt'
+ppm_value_file = 'website_vals/ppm_value.txt'
+temperature_value_file = 'website_vals/temperature_value.txt'
+
+
+def write_to_website_file(file_path, value):
+    with open(file_path, 'w') as f:
+        f.write(str(value))
+
+
 def monitor_hydroponic_system():
     """
     Continuously monitors the hydroponic system, including water level, PPM level, and pH level.
@@ -86,17 +111,29 @@ def monitor_hydroponic_system():
 
     while True:
         try:
-            # Print the current water level
-            water_level = get_water_level()
-            print("Current Water level:", water_level)
+            # Read new values from sensors
+            new_ph_value = get_ph()
+            new_water_level = get_water_level()
+            new_ppm_value = get_ppm()
+            new_temperature_value = get_temp_f()
+            print(f"pH: {new_ph_value:.2f}, Water Level: {new_water_level:.2f} in, PPM: {new_ppm_value:.2f}, "
+                  f"Temperature: {new_temperature_value:.2f} F")
 
-            # Print the current PPM level
-            ppm_level = get_ppm()
-            print("Current PPM level:", ppm_level)
+            # Update global variables with new sensor values
+            with ph_value_lock:
+                ph_value = new_ph_value
+                write_to_website_file(ph_value_file, ph_value)
 
-            # Print the current pH level
-            ph_level = get_ph()
-            print("Current PH level:", ph_level)
+            with water_level_lock:
+                water_level = new_water_level
+                write_to_website_file(water_level_file, water_level)
+            with ppm_value_lock:
+                ppm_value = new_ppm_value
+                write_to_website_file(ppm_value_file, ppm_value)
+
+            with temperature_value_lock:
+                temperature_value = new_temperature_value
+                write_to_website_file(temperature_value_file, temperature_value)
 
             # Log the data from each hour into a file or so
             log_sensor_data()
@@ -158,10 +195,14 @@ def ensure_pumps_off():
 
 
 if __name__ == "__main__":
-    """
-        Entry point for the script. This block ensures that the script runs
-        the main function when executed directly.
-    """
+    ph_value_lock = threading.Lock()
+    water_level_lock = threading.Lock()
+    ppm_value_lock = threading.Lock()
+    temperature_value_lock = threading.Lock()
+
+    monitor_thread = threading.Thread(target=monitor_hydroponic_system)
+    monitor_thread.start()
+
     try:
         main()
         ensure_pumps_off()

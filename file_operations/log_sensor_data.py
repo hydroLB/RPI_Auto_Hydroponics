@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from Atlas_and_pump_utilities.AtlasI2C import get_ppm, get_ph
+from Atlas_and_pump_utilities.AtlasI2C import get_ppm, get_ph, get_temp_f
 from Water_Level_Sensor.Water_Level_ETAPE import get_water_level
 
 
@@ -19,25 +19,25 @@ def log_sensor_data():
     except Exception as e:
         print(f"Error checking or creating the file in log_sensor_data: {e}")
         return
-
     try:
         # Get current time and sensor values
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         water_level = get_water_level()
         ppm = get_ppm()
         ph = get_ph()
+        temperature = get_temp_f()
 
         # Validate sensor values
-        if water_level is None or ppm is None or ph is None:
+        if water_level is None or ppm is None or ph is None or temperature is None:
             print("Error in log_sensor_data: One or more sensor values could not be retrieved. "
                   "Skipping logging for this hour.")
             return
 
         # Append the data to the file
         with open(file_path, "a") as file:
-            file.write(f"{current_time},{water_level},{ppm},{ph}\n")
+            file.write(f"{current_time},{water_level},{ppm},{ph},{temperature}\n")
 
-        print("Time, Water level, PPM, and pH logged successfully.")
+        print("Time, Water level, PPM, pH, and Temperature logged successfully.")
 
     except Exception as e:
         print(f"Error in log_sensor_data: logging sensor data: {e}")
