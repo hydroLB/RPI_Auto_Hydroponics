@@ -50,19 +50,23 @@ custom_marks_ph.update({i: str(i) for i in range(0, 15)})
 custom_marks_ppm = {i: '' for i in range(0, 200, 2)}  # Ticks every 2 PPM, no labels
 custom_marks_ppm.update({i: str(i) for i in range(0, 201, 10)})
 
-def create_text_log():
-    """Create the text log component style."""
-    return html.Div([
-        dcc.Textarea(
-            id='text-log',
-            value='Initializing...',
-            style={'width': '230%', 'height': '220px', 'resize': 'none', 'margin-top': '55px'},
-            readOnly=True,
-        )
-    ], style={'display': 'inline-block', 'margin-left': '80px',
-              'margin-top': '-100px'})  # Increase margin to add more space
+
+########################################################################################################################
+def convert_ppm_to_scale(ppm_valu):
+    """Convert PPM value to a 0-200 scale with one decimal place accuracy."""
+    return round(ppm_valu / 10, 1)
 
 
+########################################################################################################################
+def read_value_from_file(file_path):
+    """Read a float value from a file."""
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            return float(file.read().strip())
+    return None
+
+
+########################################################################################################################
 def create_layout():
     """Create the layout for the Dash app."""
     return html.Div([
@@ -83,6 +87,7 @@ def create_layout():
     ])
 
 
+########################################################################################################################
 def read_log_from_file(file_path):
     """Read log entries from a file."""
     if os.path.exists(file_path):
@@ -91,6 +96,44 @@ def read_log_from_file(file_path):
     return []
 
 
+def log_message(message, file_path='website_vals/action_log.txt'):
+    """Log a message with a timestamp to a specified log file."""
+    est = pytz.timezone('US/Eastern')
+    current_time = datetime.datetime.now(est).strftime("%y-%m-%d %H:%M")
+    new_log_entry = f"{current_time}: {message}\n \n"
+
+    # Read existing log entries
+    log_entries = []
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as log_file:
+            log_entries = log_file.readlines()
+
+    # Append new log entry
+    log_entries.append(new_log_entry)
+
+    # Keep only the last 10 entries
+    if len(log_entries) > 10:
+        log_entries = log_entries[-10:]
+
+    # Write log entries back to the file
+    with open(file_path, 'w') as log_file:
+        log_file.writelines(log_entries)
+
+
+def create_text_log():
+    """Create the text log component style."""
+    return html.Div([
+        dcc.Textarea(
+            id='text-log',
+            value='Initializing...',
+            style={'width': '230%', 'height': '220px', 'resize': 'none', 'margin-top': '55px'},
+            readOnly=True,
+        )
+    ], style={'display': 'inline-block', 'margin-left': '80px',
+              'margin-top': '-100px'})  # Increase margin to add more space
+
+
+########################################################################################################################
 def create_ph_gauge():
     """Create the pH gauge component."""
     return html.Div([
@@ -122,6 +165,7 @@ def create_ph_gauge():
     ], style={'display': 'inline-block', 'margin-right': '40px'})  # Add margin to the right
 
 
+########################################################################################################################
 def create_ppm_gauge():
     """Create the PPM gauge component."""
     return html.Div([
@@ -152,6 +196,7 @@ def create_ppm_gauge():
     ], style={'display': 'inline-block', 'margin-right': '40px'})  # Add margin to the right
 
 
+########################################################################################################################
 def create_temperature_thermometer():
     """Create the temperature thermometer component."""
     return daq.Thermometer(
@@ -172,90 +217,7 @@ def create_temperature_thermometer():
     )
 
 
-def create_water_level_bar():
-    """Create the water level bar component."""
-    return html.Div([
-        dcc.Graph(
-            id='water-level-bar',
-            config={
-                'displayModeBar': False,  # Hide the Plotly.js toolbar
-                'staticPlot': True  # Make the plot static
-            }
-        )
-    ], style={'display': 'inline-block', 'margin-right': '40px'})  # Add margin to the right
-
-
-def convert_ppm_to_scale(ppm_valu):
-    """Convert PPM value to a 0-200 scale with one decimal place accuracy."""
-    return round(ppm_valu / 10, 1)
-
-
-def create_interval_component():
-    """Create the interval component for periodic updates."""
-    return dcc.Interval(
-        id='interval-component',
-        interval=180 * 1000,  # Update every 5 minutes
-        n_intervals=0
-    )
-
-
-def read_value_from_file(file_path):
-    """Read a float value from a file."""
-    if os.path.exists(file_path):
-        with open(file_path, 'r') as file:
-            return float(file.read().strip())
-    return None
-
-
-# Modified update_values function to use the conversion function
-def update_values():
-    """Periodically update the gauge and bar values by reading from the files."""
-    global ph_value, water_level, ppm_value, temperature_value
-    while True:
-        new_ph_value = read_value_from_file('website_vals/ph_value.txt')
-        new_water_level = read_value_from_file('website_vals/water_level.txt')
-        new_ppm_value = read_value_from_file('website_vals/ppm_value.txt')
-        new_temperature_value = read_value_from_file('website_vals/temperature_value.txt')
-
-        if new_ph_value is not None:
-            with ph_value_lock:
-                ph_value = new_ph_value
-        if new_water_level is not None:
-            with water_level_lock:
-                water_level = new_water_level
-        if new_ppm_value is not None:
-            with ppm_value_lock:
-                ppm_value = convert_ppm_to_scale(new_ppm_value)
-        if new_temperature_value is not None:
-            with temperature_value_lock:
-                temperature_value = new_temperature_value
-        time.sleep(180)  # Adjust the sleep time as needed
-
-
-def log_message(message, file_path='website_vals/action_log.txt'):
-    """Log a message with a timestamp to a specified log file."""
-    est = pytz.timezone('US/Eastern')
-    current_time = datetime.datetime.now(est).strftime("%y-%m-%d %H:%M")
-    new_log_entry = f"{current_time}: {message}\n \n"
-
-    # Read existing log entries
-    log_entries = []
-    if os.path.exists(file_path):
-        with open(file_path, 'r') as log_file:
-            log_entries = log_file.readlines()
-
-    # Append new log entry
-    log_entries.append(new_log_entry)
-
-    # Keep only the last 10 entries
-    if len(log_entries) > 10:
-        log_entries = log_entries[-10:]
-
-    # Write log entries back to the file
-    with open(file_path, 'w') as log_file:
-        log_file.writelines(log_entries)
-
-
+########################################################################################################################
 def create_water_level_figure(water_level_val):
     """Create the water level figure."""
     tickvals = [i / 4 for i in range(0, 33)]
@@ -305,14 +267,31 @@ def create_water_level_figure(water_level_val):
     return fig
 
 
-@app.callback(
-    Output('ph-gauge', 'value'),
-    Output('water-level-bar', 'figure'),
-    Output('ppm-gauge', 'value'),
-    Output('temperature-thermometer', 'value'),
-    Output('text-log', 'value'),
-    Input('interval-component', 'n_intervals')
-)
+def create_water_level_bar():
+    """Create the water level bar component."""
+    return html.Div([
+        dcc.Graph(
+            id='water-level-bar',
+            config={
+                'displayModeBar': False,  # Hide the Plotly.js toolbar
+                'staticPlot': True  # Make the plot static
+            }
+        )
+    ], style={'display': 'inline-block', 'margin-right': '40px'})  # Add margin to the right
+
+
+########################################################################################################################
+
+def create_interval_component():
+    """Create the interval component for periodic updates."""
+    return dcc.Interval(
+        id='interval-component',
+        interval=180 * 1000,  # Update every 5 minutes
+        n_intervals=0
+    )
+
+
+########################################################################################################################
 def update_gauge_and_bar(_):
     with ph_value_lock:
         ph_val = ph_value
@@ -331,6 +310,41 @@ def update_gauge_and_bar(_):
     return ph_val, fig, ppm_val, temperature_val, log_text
 
 
+# Modified update_values function to use the conversion function
+def update_values():
+    """Periodically update the gauge and bar values by reading from the files."""
+    global ph_value, water_level, ppm_value, temperature_value
+    while True:
+        new_ph_value = read_value_from_file('website_vals/ph_value.txt')
+        new_water_level = read_value_from_file('website_vals/water_level.txt')
+        new_ppm_value = read_value_from_file('website_vals/ppm_value.txt')
+        new_temperature_value = read_value_from_file('website_vals/temperature_value.txt')
+
+        if new_ph_value is not None:
+            with ph_value_lock:
+                ph_value = new_ph_value
+        if new_water_level is not None:
+            with water_level_lock:
+                water_level = new_water_level
+        if new_ppm_value is not None:
+            with ppm_value_lock:
+                ppm_value = convert_ppm_to_scale(new_ppm_value)
+        if new_temperature_value is not None:
+            with temperature_value_lock:
+                temperature_value = new_temperature_value
+        time.sleep(180)  # Adjust the sleep time as needed
+
+
+########################################################################################################################
+
+@app.callback(
+    Output('ph-gauge', 'value'),
+    Output('water-level-bar', 'figure'),
+    Output('ppm-gauge', 'value'),
+    Output('temperature-thermometer', 'value'),
+    Output('text-log', 'value'),
+    Input('interval-component', 'n_intervals')
+)
 def start_value_update_thread():
     """Start the thread to update values."""
     thread = Thread(target=update_values)
