@@ -1,6 +1,9 @@
+import os
 import sys
 import threading
 from time import sleep
+# Add the project directory to the PYTHONPATH
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from file_operations.log_sensor_data import log_sensor_data
 from ph_ppm_pump_sensor.AtlasI2C import test_temp_sensor, test_ph_sensor, test_ec_sensor, get_ppm, get_ph, \
     test_fresh_water_pump, get_temp_f

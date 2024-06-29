@@ -8,7 +8,6 @@ import copy
 
 from ph_ppm_pump_sensor.pumps import start_fresh_water_pump, end_fresh_water_pump
 from file_operations.clear_terminal import clear_terminal
-from user_config.user_configurator import ECSensor, PHSensor, FRESH_WATER_PUMP_PIN
 
 
 def read_temp_file():
@@ -282,6 +281,7 @@ class AtlasI2C:
 
 
 def get_ph():
+    from user_config.user_configurator import PHSensor
     """Return pH value."""
     total_measurements = 8  # Total number of measurements to take (3 to discard + 5 to average)
     discard_count = 3  # Number of initial measurements to discard
@@ -333,6 +333,7 @@ def get_ph():
 
 
 def get_ec():
+    from user_config.user_configurator import ECSensor
     """Return EC value."""
     temp_c = get_temp_c()  # Get the temperature in Celsius
 
@@ -440,6 +441,7 @@ def test_temp_sensor():
 
 
 def test_ec_sensor():
+    from user_config.user_configurator import ECSensor
     """Continuously read and display EC values (in PPM) until interrupted."""
     try:
         print("\nStarting EC sensor test\n")
@@ -460,6 +462,7 @@ def test_ec_sensor():
 
 
 def test_ph_sensor():
+    from user_config.user_configurator import PHSensor
     """Continuously read and display pH values until interrupted."""
     try:
         print("\nStarting PH Sensor Test\n")
@@ -506,6 +509,7 @@ def calibrate_sensor(sensor, sensor_type):
 
 
 def test_fresh_water_pump():
+    from user_config.user_configurator import FRESH_WATER_PUMP_PIN
     """Guide the user through testing the fresh water pump using GPIO pins and IoT relay."""
     print("\n\nStarting fresh water pump test...\n")
 

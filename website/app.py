@@ -97,7 +97,6 @@ def read_log_from_file(file_path):
 
 
 def log_message(message, file_path='website_vals/action_log.txt'):
-    from twilio.rest import Client
     """Log a message with a timestamp to a specified log file."""
     est = pytz.timezone('US/Eastern')
     current_time = datetime.datetime.now(est).strftime("%y-%m-%d %H:%M")
