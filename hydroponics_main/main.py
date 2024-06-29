@@ -35,7 +35,6 @@ def setup_hydroponic_system():
         # Check the water level to determine if setup is needed
         water_level = get_water_level()
         if water_level is None or water_level < SKIP_SYSTEM_SETUP_WATER_LEVEL:
-            print("Welcome to RPI Auto Hydroponics, aka RAH, press enter to begin configuring the pumps")
             log_message("Hydroponics setup has begun")
 
             sys.stdin.readline()  # Wait for user to hit enter to start configuration

@@ -57,7 +57,7 @@ GPIO.setup(FRESH_WATER_PUMP_PIN, GPIO.OUT)  # Set pin as an output
 # the etape capturing the change
 fresh_water_pump_time_on = 1.5
 
-#how long is the pump off at a time
+# how long is the pump off at a time
 fresh_water_pump_time_off = 3.5
 
 ########################################################################################################################
@@ -71,7 +71,7 @@ WAIT_TIME_BETWEEN_CHECKS = 3600
 
 ########################################################################################################################
 
-#How long system waits between each dosing (all nutrient pumps cycle on/off) until target amount of nutrients is reached
+# How long system waits between each dosing (all nute pumps cycle on/off) until target amount of nutrients is reached
 PPM_LOOP_SLEEP_TIME = 30
 
 ########################################################################################################################
@@ -127,10 +127,14 @@ def find_motor_name_and_direction():
 
         # Ask user if they want to clear lines and reverse pumps or skip
         user_choice = input("Do you want to clear lines and reverse pumps or skip this step? (enter 'yes' to clear "
-                            "lines or no to skip ").strip().lower()
+                            "lines or no to skip: ").strip().lower()
+
         if user_choice not in ['yes', 'no']:
             print("Invalid choice. Defaulting to 'yes'.")
             user_choice = 'yes'
+
+        if user_choice == 'yes':
+            print("Grab a glass to grab any fluid that comes out of pump before it reaches the bucket .")
 
         for address, motor_num in motor_map:
             motor = motor_map[(address, motor_num)]
@@ -144,7 +148,7 @@ def find_motor_name_and_direction():
             print(f"\n\nTesting motor # {motor_num} on driver with address: {hex(address)}")
 
             temp_pump.start()
-            feedback = input("Is the direction correct, water is flowing towards bucket? (yes/no): ").strip().lower()
+            feedback = input("Is the direction correct, liquid is flowing towards bucket? (yes/no): ").strip().lower()
             temp_pump.stop()
 
             if feedback in ['no', 'n']:
@@ -157,29 +161,36 @@ def find_motor_name_and_direction():
             for idx, name in enumerate(pump_names):
                 print(f"{idx + 1}: {name}")
 
-            while True:
-                name_choice = input(
-                    "\n Enter the number for selected pump name (1,2,3...) (or 'none' for no pump): ").strip().lower()
-                if name_choice == "none" or name_choice == "n":
-                    chosen_name = None
-                    break
-                try:
-                    name_choice = int(name_choice)
-                    if 1 <= name_choice <= len(pump_names):
-                        chosen_name = pump_names.pop(name_choice - 1)
+                while True:
+                    name_choice = input(
+                        "\nEnter the number or name for the selected pump (1,2,3... or pump name) (or 'none' for no "
+                        "pump): ").strip().lower()
+                    if name_choice == "none" or name_choice == "n":
+                        chosen_name = None
                         break
-                    else:
-                        print("Invalid choice. Please enter a number from the list.")
-                except ValueError:
-                    print("Invalid input. Please enter a number.")
+                    try:
+                        # Check if input is a number
+                        name_choice_num = int(name_choice)
+                        if 1 <= name_choice_num <= len(pump_names):
+                            chosen_name = pump_names.pop(name_choice_num - 1)
+                            break
+                        else:
+                            print("Invalid choice. Please enter a number from the list.")
+                    except ValueError:
+                        # Check if input is a valid pump name
+                        if name_choice in [name.lower() for name in pump_names]:
+                            chosen_name = next(name for name in pump_names if name.lower() == name_choice)
+                            pump_names.remove(chosen_name)
+                            break
+                        else:
+                            print("Invalid input. Please enter a valid pump name or number.")
 
-            if chosen_name is not None:
-                pump_objects[chosen_name] = {
-                    'motor': (address, motor_num),
-                    'direction': direction
-                }
-                print(f"Pump {chosen_name} mapped to motor {motor_num} on driver with address {hex(address)}. \n")
-
+                if chosen_name is not None:
+                    pump_objects[chosen_name] = {
+                        'motor': (address, motor_num),
+                        'direction': direction
+                    }
+                    print(f"Pump {chosen_name} mapped to motor {motor_num} on driver with address {hex(address)}.\n")
                 if user_choice == 'yes':
                     clear_lines(Pump(motor, direction))
 
@@ -362,7 +373,6 @@ def load_motor_name_and_direction():
 def configure_system():
     try:
 ########################################################################################################################
-
         # Configuration Section
         # User can modify these values directly
         PLANT_NAME = "Raspberry plant"

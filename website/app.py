@@ -1,13 +1,18 @@
-from flask import Flask
+import plotly
+from flask import Flask, send_from_directory
 from dash import Dash, html, dcc
 from dash.dependencies import Input, Output
 import dash_daq as daq
-import os
 import time
 from threading import Thread, Lock
 import plotly.graph_objs as go
 import datetime
 import pytz
+import os
+import pandas as pd
+import plotly.express as px
+import json
+import glob
 
 # Create a Flask server
 server = Flask(__name__)
@@ -33,6 +38,18 @@ app.index_string = '''
 </html>
 '''
 
+# Get the directory of the current script
+script_dir = os.path.dirname(__file__)
+
+# Construct the full path to the action_log.txt file
+action_log_path = os.path.join(script_dir, 'website_vals', 'action_log.txt')
+
+# Ensure the file exists or handle the error appropriately
+if not os.path.exists(action_log_path):
+    print(f"File not found: {action_log_path}")
+    # You can create the file or raise an error here
+    open(action_log_path, 'w').close()
+
 # Global variables and locks for pH value, water level, PPM, and temperature
 ph_value = 7.0
 water_level = 4.0
@@ -51,13 +68,11 @@ custom_marks_ppm = {i: '' for i in range(0, 200, 2)}  # Ticks every 2 PPM, no la
 custom_marks_ppm.update({i: str(i) for i in range(0, 201, 10)})
 
 
-########################################################################################################################
 def convert_ppm_to_scale(ppm_valu):
     """Convert PPM value to a 0-200 scale with one decimal place accuracy."""
     return round(ppm_valu / 10, 1)
 
 
-########################################################################################################################
 def read_value_from_file(file_path):
     """Read a float value from a file."""
     if os.path.exists(file_path):
@@ -66,7 +81,31 @@ def read_value_from_file(file_path):
     return None
 
 
-########################################################################################################################
+def read_last_entries(filename, num_entries):
+    """Read the last num_entries from the specified log file."""
+    try:
+        file_path = os.path.join(script_dir, 'website_vals', filename)
+        # Read the file into a DataFrame
+        df = pd.read_csv(file_path)
+        # Get the last num_entries rows
+        df = df.tail(num_entries)
+        return df
+    except Exception as e:
+        print(f"Error reading the last {num_entries} entries from the file: {e}")
+        return None
+
+
+def create_plot(df, column, title, yaxis_title):
+    fig = px.line(df, x='Timestamp', y=column, title=title)
+    fig.update_layout(
+        xaxis_title='Timestamp',
+        yaxis_title=yaxis_title,
+        template='plotly_dark'
+    )
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    return graphJSON
+
+
 def create_layout():
     """Create the layout for the Dash app."""
     return html.Div([
@@ -83,11 +122,16 @@ def create_layout():
         ], style={'display': 'flex', 'justify-content': 'center', 'align-items': 'center', 'padding': '20px',
                   'margin-top': '-40px'}),  # Adjust the margin-top here
 
-        create_interval_component()
+        create_interval_component(),
+        html.Div([
+            dcc.Graph(id='water-level-graph'),
+            dcc.Graph(id='ppm-graph'),
+            dcc.Graph(id='ph-graph'),
+            dcc.Graph(id='temperature-graph')
+        ])
     ])
 
 
-########################################################################################################################
 def read_log_from_file(file_path):
     """Read log entries from a file."""
     if os.path.exists(file_path):
@@ -96,7 +140,7 @@ def read_log_from_file(file_path):
     return []
 
 
-def log_message(message, file_path='website_vals/action_log.txt'):
+def log_message(message, file_path=action_log_path):
     """Log a message with a timestamp to a specified log file."""
     est = pytz.timezone('US/Eastern')
     current_time = datetime.datetime.now(est).strftime("%y-%m-%d %H:%M")
@@ -133,7 +177,6 @@ def create_text_log():
               'margin-top': '-100px'})  # Increase margin to add more space
 
 
-########################################################################################################################
 def create_ph_gauge():
     """Create the pH gauge component."""
     return html.Div([
@@ -165,7 +208,6 @@ def create_ph_gauge():
     ], style={'display': 'inline-block', 'margin-right': '40px'})  # Add margin to the right
 
 
-########################################################################################################################
 def create_ppm_gauge():
     """Create the PPM gauge component."""
     return html.Div([
@@ -196,7 +238,6 @@ def create_ppm_gauge():
     ], style={'display': 'inline-block', 'margin-right': '40px'})  # Add margin to the right
 
 
-########################################################################################################################
 def create_temperature_thermometer():
     """Create the temperature thermometer component."""
     return daq.Thermometer(
@@ -217,7 +258,6 @@ def create_temperature_thermometer():
     )
 
 
-########################################################################################################################
 def create_water_level_figure(water_level_val):
     """Create the water level figure."""
     tickvals = [i / 4 for i in range(0, 33)]
@@ -280,8 +320,6 @@ def create_water_level_bar():
     ], style={'display': 'inline-block', 'margin-right': '40px'})  # Add margin to the right
 
 
-########################################################################################################################
-
 def create_interval_component():
     """Create the interval component for periodic updates."""
     return dcc.Interval(
@@ -291,7 +329,6 @@ def create_interval_component():
     )
 
 
-########################################################################################################################
 def update_gauge_and_bar(_):
     with ph_value_lock:
         ph_val = ph_value
@@ -302,7 +339,7 @@ def update_gauge_and_bar(_):
     with temperature_value_lock:
         temperature_val = temperature_value
 
-    log_entries = read_log_from_file('website_vals/action_log.txt')
+    log_entries = read_log_from_file(action_log_path)
     log_text = ''.join(log_entries)
 
     fig = create_water_level_figure(water_level_val)
@@ -335,24 +372,59 @@ def update_values():
         time.sleep(180)  # Adjust the sleep time as needed
 
 
-########################################################################################################################
+def update_graphs(_):
+    df = read_last_entries('sensor_data.log', 48)
+    if df is not None:
+        df['Timestamp'] = pd.to_datetime(df['Timestamp'])
+        water_level_plot = create_plot(df, 'Water Level', 'Water Level Over Time', 'Water Level')
+        ppm_plot = create_plot(df, 'PPM', 'PPM Over Time', 'PPM')
+        ph_plot = create_plot(df, 'pH', 'pH Over Time', 'pH')
+        temperature_plot = create_plot(df, 'Temperature', 'Temperature Over Time', 'Temperature (F)')
 
-@app.callback(
-    Output('ph-gauge', 'value'),
-    Output('water-level-bar', 'figure'),
-    Output('ppm-gauge', 'value'),
-    Output('temperature-thermometer', 'value'),
-    Output('text-log', 'value'),
-    Input('interval-component', 'n_intervals')
-)
-def start_value_update_thread():
-    """Start the thread to update values."""
-    thread = Thread(target=update_values)
-    thread.daemon = True
-    thread.start()
+        return water_level_plot, ppm_plot, ph_plot, temperature_plot
+    else:
+        return {}, {}, {}, {}
+
+
+app.callback(
+    [Output('water-level-graph', 'figure'),
+     Output('ppm-graph', 'figure'),
+     Output('ph-graph', 'figure'),
+     Output('temperature-graph', 'figure')],
+    [Input('interval-component', 'n_intervals')]
+)(update_graphs)
+
+
+@server.route('/static/<path:filename>')
+def send_file(filename):
+    return send_from_directory(os.path.join(script_dir, 'website_vals', 'pictures'), filename)
+
+
+def get_latest_picture():
+    """Get the path to the latest picture in the pictures folder."""
+    pictures_path = os.path.join(script_dir, 'website_vals', 'pictures')
+    list_of_files = glob.glob(os.path.join(pictures_path, '*.jpg'))  # Get all jpg files
+    if not list_of_files:
+        return None
+    latest_file = max(list_of_files, key=os.path.getmtime)
+    return latest_file
+
+
+def create_picture_display():
+    """Create the picture display component."""
+    latest_picture = get_latest_picture()
+    if latest_picture:
+        img_src = f"/static/{os.path.basename(latest_picture)}"
+        return html.Div([
+            html.Img(src=img_src, style={'width': '230px', 'height': '220px', 'object-fit': 'cover'})
+        ], style={'display': 'inline-block', 'margin-right': '40px', 'margin-left': '10px'})
+    else:
+        return html.Div([
+            html.P("No picture available")
+        ], style={'display': 'inline-block', 'margin-right': '40px', 'margin-left': '10px'})
 
 
 if __name__ == '__main__':
     app.layout = create_layout()
-    start_value_update_thread()
+    Thread(target=update_values, daemon=True).start()
     app.run_server(debug=True)
