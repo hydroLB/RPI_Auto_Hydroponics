@@ -71,20 +71,7 @@ cd RPI_Auto_Hydroponics
 
 ## ⚙️ Configuration
 
-You will need to configure the following variables in the `user_controlled_constants` file:
-
-- `ph_var`: List of 3, containing times for pH up and down pumps to be on per cycle, and time between each cycle (loop) when dosing for pH.
-
-- `WATER_LEVEL_CHANGE_THRESHOLD`: This parameter determines the minimum difference in water level (in inches) needed to trigger a fill-up, promoting stronger root growth by encouraging plants to search for water deeper in the container. Adjust the threshold to optimize watering frequency and root strength. Consider updating this value in relation to the plant's growth stage. As the plant matures, increase the time between fill-ups to encourage deeper root growth.
-
-- Smaller threshold -> More frequent fill-ups. Larger threshold -> Less frequent fill-ups, stronger roots. Never let the roots be too dry. I rather err on the side of caution even if the roots won't be as big.  
-
-- `WAIT_TIME_BETWEEN_CHECKS`: Time in seconds to wait between each water level check and ph check.
-
-- `NUTRIENT_PPM_SAFETY_MARGIN`: Safety margin in ppm between the actual target PPM and the first nutrient dosing cycle, as the ph balancing raises ppm too.
-
-- `user_plant_choice` in the main must be customized to the plant the user wants to grow. 
-
+You will need to configure the following variables in the `user_configurator` file
 
 ## 🚀 Usage
 
@@ -104,7 +91,7 @@ python3 run_this.py
 - The water level, and PPM are stored in a file to allow the system to resume its monitoring in the event of a reboot or power outage.
 
 ## Contributing, credits and special thanks: 
-Special thanks to Michael Yinka-Oke and Sean Cunneen for bringing this project and idea to from the ground to reality! 
+Special thanks to Michael Yinka-Oke and Sean Cunneen for bringing this project and idea to from the ground to prototype! 
 
 This project was developed using a variety of tools, including PyCharm as the integrated development environment and implemented on a Raspberry Pi platform.
 
@@ -116,12 +103,10 @@ This project was developed using a variety of tools, including PyCharm as the in
 
 2. Data Visualization: The ability to visualize logged data, such as water level at certain times, pH levels, and nutrient levels, over time. This will enable you to analyze your hydroponic system's performance and make necessary adjustments.
 
-3. Web/Mobile Interface: Develop a web or mobile application for interacting with the Raspberry Pi and controlling the hydroponic system. This will provide you with the ability to remotely monitor and manage your plants.
+3. Light Management: Incorporate a light management system to control light intensity and duration, simulating day-night cycles and optimizing plant growth.
 
-4. Light Management: Incorporate a light management system to control light intensity and duration, simulating day-night cycles and optimizing plant growth.
+4. Camera Integration: Integrating a camera module with your Raspberry Pi to enable visual monitoring of plant growth and health. This will allow you to track your plants' progress using a timelapse.
 
-5. Camera Integration: Integrating a camera module with your Raspberry Pi to enable visual monitoring of plant growth and health. This will allow you to track your plants' progress using a timelapse.
+5. Temperature Control: Implement a new temperature sensor to control a heater or cooler to maintain optimal temperature levels in the hydroponic environment. This will ensure that your plants grow in the most suitable conditions.
 
-6. Temperature Control: Implement a new temperature sensor to control a heater or cooler to maintain optimal temperature levels in the hydroponic environment. This will ensure that your plants grow in the most suitable conditions.
-
-7. Humidity Control: Implement a humidity sensor and control system (fans) to maintain optimal humidity levels in the hydroponic environment.
+6. Humidity Control: Implement a humidity sensor and control system (fans) to maintain optimal humidity levels in the hydroponic environment.
