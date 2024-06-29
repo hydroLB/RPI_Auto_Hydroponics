@@ -97,16 +97,12 @@ This project was developed using a variety of tools, including PyCharm as the in
 
 ## 🌟 Ideas to Add in the Future:
 
-0. Multiple Plants: Control Multiple plants each with their own customizations using a single bucket.
+1. Multiple Plants: Control Multiple plants each with their own customizations using a single bucket.
 
-1. Alerts and Notifications: Add a feature for sending alerts and notifications when certain conditions are met or thresholds are exceeded, such as low water levels, pH imbalances, or high nutrient concentrations. This will keep you informed about your system's status and help you react promptly to any issues.
-
-2. Data Visualization: The ability to visualize logged data, such as water level at certain times, pH levels, and nutrient levels, over time. This will enable you to analyze your hydroponic system's performance and make necessary adjustments.
+2. Alerts and Notifications: Add a feature for sending alerts and notifications when certain conditions are met or thresholds are exceeded, such as low water levels, pH imbalances, or high nutrient concentrations. This will keep you informed about your system's status and help you react promptly to any issues.
 
 3. Light Management: Incorporate a light management system to control light intensity and duration, simulating day-night cycles and optimizing plant growth.
 
-4. Camera Integration: Integrating a camera module with your Raspberry Pi to enable visual monitoring of plant growth and health. This will allow you to track your plants' progress using a timelapse.
+4. Temperature Control: Implement a new temperature sensor to control a heater or cooler to maintain optimal temperature levels in the hydroponic environment. This will ensure that your plants grow in the most suitable conditions.
 
-5. Temperature Control: Implement a new temperature sensor to control a heater or cooler to maintain optimal temperature levels in the hydroponic environment. This will ensure that your plants grow in the most suitable conditions.
-
-6. Humidity Control: Implement a humidity sensor and control system (fans) to maintain optimal humidity levels in the hydroponic environment.
+5. Humidity Control: Implement a humidity sensor and control system (fans) to maintain optimal humidity levels in the hydroponic environment.
