@@ -1,5 +1,6 @@
 import os
 import pickle
+from time import sleep
 
 import RPi.GPIO as GPIO
 from adafruit_motorkit import MotorKit
@@ -136,6 +137,10 @@ def find_motor_name_and_direction():
         if user_choice == 'yes':
             print("Grab a glass to grab any fluid that comes out of pump before it reaches the bucket .")
 
+        sleep(1)
+
+        clear_terminal()
+
         for address, motor_num in motor_map:
             motor = motor_map[(address, motor_num)]
             if motor is None:
@@ -146,10 +151,13 @@ def find_motor_name_and_direction():
 
             temp_pump = Pump(motor, 1)  # Temporary pump with default direction
             print(f"\n\nTesting motor # {motor_num} on driver with address: {hex(address)}")
+            sleep(1)
 
             temp_pump.start()
+            sleep(1)
             feedback = input("Is the direction correct, liquid is flowing towards bucket? (yes/no): ").strip().lower()
             temp_pump.stop()
+            sleep(2)
 
             if feedback in ['no', 'n']:
                 direction = temp_pump.direction * -1
@@ -191,15 +199,16 @@ def find_motor_name_and_direction():
                         'direction': direction
                     }
                     print(f"Pump {chosen_name} mapped to motor {motor_num} on driver with address {hex(address)}.\n")
-                if user_choice == 'yes':
-                    clear_lines(Pump(motor, direction))
 
-                    # Prime the pump to fill it completely
-                    prime(Pump(motor, direction))
+                    if user_choice == 'yes':
+                        clear_lines(Pump(motor, direction))
 
-                clear_terminal()
-            else:
-                print(f"No pump assigned to motor {motor_num} on driver with address {hex(address)}.")
+                        # Prime the pump to fill it completely
+                        prime(Pump(motor, direction))
+
+                else:
+                    print(f"No pump assigned to motor {motor_num} on driver with address {hex(address)}.")
+
                 clear_terminal()
 
         try:

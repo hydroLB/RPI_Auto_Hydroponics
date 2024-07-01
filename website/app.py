@@ -13,9 +13,15 @@ import pandas as pd
 import plotly.express as px
 import json
 import glob
+import logging
+
 
 # Create a Flask server
 server = Flask(__name__)
+
+# Configure Flask app to only log errors
+server.logger.setLevel(logging.ERROR)
+
 
 # Create a Dash app and pass the Flask server
 app = Dash(__name__, server=server)
@@ -352,10 +358,29 @@ def update_values():
     """Periodically update the gauge and bar values by reading from the files."""
     global ph_value, water_level, ppm_value, temperature_value
     while True:
-        new_ph_value = read_value_from_file('website_vals/ph_value.txt')
-        new_water_level = read_value_from_file('website_vals/water_level.txt')
-        new_ppm_value = read_value_from_file('website_vals/ppm_value.txt')
-        new_temperature_value = read_value_from_file('website_vals/temperature_value.txt')
+        def read_value_from_website_vals(file_path):
+            try:
+                with open(file_path, 'r') as file:
+                    value = file.read().strip()
+                    print(f"Successfully read from {file_path}: {value}")
+                    return value
+            except FileNotFoundError:
+                print(f"File not found: {file_path}")
+                return None
+            except Exception as e:
+                print(f"Error reading {file_path}: {e}")
+                return None
+
+        base_dir = '/home/leonbouramia/Downloads/RPI_Auto_Hydroponics/website/website_vals'
+        ph_file = os.path.join(base_dir, 'ph_value.txt')
+        water_level_file = os.path.join(base_dir, 'water_level.txt')
+        ppm_file = os.path.join(base_dir, 'ppm_value.txt')
+        temperature_file = os.path.join(base_dir, 'temperature_value.txt')
+
+        new_ph_value = read_value_from_website_vals(ph_file)
+        new_water_level = read_value_from_website_vals(water_level_file)
+        new_ppm_value = read_value_from_website_vals(ppm_file)
+        new_temperature_value = read_value_from_website_vals(temperature_file)
 
         if new_ph_value is not None:
             with ph_value_lock:
