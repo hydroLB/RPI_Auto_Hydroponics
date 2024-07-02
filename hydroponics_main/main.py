@@ -2,6 +2,7 @@ import os
 import sys
 import threading
 from time import sleep
+
 # Add the project directory to the PYTHONPATH
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from file_operations.log_sensor_data import log_sensor_data
@@ -26,6 +27,10 @@ previous_water_level = 0.0
 
 # noinspection PyCompatibility
 def setup_hydroponic_system():
+    def ask_user(prompt):
+        response = input(prompt + " (yes/y or no/n): ").strip().lower()
+        return response in ('yes', 'y')
+
     """
     Sets up the hydroponic system, including configuring pumps, priming pumps,
     initializing sensors, and dosing nutrients, only if water level is below threshold to skip this step.
@@ -37,28 +42,51 @@ def setup_hydroponic_system():
         if water_level is None or water_level < SKIP_SYSTEM_SETUP_WATER_LEVEL:
             sys.stdin.readline()  # Wait for user to hit enter to start configuration
 
-            # Configure the system and get the plant and pH pump list
             plant, ph_pump_list = configure_system()
 
             # Write initial target levels from user config file to settings.txt
             write_to_file(plant.target_ppm, plant.target_water_level)
 
-            # test the pump control over bringing in fresh water during a refill
-            test_fresh_water_pump()
+            # Test the pump control over bringing in fresh water during a refill
+            if ask_user("Do you want to test the fresh water pump?"):
+                test_fresh_water_pump()
+            else:
+                print("Skipping fresh water pump test.")
 
             # Initialize water sensor to get the water level
             initialize_water_sensor()
             log_message("Water sensor initialization begun")
 
+            # make sure user ready for bucket fill
+            while True:
+                answer = input(
+                    "Have you removed water so its beneath the max fill line chosen in the system (yes/no): ").strip().lower()
+                if answer == "yes":
+                    break
+                elif answer == "no":
+                    print("Okay, waiting for your readiness... to begin fillup")
+                else:
+                    print("Please answer with 'yes' or 'no'.")
+
             # Fill the system with water
             fill_water(FRESH_WATER_PUMP_PIN)
 
             # Test temperature sensor
-            test_temp_sensor()
+            if ask_user("Do you want to test the temperature sensor?"):
+                test_temp_sensor()
+            else:
+                print("Skipping temperature sensor test.")
 
             # Test pH and EC sensors
-            test_ph_sensor()
-            test_ec_sensor()
+            if ask_user("Do you want to test the pH sensor?"):
+                test_ph_sensor()
+            else:
+                print("Skipping pH sensor test.")
+
+            if ask_user("Do you want to test the EC sensor?"):
+                test_ec_sensor()
+            else:
+                print("Skipping EC sensor test.")
 
             # Get the target PPM and water level from settings file
             target_ppm, target_water_level = read_from_file()
@@ -181,7 +209,7 @@ def monitor_hydroponic_system():
             target_ppm, target_water_level = read_from_file()
 
             # Check if the water level is below the target threshold
-            if target_water_level - water_level > WATER_THRESHOLD:
+            if target_water_level - new_water_level > WATER_THRESHOLD:
                 # Adjust water level and nutrients if below threshold
                 adjust_water_level_and_nutrients(plant, ph_pump_list)
             else:
@@ -209,6 +237,13 @@ def main():
     try:
         # Initial setup of the hydroponic system
         setup_hydroponic_system()
+        ph_value_lock = threading.Lock()
+        water_level_lock = threading.Lock()
+        ppm_value_lock = threading.Lock()
+        temperature_value_lock = threading.Lock()
+
+        monitor_thread = threading.Thread(target=monitor_hydroponic_system)
+        monitor_thread.start()
         monitor_hydroponic_system()
 
     except TypeError as e2:
@@ -234,14 +269,6 @@ def ensure_pumps_off():
 
 
 if __name__ == "__main__":
-    ph_value_lock = threading.Lock()
-    water_level_lock = threading.Lock()
-    ppm_value_lock = threading.Lock()
-    temperature_value_lock = threading.Lock()
-
-    monitor_thread = threading.Thread(target=monitor_hydroponic_system)
-    monitor_thread.start()
-
     try:
         main()
         ensure_pumps_off()

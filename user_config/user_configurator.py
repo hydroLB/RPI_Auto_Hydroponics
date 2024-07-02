@@ -1,5 +1,6 @@
 import os
 import pickle
+import sys
 from time import sleep
 
 import RPi.GPIO as GPIO
@@ -56,10 +57,10 @@ FRESH_WATER_PUMP_PIN = 21
 GPIO.setup(FRESH_WATER_PUMP_PIN, GPIO.OUT)  # Set pin as an output
 # how long is the pump on at a time, this is to control how much water comes out at a time to not overwhelm speed of
 # the etape capturing the change
-fresh_water_pump_time_on = 1.5
+fresh_water_pump_time_on = 1.3
 
 # how long is the pump off at a time
-fresh_water_pump_time_off = 3.5
+fresh_water_pump_time_off = 3.8
 
 ########################################################################################################################
 
@@ -113,143 +114,129 @@ motors = [
 
 ########################################################################################################################
 
-def find_motor_name_and_direction():
-    try:
-        # Ensure motor_map is defined and is a dictionary
-        if not isinstance(motor_map, dict):
-            raise TypeError(
-                "Expected motor_map to be a dictionary, but got type {}. "
-                "Error in find_motor_name_and_direction.".format(
-                    type(motor_map).__name__))
 
-        pump_names = ["nutrientPump1", "nutrientPump2", "nutrientPump3", "nutrientPump4", "BacterialPump", "pHUpPump",
-                      "pHDownPump"]
-        pump_objects = {}
+def ask_user_clear_lines():
+    """Ask the user if they want to clear lines and reverse pumps."""
+    while True:
+        user_choice = input(
+            "Do you want to clear lines and reverse pumps or skip this step? "
+            "(enter 'yes' to clear lines or 'no' to skip): ").strip().lower()
+        if user_choice in ['yes', 'no']:
+            break
+        print("Invalid choice.")
+    print(user_choice)
+    return user_choice
 
-        # Ask user if they want to clear lines and reverse pumps or skip
-        user_choice = input("Do you want to clear lines and reverse pumps or skip this step? (enter 'yes' to clear "
-                            "lines or no to skip: ").strip().lower()
 
-        if user_choice not in ['yes', 'no']:
-            print("Invalid choice. Defaulting to 'yes'.")
-            user_choice = 'yes'
+def test_motor_direction(address, motor_num, motor, pump_names):
+    """Test the direction of a motor and prompt user for pump assignment."""
+    if motor is None:
+        raise ValueError(
+            f"Motor at address {address} and motor number {motor_num} is invalid."
+        )
 
-        if user_choice == 'yes':
-            print("Grab a glass to grab any fluid that comes out of pump before it reaches the bucket .")
+    temp_pump = Pump(motor, 1)  # Temporary pump with default direction
+    print(f"\nTesting motor #{motor_num} on driver with address: {hex(address)}")
+    sleep(1)
 
-        sleep(1)
+    temp_pump.start()
+    feedback = input(
+        "Is the direction correct? Is liquid flowing towards the bucket? "
+        "(yes/no): "
+    ).strip().lower()
+    temp_pump.stop()
 
-        clear_terminal()
+    if feedback in ['no', 'n']:
+        direction = temp_pump.direction * -1
+        print("\nDirection reversed.\n")
+    else:
+        direction = 1
+        print("\nDirection confirmed as forward.\n")
 
-        for address, motor_num in motor_map:
-            motor = motor_map[(address, motor_num)]
-            if motor is None:
-                raise ValueError(
-                    "Motor at address {} and motor number {} is invalid. "
-                    "Error in find_motor_name_and_direction.".format(
-                        address, motor_num))
+    chosen_name = select_pump_name(pump_names)
+    return chosen_name, direction
 
-            temp_pump = Pump(motor, 1)  # Temporary pump with default direction
-            print(f"\n\nTesting motor # {motor_num} on driver with address: {hex(address)}")
-            sleep(1)
 
-            temp_pump.start()
-            sleep(1)
-            feedback = input("Is the direction correct, liquid is flowing towards bucket? (yes/no): ").strip().lower()
-            temp_pump.stop()
-            sleep(2)
+def select_pump_name(pump_names):
+    """Prompt user to select a pump name from available choices."""
+    while True:
+        print("\nAvailable pumps:")
+        for idx, name in enumerate(pump_names):
+            print(f"{idx + 1}: {name}")
+        name_choice = input(
+            "Enter the number or name for the selected pump (or 'none' for no pump): "
+        ).strip().lower()
 
-            if feedback in ['no', 'n']:
-                direction = temp_pump.direction * -1
-                print("\n Direction reversed. \n")
-            else:
-                direction = 1
-                print("\nDirection confirmed as forward.\n")
-
-            for idx, name in enumerate(pump_names):
-                print(f"{idx + 1}: {name}")
-
-                while True:
-                    name_choice = input(
-                        "\nEnter the number or name for the selected pump (1,2,3... or pump name) (or 'none' for no "
-                        "pump): ").strip().lower()
-                    if name_choice == "none" or name_choice == "n":
-                        chosen_name = None
-                        break
-                    try:
-                        # Check if input is a number
-                        name_choice_num = int(name_choice)
-                        if 1 <= name_choice_num <= len(pump_names):
-                            chosen_name = pump_names.pop(name_choice_num - 1)
-                            break
-                        else:
-                            print("Invalid choice. Please enter a number from the list.")
-                    except ValueError:
-                        # Check if input is a valid pump name
-                        if name_choice in [name.lower() for name in pump_names]:
-                            chosen_name = next(name for name in pump_names if name.lower() == name_choice)
-                            pump_names.remove(chosen_name)
-                            break
-                        else:
-                            print("Invalid input. Please enter a valid pump name or number.")
-
-                if chosen_name is not None:
-                    pump_objects[chosen_name] = {
-                        'motor': (address, motor_num),
-                        'direction': direction
-                    }
-                    print(f"Pump {chosen_name} mapped to motor {motor_num} on driver with address {hex(address)}.\n")
-
-                    if user_choice == 'yes':
-                        clear_lines(Pump(motor, direction))
-
-                        # Prime the pump to fill it completely
-                        prime(Pump(motor, direction))
-
-                else:
-                    print(f"No pump assigned to motor {motor_num} on driver with address {hex(address)}.")
-
-                clear_terminal()
+        if name_choice == "none" or name_choice == "n":
+            return None
 
         try:
-            # Define the directory and file path
-            directory = "created_saved_values"
-            file_path = os.path.join(directory, "pump_configurations.pkl")
+            name_choice_num = int(name_choice)
+            if 1 <= name_choice_num <= len(pump_names):
+                return pump_names.pop(name_choice_num - 1)
+        except ValueError:
+            if name_choice in [name.lower() for name in pump_names]:
+                chosen_name = next(name for name in pump_names if name.lower() == name_choice)
+                pump_names.remove(chosen_name)
+                return chosen_name
 
-            # Ensure the directory exists
-            if not os.path.exists(directory):
-                os.makedirs(directory)
+        print("Invalid input. Please enter a valid pump name or number.")
 
-            # Open the file in write binary mode and save the pump objects
-            with open(file_path, 'wb') as file:
-                pickle.dump(pump_objects, file)
 
-        except IOError as ioe:
-            print(f"IOError in save_pump_objects: {ioe}")
+def save_pump_configurations(pump_objects):
+    """Save configured pump objects to a pickle file."""
+    directory = "created_saved_values"
+    file_path = os.path.join(directory, "pump_configurations.pkl")
 
-        except Exception as e:
-            print(f"An unexpected error occurred in save_pump_objects: {e}")
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
-        print("\n All motors have been named, tested for correct direction, reversed, and primed \n ")
+    with open(file_path, 'wb') as file:
+        pickle.dump(pump_objects, file)
+
+
+def find_motor_name_and_direction():
+    """Find motor names, test directions, and save configurations."""
+    try:
+        pump_names = [
+            "nutrientPump1", "nutrientPump2", "nutrientPump3", "nutrientPump4",
+            "BacterialPump", "pHUpPump", "pHDownPump"
+        ]
+        pump_objects = {}
+
+        user_choice = ask_user_clear_lines()
+
+        if user_choice == 'yes':
+            print("Prepare to catch any fluid from the pump before it reaches the bucket.")
+            sleep(1)
+
+        for (address, motor_num), motor in motor_map.items():
+            chosen_name, direction = test_motor_direction(address, motor_num, motor, pump_names)
+
+            if chosen_name is not None:
+                pump_objects[chosen_name] = {
+                    'motor': (address, motor_num),
+                    'direction': direction
+                }
+                print(f"Pump {chosen_name} mapped to motor {motor_num} on driver with address {hex(address)}.\n")
+
+                if user_choice == 'yes':
+                    clear_lines(Pump(motor, direction))
+                    prime(Pump(motor, direction))
+            else:
+                print(f"No pump assigned to motor {motor_num} on driver with address {hex(address)}.")
+
+            clear_terminal()
+
+        save_pump_configurations(pump_objects)
+
+        print("\nAll motors have been named, tested for correct direction, reversed, and primed.\n")
         clear_terminal()
 
-        # Assign variables to each pump based on their names
         return assign_pumps(pump_objects)
 
-    except TypeError as e:
-        raise TypeError("Type error occurred in find_motor_name_and_direction: {}".format(e))
-
-    except ValueError as e:
-        raise ValueError("Value error occurred in find_motor_name_and_direction: {}".format(e))
-
-    except KeyError as e:
-        raise KeyError("Key error occurred in find_motor_name_and_direction: {}".format(e))
-
-    except (IOError, OSError) as e:
-        raise IOError("I/O error occurred in find_motor_name_and_direction: {}".format(e))
-
-    except Exception as e:
-        raise Exception("An unexpected error occurred in find_motor_name_and_direction: {}".format(e))
+    except (TypeError, ValueError, KeyError, IOError, OSError) as e:
+        raise type(e)(f"Error occurred in find_motor_name_and_direction: {e}")
 
 
 def assign_pumps(pump_objects):
@@ -381,7 +368,7 @@ def load_motor_name_and_direction():
 
 def configure_system():
     try:
-########################################################################################################################
+        ########################################################################################################################
         # Configuration Section
         # User can modify these values directly
         PLANT_NAME = "Raspberry plant"
@@ -396,7 +383,7 @@ def configure_system():
         NUTRIENT4_TIME = 10
         BACTERIAL_TIME = 10
 
-########################################################################################################################
+        ########################################################################################################################
 
         # Load motor names and directions
         motor_data = load_motor_name_and_direction()

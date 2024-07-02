@@ -207,6 +207,7 @@ def calibrate_water_sensor():
     """
     calibration_data = []
     try:
+        time.sleep(2)
         for target_level in np.arange(1.5, 6.5, 0.5):
             stop_event.clear()
             pump_thread = threading.Thread(target=pump_control, args=(FRESH_WATER_PUMP_PIN,))
@@ -215,8 +216,8 @@ def calibrate_water_sensor():
             while True:
                 try:
                     user_input = input(
-                        f"Type 'confirm {target_level}' when the water is at {target_level} inches: ").strip().lower()
-                    if user_input == f"confirm {target_level}":
+                        f"Type '{target_level}' when the water is at {target_level} inches: ").strip().lower()
+                    if user_input == f"{target_level}":
                         stop_event.set()
                         pump_thread.join(timeout=10)
                         if pump_thread.is_alive():

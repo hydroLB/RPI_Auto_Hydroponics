@@ -74,9 +74,20 @@ custom_marks_ppm = {i: '' for i in range(0, 200, 2)}  # Ticks every 2 PPM, no la
 custom_marks_ppm.update({i: str(i) for i in range(0, 201, 10)})
 
 
-def convert_ppm_to_scale(ppm_valu):
-    """Convert PPM value to a 0-200 scale with one decimal place accuracy."""
-    return round(ppm_valu / 10, 1)
+def convert_ppm_to_scale(ppm_vals):
+    try:
+        # Convert ppm_value to float if it's a string or ensure it's a numeric type
+        new_ppm_vals = float(ppm_vals)
+
+        # Perform the conversion calculation
+        return round(new_ppm_vals / 10, 1)
+
+    except ValueError:
+        raise ValueError("Could not convert ppm_value to a numeric type.")
+    except TypeError:
+        raise TypeError("Expected a numeric value for ppm_value.")
+    except Exception as e:
+        raise Exception(f"An unexpected error occurred: {e}")
 
 
 def read_value_from_file(file_path):
@@ -362,7 +373,6 @@ def update_values():
             try:
                 with open(file_path, 'r') as file:
                     value = file.read().strip()
-                    print(f"Successfully read from {file_path}: {value}")
                     return value
             except FileNotFoundError:
                 print(f"File not found: {file_path}")
