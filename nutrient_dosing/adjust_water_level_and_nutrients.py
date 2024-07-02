@@ -1,6 +1,7 @@
 from time import sleep
 from ph_ppm_pump_sensor.AtlasI2C import get_ppm
 from ph_ppm_pump_sensor.pumps import end_fresh_water_pump, start_fresh_water_pump
+from water_level_sensor.ETAPE_Calibration import time_to_reach
 from water_level_sensor.Water_Level_ETAPE import get_water_level
 from ph_manager.ph_manager import balance_PH_exact
 from file_operations.logging_water_and_ppm import write_to_file, read_from_file
@@ -31,6 +32,13 @@ def fill_water(fresh_water_pin):
         while get_water_level() < target_water_level:
             # Display the current water level while adding water
             print("Filling...  current level: %f" % get_water_level() + ",target level: %f" % target_water_level)
+
+            # use the time we kind of know it takes to reach from one to another for faster fillup
+            time = time_to_reach(get_water_level, target_water_level) * .92
+            start_fresh_water_pump(fresh_water_pin)
+            sleep(time)
+            end_fresh_water_pump(fresh_water_pin)
+
             fresh_water_pump_cycle_on_off(fresh_water_pin)
 
         log_message("Water level filling completed successfully...")
@@ -49,30 +57,44 @@ def dose_nutrients(target_ppm_local, pump_info):
         pump_info (list): A list of tuples containing pump objects and their corresponding dosing times.
     """
     try:
+        # Check target_ppm_local type
         if not isinstance(target_ppm_local, (int, float)):
             raise TypeError(
                 "Expected target_ppm_local to be an int or float, but got type {}. Error in dose_nutrients.".format(
                     type(target_ppm_local).__name__))
 
+        # Check pump_info type
         if not isinstance(pump_info, list):
             raise TypeError("Expected pump_info to be a list, but got type {}. Error in dose_nutrients.".format(
                 type(pump_info).__name__))
 
+        # Ensure pump_info has more than one item
+        if len(pump_info) <= 1:
+            raise ValueError("pump_info must contain more than one pump. Error in dose_nutrients.")
+
+        # Check each item in pump_info
+        for item in pump_info:
+            if not isinstance(item, tuple) or len(item) != 2:
+                raise TypeError("Each item in pump_info should be a tuple of length 2. Error in dose_nutrients.")
+
+            pump, dosing_time = item
+
+            if not hasattr(pump, 'start') or not hasattr(pump, 'stop'):
+                raise AttributeError("Pump object missing 'start' or 'stop' method. Error in dose_nutrients.")
+
+            if not isinstance(dosing_time, (int, float)):
+                raise TypeError(
+                    "Expected dosing_time to be an int or float, but got type {}. Error in dose_nutrients.".format(
+                        type(dosing_time).__name__))
+
         if get_ppm() < target_ppm_local:
             log_message("Nutrient Dosing Sequence Starting...")
-        while get_ppm() < target_ppm_local:
+
+        while get_ppm() < target_ppm_local or get_ppm() < target_ppm_local-(target_ppm_local*.025):
             # Iterate through each pump and its corresponding dosing time in the pump_info list
             for pump, dosing_time in pump_info:
-                if not hasattr(pump, 'start') or not hasattr(pump, 'stop'):
-                    raise AttributeError("Pump object missing 'start' or 'stop' method. Error in dose_nutrients.")
-
-                if not isinstance(dosing_time, (int, float)):
-                    raise TypeError(
-                        "Expected dosing_time to be an int or float, but got type {}. Error in dose_nutrients.".format(
-                            type(dosing_time).__name__))
-
                 # Print the current PPM
-                print("Adding nutrients... PPM %f" % get_ppm())
+                print("Adding nutrients with pump... PPM %f" % get_ppm())
 
                 # Start the pump
                 pump.start()
@@ -83,8 +105,12 @@ def dose_nutrients(target_ppm_local, pump_info):
                 # Stop the pump
                 pump.stop()
 
+                # Print the PPM after dosing
+                print("Dosed with pump... PPM %f" % get_ppm())
+
             # Sleep for PPM_LOOP_SLEEP_TIME before checking the PPM again
             sleep(PPM_LOOP_SLEEP_TIME)
+
         log_message("Nutrient Dosing Sequence Completed successfully...")
 
     except TypeError as e:

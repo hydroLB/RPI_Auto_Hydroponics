@@ -66,7 +66,7 @@ fresh_water_pump_time_off = 4.3
 
 # Water level change threshold (in inches) (acts as the plants 'dry-back' function and time between checks (in seconds)
 # Example: Bucket will be filled to 6 inches, threshold is 2, so at 4 inches, the bucket will refill
-WATER_THRESHOLD = 2
+WATER_THRESHOLD = 2.5
 # TIME TO WAIT BETWEEN SYSTEM WATER LEVEL CHECK -> PPM ADJUST, PH CHECK
 # 60 SECONDS AND 60 MINUTES = 60*60=3600 = 1 hour
 WAIT_TIME_BETWEEN_CHECKS = 3600
@@ -81,8 +81,8 @@ PPM_LOOP_SLEEP_TIME = 30
 # Margin (in ppm) between the actual target PPM in the nutrient dosing cycle
 # to avoid overloading the nutrients when the pH is finally balanced at the end (which always raises it to some degree).
 PH_PPM_SAFETY_MARGIN = 50
-PH_UP_SLEEP_TIME = 8  # Sleep time for pH up pump (how long is it on aka how much of it per cycle)
-PH_DOWN_SLEEP_TIME = 8  # time for pH down pump (how long is it on aka how much of it per cycle)
+PH_UP_SLEEP_TIME = 1.1  # Sleep time for pH up pump (how long is it on aka how much of it per cycle)
+PH_DOWN_SLEEP_TIME = 1.1  # time for pH down pump (how long is it on aka how much of it per cycle)
 LOOP_SLEEP_TIME = 30  # Sleep time for the loop ((how long to wait between each increment dosing)
 
 ph_dosing_time = PH_UP_SLEEP_TIME, PH_DOWN_SLEEP_TIME, LOOP_SLEEP_TIME
@@ -351,6 +351,8 @@ def load_motor_name_and_direction():
                 "Error in load_motor_name_and_direction.".format(
                     type(pump_objects).__name__))
 
+        print("DEBUG: load_motor_name_and_direction: assign_pumps(pump_objects): PURPOSE: PUMPS ARE NOT ALL "
+              "GOING ON AND OFF PER CYCLE ")
         return assign_pumps(pump_objects)
 
     except FileNotFoundError:
@@ -375,15 +377,15 @@ def configure_system():
         PH_TARGET = 5.7
         PH_MIN = 5.6
         PH_MAX = 5.8
-        DEFAULT_TARGET_PPM = 800
+        DEFAULT_TARGET_PPM = 550
         DEFAULT_TARGET_WATER_LEVEL = 5.6
-        NUTRIENT1_TIME = 10
-        NUTRIENT2_TIME = 10
-        NUTRIENT3_TIME = 10
-        NUTRIENT4_TIME = 10
-        BACTERIAL_TIME = 10
+        NUTRIENT1_TIME = 1.1
+        NUTRIENT2_TIME = 1.1
+        NUTRIENT3_TIME = 1.1
+        NUTRIENT4_TIME = 1.1
+        BACTERIAL_TIME = 1.1
 
-        ########################################################################################################################
+########################################################################################################################
 
         # Load motor names and directions
         motor_data = load_motor_name_and_direction()

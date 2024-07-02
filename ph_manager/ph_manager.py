@@ -112,7 +112,7 @@ def balance_PH_exact(ph_dosing_time, plant, ph_pump_list):
         if (current_ph < plant.target_ph) or (current_ph > plant.target_ph):
             log_message("EXACT pH balancing starting...")
         if current_ph < plant.target_ph:  # Check if the current pH value is less than the target pH value
-            while get_ph() < plant.target_ph:  # Keep running loop while  pH value is less than the target pH value
+            while get_ph() < plant.target_ph:  # Keep running loop while pH value is less than the target pH value
                 print(
                     "Increasing PH, PH: %f" % get_ph())  # Print current pH val and indicate  it's being increased
                 pHUpPump.start()  # Start the pH up pump
