@@ -269,10 +269,14 @@ def calibrate_water_sensor():
             if pump_thread.is_alive():
                 pump_thread.join()
 
-        # Save the pump times to a file
-        with open(filename, "w") as file:
-            for level, time in pump_times.items():
-                file.write(f"{level}:{time}\n")
+        try:
+            # Save the pump times to a file
+            with open(filename, "w", encoding="utf-8") as file:
+                for level, time in pump_times.items():
+                    file.write(f"{level}:{time}\n")
+            print(f"Pump times successfully saved to {filename}")
+        except Exception as e:
+            print(f"An error occurred while saving pump times: {e}")
 
     except Exception as e:
         print(f"Error during calibration process: {e}")
@@ -281,9 +285,12 @@ def calibrate_water_sensor():
     return calibration_data
 
 
-def load_pump_times():
+def load_pump_times(filename):
     """
     Loads the pump times from a file.
+
+    Args:
+        filename (str): The path to the file containing the pump times.
 
     Returns:
         dict: A dictionary with half-inch increments as keys and pump times as values.
@@ -295,13 +302,17 @@ def load_pump_times():
     loadpump_times = {}
 
     if not os.path.exists(filename):
-        return None
+        raise FileNotFoundError(f"The file {filename} does not exist.")
 
     try:
-        with open(filename, "r") as file:
+        with open(filename, "r", encoding="utf-8") as file:
             for line in file:
                 try:
-                    level, time = line.strip().split(":")
+                    # Split by colon and filter out empty strings
+                    parts = list(filter(None, line.strip().split(":")))
+                    if len(parts) != 2:
+                        raise ValueError(f"Invalid data format in file: {line}")
+                    level, time = parts
                     loadpump_times[float(level)] = float(time)
                 except ValueError as e:
                     raise ValueError(f"Invalid data format in file: {line}. Error: {e}")

@@ -1,6 +1,10 @@
 import os
 import pickle
+
 import sys
+# Add the project directory to the PYTHONPATH
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from time import sleep
 
 import RPi.GPIO as GPIO
@@ -350,9 +354,6 @@ def load_motor_name_and_direction():
                 "Expected pump_objects to be a list or dict, but got type {}. "
                 "Error in load_motor_name_and_direction.".format(
                     type(pump_objects).__name__))
-
-        print("DEBUG: load_motor_name_and_direction: assign_pumps(pump_objects): PURPOSE: PUMPS ARE NOT ALL "
-              "GOING ON AND OFF PER CYCLE ")
         return assign_pumps(pump_objects)
 
     except FileNotFoundError:

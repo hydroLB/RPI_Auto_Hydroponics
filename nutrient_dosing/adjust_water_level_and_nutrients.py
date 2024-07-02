@@ -87,14 +87,14 @@ def dose_nutrients(target_ppm_local, pump_info):
                     "Expected dosing_time to be an int or float, but got type {}. Error in dose_nutrients.".format(
                         type(dosing_time).__name__))
 
-        if get_ppm() < target_ppm_local:
+        current_ppm = get_ppm()
+        if current_ppm < target_ppm_local:
             log_message("Nutrient Dosing Sequence Starting...")
 
-        while get_ppm() < target_ppm_local or get_ppm() < target_ppm_local-(target_ppm_local*.025):
+        while current_ppm < target_ppm_local or current_ppm < target_ppm_local - (target_ppm_local * .025):
             # Iterate through each pump and its corresponding dosing time in the pump_info list
             for pump, dosing_time in pump_info:
                 # Print the current PPM
-                print("Adding nutrients with pump... PPM %f" % get_ppm())
 
                 # Start the pump
                 pump.start()
@@ -105,11 +105,11 @@ def dose_nutrients(target_ppm_local, pump_info):
                 # Stop the pump
                 pump.stop()
 
-                # Print the PPM after dosing
-                print("Dosed with pump... PPM %f" % get_ppm())
+            current_ppm = get_ppm()
 
             # Sleep for PPM_LOOP_SLEEP_TIME before checking the PPM again
             sleep(PPM_LOOP_SLEEP_TIME)
+            print("Current ppm %f" % current_ppm + "target ppm %f" % target_ppm_local)
 
         log_message("Nutrient Dosing Sequence Completed successfully...")
 

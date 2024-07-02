@@ -1,5 +1,7 @@
 import os
 import sys
+# Add the project directory to the PYTHONPATH
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import threading
 from time import sleep
 
@@ -21,9 +23,6 @@ previous_ph_value = 7.0
 previous_ppm_value = 0.0
 previous_temperature_value = 70.0
 previous_water_level = 0.0
-
-# Add the project directory to the PYTHONPATH
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
 def ask_user(prompt):
@@ -56,8 +55,9 @@ def setup_hydroponic_system():
                 print("Skipping fresh water pump test. \n ")
 
             # Initialize water sensor to get the water level
-            initialize_water_sensor()
-            log_message("Water sensor initialization begun")
+            if water_level is None:
+                initialize_water_sensor()
+                log_message("Water sensor initialization begun")
 
             # make sure user ready for bucket fill
             while True:
@@ -121,93 +121,6 @@ def setup_hydroponic_system():
         raise Exception(f"An unexpected error occurred in setup_hydroponic_system: {ex}")
 
 
-def setup_hydroponic_system_tempo():
-    """
-    Sets up the hydroponic system, including configuring pumps, priming pumps,
-    initializing sensors, and dosing nutrients, only if water level is below threshold to skip this step.
-    """
-
-    try:
-        """ "# Check the water level to determine if setup is needed
-        water_level = get_water_level()
-        if water_level is None or water_level < SKIP_SYSTEM_SETUP_WATER_LEVEL:
-            sys.stdin.readline()  # Wait for user to hit enter to start configuration
-            """
-        plant, ph_pump_list = configure_system()
-        """ # Write initial target levels from user config file to settings.txt
-            write_to_file(plant.target_ppm, plant.target_water_level)
-
-            # Test the pump control over bringing in fresh water during a refill
-            if ask_user("Do you want to test the fresh water pump?"):
-                test_fresh_water_pump()
-            else:
-                print("Skipping fresh water pump test. \n ")
-
-            # Initialize water sensor to get the water level
-            initialize_water_sensor()
-            log_message("Water sensor initialization begun")
-
-            # make sure user ready for bucket fill
-            while True:
-
-                answer = input(
-                    f"Have you removed water so it's beneath the max fill line of {plant.target_water_level} chosen "
-                    f"in the" f"system (yes/no): ").strip().lower()
-                if answer == "yes":
-                    break
-                elif answer == "no":
-                    print("Okay, waiting for your readiness... to begin fillup \n ")
-                else:
-                    print("Please answer with 'yes' or 'no'. \n ")
-
-            # Fill the system with water
-            fill_water(FRESH_WATER_PUMP_PIN)
-
-            # Test temperature sensor
-            if ask_user("Do you want to test the temperature sensor?"):
-                test_temp_sensor()
-            else:
-                print("Skipping temperature sensor test.\n")
-
-            # Test pH and EC sensors
-            if ask_user("Do you want to test the pH sensor?"):
-                test_ph_sensor()
-            else:
-                print("Skipping pH sensor test.\n")
-
-            if ask_user("Do you want to test the EC sensor?"):
-                test_ec_sensor()
-            else:
-                print("Skipping EC sensor test. \n")
-            """
-
-        # Get the target PPM and water level from settings file
-        target_ppm, target_water_level = read_from_file()
-
-        # Dose nutrients based on the target PPM
-        dose_nutrients(target_ppm, plant.nutrient_pump_time_list)
-
-        # Balance the pH exactly
-        balance_PH_exact(ph_dosing_time, plant, ph_pump_list)
-
-        # Write the current PPM and water level to the settings file
-        write_to_file(get_ppm(), get_water_level())
-
-        print("Startup completed")  # Log that startup is complete
-        log_message("Startup sequence completed, moving to monitoring!")
-        """
-        else:
-            # water is above the skip_system water level
-            print("Hydroponic system already set up, moving to monitoring")
-    """
-    except (TypeError, ValueError, KeyError) as ex:
-        raise Exception(f"Specific error occurred in setup_hydroponic_system: {ex}")
-
-    except IOError as ex:
-        raise Exception(f"I/O error occurred in setup_hydroponic_system: {ex}")
-
-    except Exception as ex:
-        raise Exception(f"An unexpected error occurred in setup_hydroponic_system: {ex}")
 
 
 def write_value_to_file(file_path, value):
@@ -329,7 +242,7 @@ def main():
     """
     try:
         # Initial setup of the hydroponic system
-        setup_hydroponic_system_tempo()
+        setup_hydroponic_system()
         ###
         ph_value_lock = threading.Lock()
         water_level_lock = threading.Lock()
