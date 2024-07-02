@@ -394,7 +394,7 @@ def get_ppm():
         else:
             print("Warning: Failed to read EC value.")
 
-        # Wait for 5 seconds before taking the next measurement
+        # Wait for 4 seconds before taking the next measurement
         time.sleep(4)
 
     # If there are not enough valid measurements, print a warning message
