@@ -57,10 +57,10 @@ FRESH_WATER_PUMP_PIN = 21
 GPIO.setup(FRESH_WATER_PUMP_PIN, GPIO.OUT)  # Set pin as an output
 # how long is the pump on at a time, this is to control how much water comes out at a time to not overwhelm speed of
 # the etape capturing the change
-fresh_water_pump_time_on = 1.3
+fresh_water_pump_time_on = .95
 
 # how long is the pump off at a time
-fresh_water_pump_time_off = 3.8
+fresh_water_pump_time_off = 6.1
 
 ########################################################################################################################
 

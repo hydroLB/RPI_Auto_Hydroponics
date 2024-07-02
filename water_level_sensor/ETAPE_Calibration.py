@@ -89,6 +89,7 @@ def get_average_sensor_value(num_samples=5):
     """Get the RAW average sensor value over a number of samples for the E-tape."""
     total = 0
     successful_reads = 0
+    time.sleep(6)
 
     for i in range(num_samples):
         attempts = 5
@@ -96,12 +97,13 @@ def get_average_sensor_value(num_samples=5):
             try:
                 # Read raw eTape sensor values from the ADC
                 raw_val = adc.read_adc(0, gain=GAIN)
+                time.sleep(3)
                 if raw_val is not None:
                     total += raw_val
                     successful_reads += 1
                     break
                 else:
-                    time.sleep(0.1)  # Small delay before retrying
+                    time.sleep(1)  # Small delay before retrying
             except Exception as e:
                 print(f"Error reading sensor values in get_average_sensor_value: {e}")
                 raise
@@ -225,9 +227,9 @@ def calibrate_water_sensor():
                         average_sensor_value = get_average_sensor_value()
                         calibration_data.append((target_level, average_sensor_value))
                         print(f"Averaged sensor value at {target_level} inches: {average_sensor_value}")
-                        time.sleep(3)
+                        time.sleep(5)
                         clear_terminal()
-                        time.sleep(2)
+                        time.sleep(3)
                         break
                     else:
                         print("\nInvalid input. Please follow the format 'confirm <level>'.")
