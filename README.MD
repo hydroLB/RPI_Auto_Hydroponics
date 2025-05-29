@@ -99,10 +99,10 @@ This project was developed using a variety of tools, including PyCharm as the in
 
 1. Multiple Plants: Control Multiple plants each with their own customizations using a single bucket.
 
-2. Alerts and Notifications: Add a feature for sending alerts and notifications when certain conditions are met or thresholds are exceeded, such as low water levels, pH imbalances, or high nutrient concentrations. This will keep you informed about your system's status and help you react promptly to any issues.
+2. Alerts and Notifications: Add a feature for sending alerts and notifications when certain conditions are met or thresholds are exceeded, such as low water levels, pH imbalances, or high nutrient concentrations. This will help to inform about your system's status and to react promptly to any issues.
 
 3. Light Management: Incorporate a light management system to control light intensity and duration, simulating day-night cycles and optimizing plant growth.
 
-4. Temperature Control: Implement a new temperature sensor to control a heater or cooler to maintain optimal temperature levels in the hydroponic environment. This will ensure that your plants grow in the most suitable conditions.
+4. Temperature Control: Implement a new temperature sensor to control a heater or cooler to maintain optimal temperature levels in the hydroponic environment. Temperature is a very important aspect to increased plant growth. 
 
-5. Humidity Control: Implement a humidity sensor and control system (fans) to maintain optimal humidity levels in the hydroponic environment.
+5. Humidity Control: Implement a humidity sensor and control system (fans) to maintain optimal humidity levels in the hydroponic environment. Humidity is also a big factor in plant growth speeds. 
