@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env*
+node_modules/
+dist/
+build/
+.DS_Store
+.idea/
+.vscode/
+verify-*.log
+.githooks/
+.repo/hooks/
+.repo/wrappers/
