@@ -12,3 +12,7 @@ verify-*.log
 .githooks/
 .repo/hooks/
 .repo/wrappers/
+
+# ---- Added by audit ----
+# OS / tooling
+.DS_Store
