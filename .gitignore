@@ -19,3 +19,7 @@ verify-*.log
 .vite/
 coverage/
 target/
+.repo/
+.repowizard/
+git-autosnap.sh
+gitleaks-prepush.json
